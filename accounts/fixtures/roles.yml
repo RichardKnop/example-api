@@ -1,0 +1,17 @@
+---
+
+- table: 'account_roles'
+  pk:
+    id: 1
+  fields:
+    name: 'superuser'
+    created_at: 'ON_INSERT_NOW()'
+    updated_at: 'ON_UPDATE_NOW()'
+
+- table: 'account_roles'
+  pk:
+    id: 2
+  fields:
+    name: 'user'
+    created_at: 'ON_INSERT_NOW()'
+    updated_at: 'ON_UPDATE_NOW()'

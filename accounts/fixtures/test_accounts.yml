@@ -1,0 +1,10 @@
+---
+
+- table: 'account_accounts'
+  pk:
+    id: 1
+  fields:
+    oauth_client_id: 1
+    name: 'Test Account'
+    created_at: 'ON_INSERT_NOW()'
+    updated_at: 'ON_UPDATE_NOW()'
