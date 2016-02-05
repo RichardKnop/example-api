@@ -31,7 +31,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Authenticate the user
-	user, err := s.oauthService.AuthUser(
+	user, err := s.GetAccountsService().GetOauthService().AuthUser(
 		r.Form.Get("email"),    // username
 		r.Form.Get("password"), // password
 	)
@@ -42,7 +42,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the scope string
-	scope, err := s.oauthService.GetScope(r.Form.Get("scope"))
+	scope, err := s.GetAccountsService().GetOauthService().GetScope(r.Form.Get("scope"))
 	if err != nil {
 		sessionService.SetFlashMessage(err.Error())
 		http.Redirect(w, r, r.RequestURI, http.StatusFound)
@@ -50,7 +50,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch the trusted client
-	client, err := s.oauthService.FindClientByClientID(
+	client, err := s.GetAccountsService().GetOauthService().FindClientByClientID(
 		s.cnf.TrustedClient.ClientID,
 	)
 	if err != nil {
@@ -59,7 +59,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Grant an access token
-	accessToken, err := s.oauthService.GrantAccessToken(
+	accessToken, err := s.GetAccountsService().GetOauthService().GrantAccessToken(
 		client, // client
 		user,   // user
 		scope,  // scope
@@ -71,7 +71,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get a refresh token
-	refreshToken, err := s.oauthService.GetOrCreateRefreshToken(
+	refreshToken, err := s.GetAccountsService().GetOauthService().GetOrCreateRefreshToken(
 		client, // client
 		user,   // user
 		scope,  // scope
@@ -99,7 +99,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	// pages by specifying a path with login_redirect_uri query string param
 	loginRedirectURI := r.URL.Query().Get("login_redirect_uri")
 	if loginRedirectURI == "" {
-		loginRedirectURI = "/web/authorize"
+		loginRedirectURI = "/web/admin"
 	}
 	redirectWithQueryString(loginRedirectURI, r.URL.Query(), w, r)
 }

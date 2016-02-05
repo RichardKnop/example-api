@@ -75,7 +75,7 @@ func (suite *AccountsTestSuite) SetupSuite() {
 		}
 
 		// Insert the fixture data
-		err = fixtures.Load(data, suite.db.DB(), suite.cnf.Database.Type)
+		err = fixtures.Load(data, suite.db.DB(), "sqlite")
 		if err != nil {
 			log.Fatal(err)
 		}

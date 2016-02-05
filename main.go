@@ -5,8 +5,6 @@ import (
 	"os"
 
 	"github.com/RichardKnop/recall/commands"
-	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/database"
 	"github.com/codegangsta/cli"
 )
 
@@ -25,27 +23,13 @@ func init() {
 }
 
 func main() {
-	// Load the configuration, connect to the database
-	cnf := config.NewConfig(
-		true, // must load once
-		true, // keep reloading
-	)
-	db, err := database.NewDatabase(cnf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	// Disable logging
-	db.LogMode(false)
-
 	// Set the CLI app commands
 	cliApp.Commands = []cli.Command{
 		{
 			Name:  "migrate",
 			Usage: "run migrations",
 			Action: func(c *cli.Context) {
-				if err := commands.Migrate(db); err != nil {
+				if err := commands.Migrate(); err != nil {
 					log.Fatal(err)
 				}
 			},
@@ -54,7 +38,25 @@ func main() {
 			Name:  "loaddata",
 			Usage: "load data from fixture",
 			Action: func(c *cli.Context) {
-				if err := commands.LoadData(c.Args(), cnf, db); err != nil {
+				if err := commands.LoadData(c.Args()); err != nil {
+					log.Fatal(err)
+				}
+			},
+		},
+		{
+			Name:  "createaccount",
+			Usage: "create new account",
+			Action: func(c *cli.Context) {
+				if err := commands.CreateAccount(); err != nil {
+					log.Fatal(err)
+				}
+			},
+		},
+		{
+			Name:  "createsuperadmin",
+			Usage: "create new superadmin",
+			Action: func(c *cli.Context) {
+				if err := commands.CreateSuperadmin(); err != nil {
 					log.Fatal(err)
 				}
 			},
@@ -63,7 +65,9 @@ func main() {
 			Name:  "runserver",
 			Usage: "run web server",
 			Action: func(c *cli.Context) {
-				commands.RunServer(cnf, db)
+				if err := commands.RunServer(); err != nil {
+					log.Fatal(err)
+				}
 			},
 		},
 	}

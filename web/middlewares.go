@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/RichardKnop/recall/session"
+	"github.com/RichardKnop/recall/util"
 	"github.com/gorilla/context"
 )
 
@@ -32,6 +33,12 @@ func newGuestMiddleware(service ServiceInterface) *guestMiddleware {
 
 // ServeHTTP as per the negroni.Handler interface
 func (m *guestMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	// HTTPS redirection
+	err := util.NewSecure(m.service.GetConfig().IsDevelopment).Process(w, r)
+	if err != nil {
+		return
+	}
+
 	// Initialise the session service
 	sessionService := session.NewService(m.service.GetConfig(), r, w)
 
@@ -58,6 +65,12 @@ func newLoggedInMiddleware(service ServiceInterface) *loggedInMiddleware {
 
 // ServeHTTP as per the negroni.Handler interface
 func (m *loggedInMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	// HTTPS redirection
+	err := util.NewSecure(m.service.GetConfig().IsDevelopment).Process(w, r)
+	if err != nil {
+		return
+	}
+
 	// Initialise the session service
 	sessionService := session.NewService(m.service.GetConfig(), r, w)
 
@@ -90,7 +103,7 @@ func (m *loggedInMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 
 func (m *loggedInMiddleware) authenticate(userSession *session.UserSession) error {
 	// Try to authenticate with the stored access token
-	_, err := m.service.GetOauthService().Authenticate(userSession.AccessToken)
+	_, err := m.service.GetAccountsService().GetOauthService().Authenticate(userSession.AccessToken)
 	if err == nil {
 		// Access token valid, return
 		return nil
@@ -98,7 +111,7 @@ func (m *loggedInMiddleware) authenticate(userSession *session.UserSession) erro
 	// Access token might be expired, let's try refreshing...
 
 	// Fetch the client
-	client, err := m.service.GetOauthService().FindClientByClientID(
+	client, err := m.service.GetAccountsService().GetOauthService().FindClientByClientID(
 		userSession.ClientID, // client ID
 	)
 	if err != nil {
@@ -106,7 +119,7 @@ func (m *loggedInMiddleware) authenticate(userSession *session.UserSession) erro
 	}
 
 	// Validate the refresh token
-	theRefreshToken, err := m.service.GetOauthService().GetValidRefreshToken(
+	theRefreshToken, err := m.service.GetAccountsService().GetOauthService().GetValidRefreshToken(
 		userSession.RefreshToken, // refresh token
 		client, // client
 	)
@@ -115,7 +128,7 @@ func (m *loggedInMiddleware) authenticate(userSession *session.UserSession) erro
 	}
 
 	// Create a new access token
-	accessToken, err := m.service.GetOauthService().GrantAccessToken(
+	accessToken, err := m.service.GetAccountsService().GetOauthService().GrantAccessToken(
 		theRefreshToken.Client, // client
 		theRefreshToken.User,   // user
 		theRefreshToken.Scope,  // scope
@@ -125,7 +138,7 @@ func (m *loggedInMiddleware) authenticate(userSession *session.UserSession) erro
 	}
 
 	// Create or retrieve a refresh token
-	refreshToken, err := m.service.GetOauthService().GetOrCreateRefreshToken(
+	refreshToken, err := m.service.GetAccountsService().GetOauthService().GetOrCreateRefreshToken(
 		theRefreshToken.Client, // client
 		theRefreshToken.User,   // user
 		theRefreshToken.Scope,  // scope
@@ -154,7 +167,7 @@ func newClientMiddleware(service ServiceInterface) *clientMiddleware {
 // ServeHTTP as per the negroni.Handler interface
 func (m *clientMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	// Fetch the client
-	client, err := m.service.GetOauthService().FindClientByClientID(
+	client, err := m.service.GetAccountsService().GetOauthService().FindClientByClientID(
 		r.Form.Get("client_id"), // client ID
 	)
 	if err != nil {

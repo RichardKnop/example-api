@@ -7,13 +7,13 @@ import (
 )
 
 // RegisterRoutes registers route handlers for the web package
-func RegisterRoutes(router *mux.Router, service *Service) {
+func RegisterRoutes(router *mux.Router, service ServiceInterface) {
 	subRouter := router.PathPrefix("/web").Subrouter()
 	routes.AddRoutes(newRoutes(service), subRouter)
 }
 
 // newRoutes returns []routes.Route slice for the web package
-func newRoutes(service *Service) []routes.Route {
+func newRoutes(service ServiceInterface) []routes.Route {
 	return []routes.Route{
 		routes.Route{
 			Name:        "register_form",

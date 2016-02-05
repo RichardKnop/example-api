@@ -3,15 +3,15 @@ package web
 import (
 	"net/http"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/oauth"
 )
 
 // ServiceInterface defines exported methods
 type ServiceInterface interface {
 	// Exported methods
 	GetConfig() *config.Config
-	GetOauthService() oauth.ServiceInterface
+	GetAccountsService() accounts.ServiceInterface
 
 	// Needed for the newRoutes to be able to register handlers
 	authorizeForm(w http.ResponseWriter, r *http.Request)

@@ -54,7 +54,7 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch the user
-	user, err := s.oauthService.FindUserByUsername(
+	user, err := s.GetAccountsService().GetOauthService().FindUserByUsername(
 		userSession.Username,
 	)
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check the requested scope
-	scope, err := s.oauthService.GetScope(r.Form.Get("scope"))
+	scope, err := s.GetAccountsService().GetOauthService().GetScope(r.Form.Get("scope"))
 	if err != nil {
 		errorRedirect(w, r, parsedRedirectURI, "invalid_scope", state, responseType)
 		return
@@ -109,14 +109,13 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	// When response_type == "code", we will grant an authorization code
 	if responseType == "code" {
 		// Create a new authorization code
-		authorizationCode, err := s.oauthService.GrantAuthorizationCode(
+		authorizationCode, err := s.GetAccountsService().GetOauthService().GrantAuthorizationCode(
 			client, // client
 			user,   // user
 			r.Form.Get("redirect_uri"), // redirect URI
 			scope, // scope
 		)
 		if err != nil {
-			log.Print(err)
 			errorRedirect(w, r, parsedRedirectURI, "server_error", state, responseType)
 			return
 		}
@@ -135,7 +134,7 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	// When response_type == "token", we will directly grant an access token
 	if responseType == "token" {
 		// Grant an access token
-		accessToken, err := s.oauthService.GrantAccessToken(
+		accessToken, err := s.GetAccountsService().GetOauthService().GrantAccessToken(
 			client, // client
 			user,   // user
 			scope,  // scope

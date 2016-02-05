@@ -15,8 +15,8 @@ const sessionServiceKey contextKey = 0
 const clientKey contextKey = 1
 
 var (
-	errSessionServiceNotPresent = errors.New("Session service not present in the request context.")
-	errClientNotPresent         = errors.New("Client not present in the request context.")
+	errSessionServiceNotPresent = errors.New("Session service not present in the request context")
+	errClientNotPresent         = errors.New("Client not present in the request context")
 )
 
 // Returns *session.Service from the request context

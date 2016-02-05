@@ -29,14 +29,14 @@ func (s *Service) register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that the submitted email hasn't been registered already
-	if s.oauthService.UserExists(r.Form.Get("email")) {
+	if s.GetAccountsService().GetOauthService().UserExists(r.Form.Get("email")) {
 		sessionService.SetFlashMessage("Email taken")
 		http.Redirect(w, r, r.RequestURI, http.StatusFound)
 		return
 	}
 
 	// Create a user
-	_, err = s.oauthService.CreateUser(
+	_, err = s.GetAccountsService().GetOauthService().CreateUser(
 		r.Form.Get("email"),    // username
 		r.Form.Get("password"), // password
 	)
