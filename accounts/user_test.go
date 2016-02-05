@@ -95,7 +95,7 @@ func (suite *AccountsTestSuite) TestCreateSuperadmin() {
 	// Error should be nil
 	assert.Nil(suite.T(), err)
 
-	// Correct account object should be returned
+	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test@superadmin2", user.OauthUser.Username)
 	}
