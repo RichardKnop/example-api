@@ -140,3 +140,10 @@ docker exec <container_id> /go/bin/recall loaddata \
 	oauth/fixtures/scopes.yml \
 	oauth/fixtures/test_clients.yml
 ```
+
+You can also execute interactive commands by passing `-i` flag:
+
+```
+docker exec -i <container_id> /go/bin/area-api createaccount
+docker exec -i <container_id> /go/bin/area-api createsuperadmin
+```
