@@ -29,7 +29,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 
 	// Correct user should be returned
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test_client", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 	}
 }
@@ -59,7 +59,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 
 	// Correct user should be returned with preloaded data
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test_client", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 	}
 }

@@ -29,8 +29,8 @@ func (suite *AccountsTestSuite) TestFindAccountByOauthClientID() {
 
 	// Correct account should be returned
 	if assert.NotNil(suite.T(), account) {
-		assert.Equal(suite.T(), "Test Account", account.Name)
-		assert.Equal(suite.T(), "test_client", account.OauthClient.Key)
+		assert.Equal(suite.T(), "Test Account 1", account.Name)
+		assert.Equal(suite.T(), "test_client_1", account.OauthClient.Key)
 	}
 }
 
@@ -59,8 +59,8 @@ func (suite *AccountsTestSuite) TestFindAccountByID() {
 
 	// Correct account should be returned with preloaded data
 	if assert.NotNil(suite.T(), account) {
-		assert.Equal(suite.T(), "Test Account", account.Name)
-		assert.Equal(suite.T(), "test_client", account.OauthClient.Key)
+		assert.Equal(suite.T(), "Test Account 1", account.Name)
+		assert.Equal(suite.T(), "test_client_1", account.OauthClient.Key)
 	}
 }
 
@@ -74,7 +74,7 @@ func (suite *AccountsTestSuite) TestCreateAccount() {
 	account, err = suite.service.CreateAccount(
 		"Test Account 2",          // name
 		"",                        // description
-		"test_client",             // client ID
+		"test_client_2",           // client ID
 		"test_secret",             // secret
 		"https://www.example.com", // redirect URI
 	)
@@ -89,9 +89,9 @@ func (suite *AccountsTestSuite) TestCreateAccount() {
 
 	// We try to insert a non unique account
 	account, err = suite.service.CreateAccount(
-		"Test Account",            // name
+		"Test Account 2",          // name
 		"",                        // description
-		"test_client2",            // client ID
+		"test_client_3",           // client ID
 		"test_secret",             // secret
 		"https://www.example.com", // redirect URI
 	)
@@ -106,9 +106,9 @@ func (suite *AccountsTestSuite) TestCreateAccount() {
 
 	// We try to insert a unique account
 	account, err = suite.service.CreateAccount(
-		"Test Account 2",          // name
+		"Test Account 3",          // name
 		"",                        // description
-		"test_client2",            // client ID
+		"test_client_3",           // client ID
 		"test_secret",             // secret
 		"https://www.example.com", // redirect URI
 	)
@@ -118,7 +118,7 @@ func (suite *AccountsTestSuite) TestCreateAccount() {
 
 	// Correct account object should be returned
 	if assert.NotNil(suite.T(), account) {
-		assert.Equal(suite.T(), "Test Account 2", account.Name)
-		assert.Equal(suite.T(), "test_client2", account.OauthClient.Key)
+		assert.Equal(suite.T(), "Test Account 3", account.Name)
+		assert.Equal(suite.T(), "test_client_3", account.OauthClient.Key)
 	}
 }

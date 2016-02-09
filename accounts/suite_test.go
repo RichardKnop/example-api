@@ -117,8 +117,11 @@ func (suite *AccountsTestSuite) TearDownSuite() {
 func (suite *AccountsTestSuite) SetupTest() {
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(User))
 
-	// Service.createUser also creates a new oauth.User instance
+	// Service.CreateUser also creates a new oauth.User instance
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.User))
+
+	// Service.CreateAccount also creates a new oauth.Client instance
+	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.Client))
 }
 
 // The TearDownTest method will be run after every test in the suite.

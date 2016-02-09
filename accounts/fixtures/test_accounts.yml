@@ -5,6 +5,15 @@
     id: 1
   fields:
     oauth_client_id: 1
-    name: 'Test Account'
+    name: 'Test Account 1'
+    created_at: 'ON_INSERT_NOW()'
+    updated_at: 'ON_UPDATE_NOW()'
+
+- table: 'account_accounts'
+  pk:
+    id: 2
+  fields:
+    oauth_client_id: 2
+    name: 'Test Account 2'
     created_at: 'ON_INSERT_NOW()'
     updated_at: 'ON_UPDATE_NOW()'

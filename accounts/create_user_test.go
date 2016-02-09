@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"bytes"
+	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -33,7 +34,13 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	r.Header.Set("Authorization", "Basic dGVzdF9jbGllbnQ6dGVzdF9zZWNyZXQ=")
+	r.Header.Set(
+		"Authorization",
+		fmt.Sprintf(
+			"Basic %s",
+			b64.StdEncoding.EncodeToString([]byte("test_client_1:test_secret")),
+		),
+	)
 
 	// Check the routing
 	match := new(mux.RouteMatch)

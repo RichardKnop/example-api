@@ -85,7 +85,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	r.SetBasicAuth("test_client", "test_secret")
+	r.SetBasicAuth("test_client_1", "test_secret")
 	w = httptest.NewRecorder()
 	next = func(w http.ResponseWriter, r *http.Request) {}
 	middleware.ServeHTTP(w, r, next)
@@ -97,7 +97,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 	authenticatedAccount, err = GetAuthenticatedAccount(r)
 	assert.Nil(suite.T(), err)
 	if assert.NotNil(suite.T(), authenticatedAccount) {
-		assert.Equal(suite.T(), "Test Account", authenticatedAccount.Name)
-		assert.Equal(suite.T(), "test_client", authenticatedAccount.OauthClient.Key)
+		assert.Equal(suite.T(), "Test Account 1", authenticatedAccount.Name)
+		assert.Equal(suite.T(), "test_client_1", authenticatedAccount.OauthClient.Key)
 	}
 }
