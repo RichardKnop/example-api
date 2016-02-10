@@ -12,13 +12,19 @@ func RegisterRoutes(router *mux.Router, service *Service) {
 }
 
 // newRoutes returns []routes.Route slice for the oauth service
-func newRoutes(service *Service) []routes.Route {
+func newRoutes(service ServiceInterface) []routes.Route {
 	return []routes.Route{
 		routes.Route{
 			Name:        "oauth_tokens",
 			Method:      "POST",
 			Pattern:     "/tokens",
 			HandlerFunc: service.tokensHandler,
+		},
+		routes.Route{
+			Name:        "oauth_introspect",
+			Method:      "POST",
+			Pattern:     "/introspect",
+			HandlerFunc: service.introspectHandler,
 		},
 	}
 }
