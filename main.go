@@ -53,10 +53,10 @@ func main() {
 			},
 		},
 		{
-			Name:  "createsuperadmin",
-			Usage: "create new superadmin",
+			Name:  "createsuperuser",
+			Usage: "create new superuser",
 			Action: func(c *cli.Context) {
-				if err := commands.CreateSuperadmin(); err != nil {
+				if err := commands.CreateSuperuser(); err != nil {
 					log.Fatal(err)
 				}
 			},

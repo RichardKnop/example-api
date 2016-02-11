@@ -64,16 +64,16 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 	}
 }
 
-func (suite *AccountsTestSuite) TestCreateSuperadmin() {
+func (suite *AccountsTestSuite) TestCreateSuperuser() {
 	var (
 		user *User
 		err  error
 	)
 
 	// We try to insert a user with a non unique oauth user
-	user, err = suite.service.CreateSuperadmin(
+	user, err = suite.service.CreateSuperuser(
 		suite.accounts[0], // account
-		"test@superadmin", // email
+		"test@superuser",  // email
 		"test_password",   // password
 	)
 
@@ -86,10 +86,10 @@ func (suite *AccountsTestSuite) TestCreateSuperadmin() {
 	}
 
 	// We try to insert a unique superuser
-	user, err = suite.service.CreateSuperadmin(
-		suite.accounts[0],  // account
-		"test@superadmin2", // email
-		"test_password",    // password
+	user, err = suite.service.CreateSuperuser(
+		suite.accounts[0], // account
+		"test@superuser2", // email
+		"test_password",   // password
 	)
 
 	// Error should be nil
@@ -97,6 +97,6 @@ func (suite *AccountsTestSuite) TestCreateSuperadmin() {
 
 	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test@superadmin2", user.OauthUser.Username)
+		assert.Equal(suite.T(), "test@superuser2", user.OauthUser.Username)
 	}
 }

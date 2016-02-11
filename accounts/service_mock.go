@@ -196,7 +196,7 @@ func (_m *ServiceMock) UpdateUser(user *User, userRequest *UserRequest) error {
 }
 
 // CreateSuperadmin ..
-func (_m *ServiceMock) CreateSuperadmin(account *Account, email string, password string) (*User, error) {
+func (_m *ServiceMock) CreateSuperuser(account *Account, email string, password string) (*User, error) {
 	ret := _m.Called(account, email, password)
 
 	var r0 *User

@@ -10,8 +10,8 @@ import (
 	"github.com/RichardKnop/recall/oauth"
 )
 
-// CreateSuperadmin creates a new superadmin
-func CreateSuperadmin() error {
+// CreateSuperuser creates a new superuser
+func CreateSuperuser() error {
 	cnf, db, err := initConfigDB(true, false)
 	defer db.Close()
 	if err != nil {
@@ -21,7 +21,7 @@ func CreateSuperadmin() error {
 	// Initialise the accounts service
 	accountsService := accounts.NewService(cnf, db, oauth.NewService(cnf, db))
 
-	// Fetch the account (assume all superadmins belong to the first account)
+	// Fetch the account (assume all superusers belong to the first account)
 	account, err := accountsService.FindAccountByID(uint(1))
 	if err != nil {
 		return err
@@ -43,8 +43,8 @@ func CreateSuperadmin() error {
 		return err
 	}
 
-	// Create a new account
-	_, err = accountsService.CreateSuperadmin(
+	// Create a new user
+	_, err = accountsService.CreateSuperuser(
 		account,
 		strings.TrimRight(email, "\n"),
 		strings.TrimRight(password, "\n"),

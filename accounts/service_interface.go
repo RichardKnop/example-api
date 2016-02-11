@@ -19,7 +19,7 @@ type ServiceInterface interface {
 	FindUserByID(userID uint) (*User, error)
 	CreateUser(account *Account, userRequest *UserRequest) (*User, error)
 	UpdateUser(user *User, userRequest *UserRequest) error
-	CreateSuperadmin(account *Account, email, password string) (*User, error)
+	CreateSuperuser(account *Account, email, password string) (*User, error)
 
 	// Needed for the newRoutes to be able to register handlers
 	createUserHandler(w http.ResponseWriter, r *http.Request)

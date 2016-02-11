@@ -114,8 +114,8 @@ func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 	return nil
 }
 
-// CreateSuperadmin creates a new superadmin account
-func (s *Service) CreateSuperadmin(account *Account, email, password string) (*User, error) {
+// CreateSuperuser creates a new superuser account
+func (s *Service) CreateSuperuser(account *Account, email, password string) (*User, error) {
 	// Fetch the role object
 	role, err := s.findRoleByName(roles.Superuser)
 	if err != nil {
