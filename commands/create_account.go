@@ -13,10 +13,10 @@ import (
 // CreateAccount creates a new account
 func CreateAccount() error {
 	cnf, db, err := initConfigDB(true, false)
-	defer db.Close()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
 	reader := bufio.NewReader(os.Stdin)
 

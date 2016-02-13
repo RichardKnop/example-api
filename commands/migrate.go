@@ -9,10 +9,10 @@ import (
 // Migrate runs database migrations
 func Migrate() error {
 	_, db, err := initConfigDB(true, false)
-	defer db.Close()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
 	// Bootstrap migrations
 	if err := migrations.Bootstrap(db); err != nil {

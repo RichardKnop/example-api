@@ -13,10 +13,10 @@ import (
 // CreateSuperuser creates a new superuser
 func CreateSuperuser() error {
 	cnf, db, err := initConfigDB(true, false)
-	defer db.Close()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
 	// Initialise the accounts service
 	accountsService := accounts.NewService(cnf, db, oauth.NewService(cnf, db))
