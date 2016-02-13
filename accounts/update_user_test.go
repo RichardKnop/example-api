@@ -37,7 +37,7 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 	// Check the routing
 	match := new(mux.RouteMatch)
 	suite.router.Match(r, match)
-	if assert.NotNil(suite.T(), match.Route.GetName()) {
+	if assert.NotNil(suite.T(), match.Route) {
 		assert.Equal(suite.T(), "update_user", match.Route.GetName())
 	}
 
