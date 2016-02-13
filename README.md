@@ -144,6 +144,6 @@ docker exec <container_id> /go/bin/recall loaddata \
 You can also execute interactive commands by passing `-i` flag:
 
 ```
-docker exec -i <container_id> /go/bin/area-api createaccount
-docker exec -i <container_id> /go/bin/area-api createsuperuser
+docker exec -i <container_id> /go/bin/recall createaccount
+docker exec -i <container_id> /go/bin/recall createsuperuser
 ```
