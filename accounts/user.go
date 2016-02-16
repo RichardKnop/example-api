@@ -17,7 +17,7 @@ func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*User, error) {
 	// Fetch the user from the database
 	user := new(User)
 	notFound := s.db.Where(User{
-		OauthUserID: util.IntOrNull(int64(oauthUserID)),
+		OauthUserID: util.PositiveIntOrNull(int64(oauthUserID)),
 	}).Preload("Account.OauthClient").Preload("OauthUser").Preload("Role").
 		First(user).RecordNotFound()
 

@@ -15,7 +15,7 @@ func (s *Service) FindAccountByOauthClientID(oauthClientID uint) (*Account, erro
 	// Fetch the client from the database
 	account := new(Account)
 	notFound := s.db.Where(Account{
-		OauthClientID: util.IntOrNull(int64(oauthClientID)),
+		OauthClientID: util.PositiveIntOrNull(int64(oauthClientID)),
 	}).Preload("OauthClient").First(account).RecordNotFound()
 
 	// Not found

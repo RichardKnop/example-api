@@ -53,7 +53,7 @@ func (u *User) TableName() string {
 
 // newAccount creates new Account instance
 func newAccount(oauthClient *oauth.Client, name, description string) *Account {
-	oauthClientID := util.IntOrNull(int64(oauthClient.ID))
+	oauthClientID := util.PositiveIntOrNull(int64(oauthClient.ID))
 	account := &Account{
 		OauthClientID: oauthClientID,
 		Name:          name,
@@ -67,9 +67,9 @@ func newAccount(oauthClient *oauth.Client, name, description string) *Account {
 
 // newUser creates new User instance
 func newUser(account *Account, oauthUser *oauth.User, role *Role, firstName, lastName string) *User {
-	accountID := util.IntOrNull(int64(account.ID))
-	oauthUserID := util.IntOrNull(int64(oauthUser.ID))
-	roleID := util.IntOrNull(int64(role.ID))
+	accountID := util.PositiveIntOrNull(int64(account.ID))
+	oauthUserID := util.PositiveIntOrNull(int64(oauthUser.ID))
+	roleID := util.PositiveIntOrNull(int64(role.ID))
 	user := &User{
 		AccountID:   accountID,
 		OauthUserID: oauthUserID,
