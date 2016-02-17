@@ -74,10 +74,6 @@ curl -L http://localhost:2379/v2/keys/config/recall.json -XPUT -d value='{
 		"MaxAge": 604800,
 		"HTTPOnly": true
 	},
-	"TrustedClient": {
-		"ClientID": "test_client",
-		"Secret": "test_secret"
-	},
 	"Sendgrid": {
 		"APIKey": "sendgrid_api_key"
 	},
@@ -111,7 +107,10 @@ You might want to insert some test data if you are testing locally using `curl` 
 go run main.go loaddata \
 	oauth/fixtures/scopes.yml \
 	oauth/fixtures/test_clients.yml \
-	oauth/fixtures/test_users.yml
+	oauth/fixtures/test_users.yml \
+	accounts/fixtures/roles.yml \
+	accounts/fixtures/test_accounts.yml \
+	accounts/fixtures/test_users.yml
 ```
 
 # Testing

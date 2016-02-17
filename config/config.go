@@ -33,12 +33,6 @@ type SessionConfig struct {
 	HTTPOnly bool
 }
 
-// TrustedClientConfig stores trusted client configuration for the web app
-type TrustedClientConfig struct {
-	ClientID string
-	Secret   string
-}
-
 // SendgridConfig stores sengrid configuration options
 type SendgridConfig struct {
 	APIKey string
@@ -55,7 +49,6 @@ type Config struct {
 	Database      DatabaseConfig
 	Oauth         OauthConfig
 	Session       SessionConfig
-	TrustedClient TrustedClientConfig
 	Sendgrid      SendgridConfig
 	Web           WebConfig
 	IsDevelopment bool
