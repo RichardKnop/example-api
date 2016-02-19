@@ -18,7 +18,7 @@ type Embedded interface{}
 
 // Hal is used for composition, include it as anonymous field in your structs
 type Hal struct {
-	Links    map[string]*Link    `json:"_links"`
+	Links    map[string]*Link    `json:"_links,omitempty"`
 	Embedded map[string]Embedded `json:"_embedded,omitempty"`
 }
 

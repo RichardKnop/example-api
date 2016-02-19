@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/RichardKnop/recall",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.6",
 	"Packages": [
 		"./..."
 	],
@@ -11,7 +11,7 @@
 		},
 		{
 			"ImportPath": "github.com/RichardKnop/jsonhal",
-			"Rev": "eb6cc79ff10ddd40b27c227964dd007c306ccd4a"
+			"Rev": "b68154475bf16ba22d742ee8be918805fb8a0da6"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
