@@ -104,8 +104,8 @@
 		},
 		{
 			"ImportPath": "github.com/sendgrid/sendgrid-go",
-			"Comment": "v2.0.0-16-g44787bb",
-			"Rev": "44787bbef003df8c518dd53107b497eefd79bf86"
+			"Comment": "v2.0.0-18-g618ae01",
+			"Rev": "618ae01fc450f11509a8dee37756036780338593"
 		},
 		{
 			"ImportPath": "github.com/sendgrid/smtpapi-go",
