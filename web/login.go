@@ -38,7 +38,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Authenticate the user
-	user, err := s.GetAccountsService().GetOauthService().AuthUser(
+	user, err := s.accountsService.GetOauthService().AuthUser(
 		r.Form.Get("email"),    // username
 		r.Form.Get("password"), // password
 	)
@@ -49,7 +49,7 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the scope string
-	scope, err := s.GetAccountsService().GetOauthService().GetScope(r.Form.Get("scope"))
+	scope, err := s.accountsService.GetOauthService().GetScope(r.Form.Get("scope"))
 	if err != nil {
 		sessionService.SetFlashMessage(err.Error())
 		http.Redirect(w, r, r.RequestURI, http.StatusFound)
@@ -57,10 +57,11 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Grant an access token
-	accessToken, err := s.GetAccountsService().GetOauthService().GrantAccessToken(
+	accessToken, err := s.accountsService.GetOauthService().GrantAccessToken(
 		client, // client
 		user,   // user
-		scope,  // scope
+		s.cnf.Oauth.AccessTokenLifetime, // expires in
+		scope, // scope
 	)
 	if err != nil {
 		sessionService.SetFlashMessage(err.Error())
@@ -69,10 +70,11 @@ func (s *Service) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get a refresh token
-	refreshToken, err := s.GetAccountsService().GetOauthService().GetOrCreateRefreshToken(
+	refreshToken, err := s.accountsService.GetOauthService().GetOrCreateRefreshToken(
 		client, // client
 		user,   // user
-		scope,  // scope
+		s.cnf.Oauth.RefreshTokenLifetime, // expires in
+		scope, // scope
 	)
 	if err != nil {
 		sessionService.SetFlashMessage(err.Error())

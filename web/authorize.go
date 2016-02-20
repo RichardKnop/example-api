@@ -2,7 +2,6 @@ package web
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -54,7 +53,7 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch the user
-	user, err := s.GetAccountsService().GetOauthService().FindUserByUsername(
+	user, err := s.accountsService.GetOauthService().FindUserByUsername(
 		userSession.Username,
 	)
 	if err != nil {
@@ -72,14 +71,9 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	// Fallback to the client redirect URI if not in query string
 	redirectURI := r.Form.Get("redirect_uri")
 	if redirectURI == "" {
-		value, err := client.RedirectURI.Value()
-		if err == nil {
-			clientRedirectURI, ok := value.(string)
-			if ok {
-				redirectURI = clientRedirectURI
-			}
-		}
+		redirectURI = client.RedirectURI.String
 	}
+
 	// // Parse the redirect URL
 	parsedRedirectURI, err := url.ParseRequestURI(redirectURI)
 	if err != nil {
@@ -98,7 +92,7 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check the requested scope
-	scope, err := s.GetAccountsService().GetOauthService().GetScope(r.Form.Get("scope"))
+	scope, err := s.accountsService.GetOauthService().GetScope(r.Form.Get("scope"))
 	if err != nil {
 		errorRedirect(w, r, parsedRedirectURI, "invalid_scope", state, responseType)
 		return
@@ -109,11 +103,12 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	// When response_type == "code", we will grant an authorization code
 	if responseType == "code" {
 		// Create a new authorization code
-		authorizationCode, err := s.GetAccountsService().GetOauthService().GrantAuthorizationCode(
+		authorizationCode, err := s.accountsService.GetOauthService().GrantAuthorizationCode(
 			client, // client
 			user,   // user
-			r.Form.Get("redirect_uri"), // redirect URI
-			scope, // scope
+			s.cnf.Oauth.AuthCodeLifetime, // expires in
+			redirectURI,                  // redirect URI
+			scope,                        // scope
 		)
 		if err != nil {
 			errorRedirect(w, r, parsedRedirectURI, "server_error", state, responseType)
@@ -134,13 +129,13 @@ func (s *Service) authorize(w http.ResponseWriter, r *http.Request) {
 	// When response_type == "token", we will directly grant an access token
 	if responseType == "token" {
 		// Grant an access token
-		accessToken, err := s.GetAccountsService().GetOauthService().GrantAccessToken(
+		accessToken, err := s.accountsService.GetOauthService().GrantAccessToken(
 			client, // client
 			user,   // user
-			scope,  // scope
+			s.cnf.Oauth.AccessTokenLifetime, // expires in
+			scope, // scope
 		)
 		if err != nil {
-			log.Print(err)
 			errorRedirect(w, r, parsedRedirectURI, "server_error", state, responseType)
 			return
 		}

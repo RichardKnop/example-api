@@ -38,21 +38,21 @@ func (s *Service) register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that the submitted email hasn't been registered already
-	if s.GetAccountsService().GetOauthService().UserExists(r.Form.Get("email")) {
+	if s.accountsService.GetOauthService().UserExists(r.Form.Get("email")) {
 		sessionService.SetFlashMessage("Email taken")
 		http.Redirect(w, r, r.RequestURI, http.StatusFound)
 		return
 	}
 
 	// Fetch the account based on oauth client
-	account, err := s.GetAccountsService().FindAccountByOauthClientID(client.ID)
+	account, err := s.accountsService.FindAccountByOauthClientID(client.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// Create a user
-	_, err = s.GetAccountsService().CreateUser(
+	_, err = s.accountsService.CreateUser(
 		account,
 		&accounts.UserRequest{
 			Email:    r.Form.Get("email"),

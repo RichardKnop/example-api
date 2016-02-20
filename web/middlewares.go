@@ -133,9 +133,10 @@ func (m *loggedInMiddleware) authenticate(userSession *session.UserSession) erro
 
 	// Create a new access token
 	accessToken, err := m.service.GetAccountsService().GetOauthService().GrantAccessToken(
-		theRefreshToken.Client, // client
-		theRefreshToken.User,   // user
-		theRefreshToken.Scope,  // scope
+		theRefreshToken.Client,                          // client
+		theRefreshToken.User,                            // user
+		m.service.GetConfig().Oauth.AccessTokenLifetime, // expires in
+		theRefreshToken.Scope,                           // scope
 	)
 	if err != nil {
 		return err
@@ -143,9 +144,10 @@ func (m *loggedInMiddleware) authenticate(userSession *session.UserSession) erro
 
 	// Create or retrieve a refresh token
 	refreshToken, err := m.service.GetAccountsService().GetOauthService().GetOrCreateRefreshToken(
-		theRefreshToken.Client, // client
-		theRefreshToken.User,   // user
-		theRefreshToken.Scope,  // scope
+		theRefreshToken.Client,                           // client
+		theRefreshToken.User,                             // user
+		m.service.GetConfig().Oauth.RefreshTokenLifetime, // expires in
+		theRefreshToken.Scope,                            // scope
 	)
 	if err != nil {
 		return err
