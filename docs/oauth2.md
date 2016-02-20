@@ -1,5 +1,6 @@
 [1]: ../../../../assets/blob/master/recall/login_screenshot.png
-[2]: ../../../../assets/blob/master/recall/authorize_screenshot.png
+[2]: ../../../../assets/blob/master/recall/authorization_code_screenshot.png
+[3]: ../../../../assets/blob/master/recall/implicit_screenshot.png
 
 # OAuth 2.0
 
@@ -167,7 +168,7 @@ The authorization server authenticates the resource owner (via the user-agent).
 
 The authorization server then establishes whether the resource owner grants or denies the client's access request.
 
-![Authorize page screenshot][2]
+![Authorize page screenshot][3]
 
 If the request fails due to a missing, invalid, or mismatching redirection URI, or if the client identifier is missing or invalid, the authorization server SHOULD inform the resource owner of the error and MUST NOT automatically redirect the user-agent to the invalid redirection URI.
 
