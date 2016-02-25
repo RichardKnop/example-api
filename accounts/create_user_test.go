@@ -23,17 +23,13 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		Email:    "test@user2",
 		Password: "test_password",
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"POST",
 		"http://1.2.3.4/v1/accounts/users",
 		bytes.NewBuffer(payload),
 	)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set(
 		"Authorization",
 		fmt.Sprintf(
@@ -106,12 +102,11 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		UpdatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
 	}
 	expectedJSON, err := json.Marshal(expected)
-	if err != nil {
-		log.Fatal(err)
+	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
+		assert.Equal(
+			suite.T(),
+			string(expectedJSON),
+			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
+		)
 	}
-	assert.Equal(
-		suite.T(),
-		string(expectedJSON),
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-	)
 }

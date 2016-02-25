@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -23,9 +22,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 
 	// Send a request without a bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	w = httptest.NewRecorder()
 	next = func(w http.ResponseWriter, r *http.Request) {}
 	middleware.ServeHTTP(w, r, next)
@@ -52,9 +49,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 
 	// Send a request with empty bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer ")
 	w = httptest.NewRecorder()
 	next = func(w http.ResponseWriter, r *http.Request) {}
@@ -82,9 +77,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 
 	// Send a request with incorrect bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer bogus")
 	w = httptest.NewRecorder()
 	next = func(w http.ResponseWriter, r *http.Request) {}
@@ -112,9 +105,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 
 	// Send a request with client bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer test_client_token")
 	w = httptest.NewRecorder()
 	next = func(w http.ResponseWriter, r *http.Request) {}
@@ -142,9 +133,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 
 	// Send a request with correct bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer test_user_token")
 	w = httptest.NewRecorder()
 	next = func(w http.ResponseWriter, r *http.Request) {}

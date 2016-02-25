@@ -21,17 +21,13 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 		FirstName: "John",
 		LastName:  "Reese",
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"PUT",
 		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", suite.users[1].ID),
 		bytes.NewBuffer(payload),
 	)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer test_user_token")
 
 	// Check the routing
@@ -91,12 +87,11 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),
 	}
 	expectedJSON, err := json.Marshal(expected)
-	if err != nil {
-		log.Fatal(err)
+	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
+		assert.Equal(
+			suite.T(),
+			string(expectedJSON),
+			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
+		)
 	}
-	assert.Equal(
-		suite.T(),
-		string(expectedJSON),
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-	)
 }

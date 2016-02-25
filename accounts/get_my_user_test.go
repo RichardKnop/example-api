@@ -18,9 +18,7 @@ import (
 func (suite *AccountsTestSuite) TestGetMyUser() {
 	// Prepare a request
 	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/users/me", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer test_user_token")
 
 	// Check the routing
@@ -57,12 +55,11 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 		UpdatedAt: suite.users[1].UpdatedAt.UTC().Format(time.RFC3339),
 	}
 	expectedJSON, err := json.Marshal(expected)
-	if err != nil {
-		log.Fatal(err)
+	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
+		assert.Equal(
+			suite.T(),
+			string(expectedJSON),
+			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
+		)
 	}
-	assert.Equal(
-		suite.T(),
-		string(expectedJSON),
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-	)
 }

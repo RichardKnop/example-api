@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"log"
 	"net/http"
 	"testing"
 
@@ -18,9 +17,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 
 	// A test request
 	r, err := http.NewRequest("GET", "http://1.2.3.4/something", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(t, err, "Request setup should not get an error")
 
 	account, err = GetAuthenticatedAccount(r)
 
@@ -67,9 +64,7 @@ func TestGetAuthenticatedUser(t *testing.T) {
 
 	// A test request
 	r, err := http.NewRequest("GET", "http://1.2.3.4/something", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	assert.NoError(t, err, "Request setup should not get an error")
 
 	user, err = GetAuthenticatedUser(r)
 
