@@ -1,7 +1,6 @@
 package oauth
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"testing"
@@ -58,18 +57,8 @@ func (suite *OauthTestSuite) SetupSuite() {
 	}
 
 	// Load test data from fixtures
-	for _, path := range testFixtures {
-		// Read fixture data from the file
-		data, err := ioutil.ReadFile(path)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Insert the fixture data
-		err = fixtures.Load(data, suite.db.DB(), "sqlite")
-		if err != nil {
-			log.Fatal(err)
-		}
+	if err := fixtures.LoadFiles(testFixtures, suite.db.DB(), "sqlite"); err != nil {
+		log.Fatal(err)
 	}
 
 	// Fetch test client
