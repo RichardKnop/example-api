@@ -2,12 +2,10 @@ package accounts
 
 import (
 	"log"
-	"os"
 	"testing"
 
-	"github.com/RichardKnop/go-fixtures"
 	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/migrations"
+	"github.com/RichardKnop/recall/database"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -27,6 +25,12 @@ var testFixtures = []string{
 	"fixtures/test_users.yml",
 }
 
+// db migrations needed for tests
+var testMigrations = []func(*gorm.DB) error{
+	oauth.MigrateAll,
+	MigrateAll,
+}
+
 // AccountsTestSuite needs to be exported so the tests run
 type AccountsTestSuite struct {
 	suite.Suite
@@ -41,34 +45,16 @@ type AccountsTestSuite struct {
 // The SetupSuite method will be run by testify once, at the very
 // start of the testing suite, before any tests are run.
 func (suite *AccountsTestSuite) SetupSuite() {
-	// Delete the test database
-	os.Remove(testDbPath)
 
 	// Initialise the config
 	suite.cnf = config.NewConfig(false, false)
 
-	// Init in-memory test database
-	inMemoryDB, err := gorm.Open("sqlite3", testDbPath)
+	// Create the test database
+	db, err := database.CreateTestDatabase(testDbPath, testMigrations, testFixtures)
 	if err != nil {
 		log.Fatal(err)
 	}
-	suite.db = &inMemoryDB
-
-	// Run all migrations
-	if err := migrations.Bootstrap(suite.db); err != nil {
-		log.Print(err)
-	}
-	if err := oauth.MigrateAll(suite.db); err != nil {
-		log.Print(err)
-	}
-	if err := MigrateAll(suite.db); err != nil {
-		log.Print(err)
-	}
-
-	// Load test data from fixtures
-	if err := fixtures.LoadFiles(testFixtures, suite.db.DB(), "sqlite"); err != nil {
-		log.Fatal(err)
-	}
+	suite.db = db
 
 	// Fetch test accounts
 	suite.accounts = make([]*Account, 0)
