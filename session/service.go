@@ -26,9 +26,12 @@ type UserSession struct {
 	RefreshToken string
 }
 
-var (
+const (
 	storageSessionName  = "recall_session"
 	userSessionKey      = "recall_user"
+)
+
+var (
 	errSessonNotStarted = errors.New("Session not started")
 )
 
