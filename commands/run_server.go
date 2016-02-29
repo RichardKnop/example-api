@@ -27,11 +27,7 @@ func RunServer() error {
 	oauthService := oauth.NewService(cnf, db)
 
 	// Initialise the accounts service
-	accountsService := accounts.NewService(
-		cnf,
-		db,
-		oauthService,
-	)
+	accountsService := accounts.NewService(cnf, db, oauthService)
 
 	// Initialise the web service
 	webService := web.NewService(cnf, accountsService)
