@@ -48,6 +48,10 @@ var cnf = &Config{
 		Scheme: "http",
 		Host:   "localhost:8080",
 	},
+	Facebook: FacebookConfig{
+		AppID:     "facebook_app_id",
+		AppSecret: "facebook_app_secret",
+	},
 	IsDevelopment: true,
 }
 

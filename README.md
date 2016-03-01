@@ -81,6 +81,10 @@ curl -L http://localhost:2379/v2/keys/config/recall.json -XPUT -d value='{
 		"Scheme": "http",
 		"Host": "localhost:8080"
 	},
+	"Facebook": {
+		"AppID": "facebook_app_id",
+		"AppSecret": "facebook_app_secret"
+	},
 	"IsDevelopment": true
 }'
 ```

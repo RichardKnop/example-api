@@ -44,6 +44,12 @@ type WebConfig struct {
 	Host   string
 }
 
+// FacebookConfig stores Facebook app config
+type FacebookConfig struct {
+	AppID     string
+	AppSecret string
+}
+
 // Config stores all configuration options
 type Config struct {
 	Database      DatabaseConfig
@@ -51,5 +57,6 @@ type Config struct {
 	Session       SessionConfig
 	Sendgrid      SendgridConfig
 	Web           WebConfig
+	Facebook      FacebookConfig
 	IsDevelopment bool
 }
