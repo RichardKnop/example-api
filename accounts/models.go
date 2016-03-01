@@ -36,9 +36,10 @@ func (r *Role) TableName() string {
 // User ...
 type User struct {
 	gorm.Model
-	AccountID   sql.NullInt64 `sql:"index;not null"`
-	OauthUserID sql.NullInt64 `sql:"index;not null"`
-	RoleID      sql.NullInt64 `sql:"index;not null"`
+	AccountID   sql.NullInt64  `sql:"index;not null"`
+	OauthUserID sql.NullInt64  `sql:"index;not null"`
+	RoleID      sql.NullInt64  `sql:"index;not null"`
+	FacebookID  sql.NullString `sql:"type:varchar(60);unique"`
 	Account     *Account
 	OauthUser   *oauth.User
 	Role        *Role
@@ -66,7 +67,7 @@ func newAccount(oauthClient *oauth.Client, name, description string) *Account {
 }
 
 // newUser creates new User instance
-func newUser(account *Account, oauthUser *oauth.User, role *Role, firstName, lastName string) *User {
+func newUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, firstName, lastName string) *User {
 	accountID := util.PositiveIntOrNull(int64(account.ID))
 	oauthUserID := util.PositiveIntOrNull(int64(oauthUser.ID))
 	roleID := util.PositiveIntOrNull(int64(role.ID))
@@ -74,6 +75,7 @@ func newUser(account *Account, oauthUser *oauth.User, role *Role, firstName, las
 		AccountID:   accountID,
 		OauthUserID: oauthUserID,
 		RoleID:      roleID,
+		FacebookID:  util.StringOrNull(facebookID),
 		FirstName:   util.StringOrNull(firstName),
 		LastName:    util.StringOrNull(lastName),
 	}

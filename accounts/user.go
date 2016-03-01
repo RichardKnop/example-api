@@ -44,6 +44,22 @@ func (s *Service) FindUserByID(userID uint) (*User, error) {
 	return user, nil
 }
 
+// FindUserByFacebookID looks up a user by a Facebook ID and returns it
+func (s *Service) FindUserByFacebookID(facebookID string) (*User, error) {
+	// Fetch the user from the database
+	user := new(User)
+	notFound := s.db.Where("facebook_id = ?", facebookID).
+		Preload("Account.OauthClient").Preload("OauthUser").Preload("Role").
+		First(user).RecordNotFound()
+
+	// Not found
+	if notFound {
+		return nil, errUserNotFound
+	}
+
+	return user, nil
+}
+
 // CreateUser creates a new oauth user and a new account user
 func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User, error) {
 	// Superusers can only be created manually
@@ -82,6 +98,7 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 		account,
 		oauthUser,
 		role,
+		"", // facebook ID
 		userRequest.FirstName,
 		userRequest.LastName,
 	)
@@ -114,6 +131,53 @@ func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 	return nil
 }
 
+// CreateFacebookUser creates a new user with facebook ID
+func (s *Service) CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
+	// Fetch the user role from the database
+	role, err := s.findRoleByName(roles.User)
+	if err != nil {
+		return nil, err
+	}
+
+	// Begin a transaction
+	tx := s.db.Begin()
+
+	// Create a new oauth user
+	oauthUser, err := s.GetOauthService().CreateUserTx(
+		tx,
+		userRequest.Email,
+		"", // no password
+	)
+	if err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
+	// Create a new user
+	user := newUser(
+		account,
+		oauthUser,
+		role,
+		facebookID,
+		userRequest.FirstName,
+		userRequest.LastName,
+	)
+
+	// Save the user to the database
+	if err := tx.Create(user).Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
+	return user, nil
+}
+
 // CreateSuperuser creates a new superuser account
 func (s *Service) CreateSuperuser(account *Account, email, password string) (*User, error) {
 	// Fetch the role object
@@ -141,8 +205,9 @@ func (s *Service) CreateSuperuser(account *Account, email, password string) (*Us
 		account,
 		oauthUser,
 		role,
-		"",
-		"",
+		"", // facebook ID
+		"", // first name
+		"", // last name
 	)
 
 	// Save the user to the database

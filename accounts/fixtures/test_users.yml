@@ -19,6 +19,7 @@
     account_id: 1
     oauth_user_id: 2
     role_id: 2
+    facebook_id: 'facebook_id_2'
     first_name: 'test_first_name_2'
     last_name: 'test_last_name_2'
     created_at: 'ON_INSERT_NOW()'

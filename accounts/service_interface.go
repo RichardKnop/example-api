@@ -17,8 +17,10 @@ type ServiceInterface interface {
 	CreateAccount(name, description, key, secret, redirectURI string) (*Account, error)
 	FindUserByOauthUserID(oauthUserID uint) (*User, error)
 	FindUserByID(userID uint) (*User, error)
+	FindUserByFacebookID(facebookID string) (*User, error)
 	CreateUser(account *Account, userRequest *UserRequest) (*User, error)
 	UpdateUser(user *User, userRequest *UserRequest) error
+	CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error)
 	CreateSuperuser(account *Account, email, password string) (*User, error)
 
 	// Needed for the newRoutes to be able to register handlers

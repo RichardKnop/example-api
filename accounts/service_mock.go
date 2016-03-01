@@ -158,6 +158,29 @@ func (_m *ServiceMock) FindUserByID(userID uint) (*User, error) {
 	return r0, r1
 }
 
+// FindUserByFacebookID ...
+func (_m *ServiceMock) FindUserByFacebookID(facebookID string) (*User, error) {
+	ret := _m.Called(facebookID)
+
+	var r0 *User
+	if rf, ok := ret.Get(0).(func(string) *User); ok {
+		r0 = rf(facebookID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*User)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(facebookID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateUser ...
 func (_m *ServiceMock) CreateUser(account *Account, userRequest *UserRequest) (*User, error) {
 	ret := _m.Called(account, userRequest)
@@ -195,7 +218,30 @@ func (_m *ServiceMock) UpdateUser(user *User, userRequest *UserRequest) error {
 	return r0
 }
 
-// CreateSuperadmin ..
+// CreateFacebookUser ...
+func (_m *ServiceMock) CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
+	ret := _m.Called(account, facebookID, userRequest)
+
+	var r0 *User
+	if rf, ok := ret.Get(0).(func(*Account, string, *UserRequest) *User); ok {
+		r0 = rf(account, facebookID, userRequest)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*User)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*Account, string, *UserRequest) error); ok {
+		r1 = rf(account, facebookID, userRequest)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateSuperuser ..
 func (_m *ServiceMock) CreateSuperuser(account *Account, email string, password string) (*User, error) {
 	ret := _m.Called(account, email, password)
 
