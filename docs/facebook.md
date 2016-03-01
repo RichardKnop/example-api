@@ -4,6 +4,16 @@
 
 ## Login
 
+General flow:
+
+1) Mobile app displays a Facebook login button.
+
+2) The `oauth2` flow happens completely within the app. No interaction with the API.
+
+3) Once app fetches an access token from Facebook, it POSTs it to `/v1/facebook/login` endpoint which does registration/login behind the scenes (creates a new account for the user if it doesn't exist yet) and returns access token.
+
+4) The mobile app is now logged in.
+
 Example request:
 
 ```
