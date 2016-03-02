@@ -297,7 +297,6 @@ If the authorization server issued a refresh token to the client, the client can
 curl --compressed -v localhost:8080/v1/oauth/tokens \
 	-u test_client_1:test_secret \
 	-d "grant_type=refresh_token" \
-	-d "scope=read_write" \
 	-d "refresh_token=6fd8d272-375a-4d8a-8d0f-43367dc8b791"
 ```
 
