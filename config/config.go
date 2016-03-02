@@ -33,6 +33,12 @@ type SessionConfig struct {
 	HTTPOnly bool
 }
 
+// FacebookConfig stores Facebook app config
+type FacebookConfig struct {
+	AppID     string
+	AppSecret string
+}
+
 // SendgridConfig stores sengrid configuration options
 type SendgridConfig struct {
 	APIKey string
@@ -44,19 +50,13 @@ type WebConfig struct {
 	Host   string
 }
 
-// FacebookConfig stores Facebook app config
-type FacebookConfig struct {
-	AppID     string
-	AppSecret string
-}
-
 // Config stores all configuration options
 type Config struct {
 	Database      DatabaseConfig
 	Oauth         OauthConfig
 	Session       SessionConfig
+	Facebook      FacebookConfig
 	Sendgrid      SendgridConfig
 	Web           WebConfig
-	Facebook      FacebookConfig
 	IsDevelopment bool
 }

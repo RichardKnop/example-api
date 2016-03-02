@@ -74,16 +74,16 @@ curl -L http://localhost:2379/v2/keys/config/recall.json -XPUT -d value='{
 		"MaxAge": 604800,
 		"HTTPOnly": true
 	},
+	"Facebook": {
+		"AppID": "facebook_app_id",
+		"AppSecret": "facebook_app_secret"
+	},
 	"Sendgrid": {
 		"APIKey": "sendgrid_api_key"
 	},
 	"Web": {
 		"Scheme": "http",
 		"Host": "localhost:8080"
-	},
-	"Facebook": {
-		"AppID": "facebook_app_id",
-		"AppSecret": "facebook_app_secret"
 	},
 	"IsDevelopment": true
 }'

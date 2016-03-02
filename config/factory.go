@@ -41,16 +41,16 @@ var cnf = &Config{
 		MaxAge:   86400 * 7, // 7 days
 		HTTPOnly: true,
 	},
+	Facebook: FacebookConfig{
+		AppID:     "facebook_app_id",
+		AppSecret: "facebook_app_secret",
+	},
 	Sendgrid: SendgridConfig{
 		APIKey: "sendgrid_api_key",
 	},
 	Web: WebConfig{
 		Scheme: "http",
 		Host:   "localhost:8080",
-	},
-	Facebook: FacebookConfig{
-		AppID:     "facebook_app_id",
-		AppSecret: "facebook_app_secret",
 	},
 	IsDevelopment: true,
 }
