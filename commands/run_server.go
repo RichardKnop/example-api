@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/RichardKnop/recall/accounts"
+	"github.com/RichardKnop/recall/facebook"
 	"github.com/RichardKnop/recall/health"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/web"
@@ -29,6 +30,14 @@ func RunServer() error {
 	// Initialise the accounts service
 	accountsService := accounts.NewService(cnf, db, oauthService)
 
+	// Initialise the facebook service
+	facebookService := facebook.NewService(
+		cnf,
+		db,
+		accountsService,
+		nil, // facebook.Adapter
+	)
+
 	// Initialise the web service
 	webService := web.NewService(cnf, accountsService)
 
@@ -50,6 +59,9 @@ func RunServer() error {
 
 	// Register routes for the accounts service
 	accounts.RegisterRoutes(router, accountsService)
+
+	// Register routes for the facebook service
+	facebook.RegisterRoutes(router, facebookService)
 
 	// Register routes for the web service
 	web.RegisterRoutes(router, webService)

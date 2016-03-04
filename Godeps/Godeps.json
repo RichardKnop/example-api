@@ -69,6 +69,11 @@
 			"Rev": "715060ac0b7d99d95d1600df329f5da94809023a"
 		},
 		{
+			"ImportPath": "github.com/huandu/facebook",
+			"Comment": "v1.6.0",
+			"Rev": "e7512237e5dc620be55f6bd9ab2d75e7ebbb914c"
+		},
+		{
 			"ImportPath": "github.com/jinzhu/gorm",
 			"Rev": "e1df3994fb585496b9224e25cba1d3c2d0e06460"
 		},
@@ -147,6 +152,14 @@
 		{
 			"ImportPath": "golang.org/x/crypto/blowfish",
 			"Rev": "1f22c0103821b9390939b6776727195525381532"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "6acef71eb69611914f7a30939ea9f6e194c78172"
+		},
+		{
+			"ImportPath": "golang.org/x/oauth2",
+			"Rev": "2cd4472c321b6cba78e029d99f0e7fe51032fd21"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
