@@ -87,7 +87,7 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 		// If the email was sent successfully, update the email_sent flag
 		now := time.Now()
-		s.db.Model(&confirmation).UpdateColumns(Confirmation{
+		s.db.Model(confirmation).UpdateColumns(Confirmation{
 			EmailSent:   true,
 			EmailSentAt: util.TimeOrNull(&now),
 		})
