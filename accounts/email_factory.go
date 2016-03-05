@@ -16,7 +16,7 @@ Please confirm your email: %s.
 
 Kind Regards,
 
-TODO Team
+%s Team
 `
 
 // EmailFactory facilitates construction of email.Email objects
@@ -43,6 +43,7 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) *email.E
 		f.cnf.Web.Scheme,
 		f.cnf.Web.Host,
 		confirmation.Reference,
+		f.cnf.Web.Host,
 	)
 
 	// The email subject
