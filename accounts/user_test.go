@@ -1,9 +1,21 @@
 package accounts
 
 import (
+	"testing"
+
+	"github.com/RichardKnop/recall/util"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestUserGetName(t *testing.T) {
+	user := &User{}
+	assert.Equal(t, "", user.GetName())
+
+	user.FirstName = util.StringOrNull("John")
+	user.LastName = util.StringOrNull("Reese")
+	assert.Equal(t, "John Reese", user.GetName())
+}
 
 func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 	var (

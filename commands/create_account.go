@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/RichardKnop/recall/accounts"
+	"github.com/RichardKnop/recall/email"
 	"github.com/RichardKnop/recall/oauth"
 )
 
@@ -17,6 +18,21 @@ func CreateAccount() error {
 		return err
 	}
 	defer db.Close()
+
+	// Initialise the oauth service
+	oauthService := oauth.NewService(cnf, db)
+
+	// Initialise the email service
+	emailService := email.NewService(cnf)
+
+	// Initialise the accounts service
+	accountsService := accounts.NewService(
+		cnf,
+		db,
+		oauthService,
+		emailService,
+		nil, // accounts.EmailFactory
+	)
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -54,9 +70,6 @@ func CreateAccount() error {
 	if err != nil {
 		return err
 	}
-
-	// Initialise the accounts service
-	accountsService := accounts.NewService(cnf, db, oauth.NewService(cnf, db))
 
 	// Create a new account
 	_, err = accountsService.CreateAccount(

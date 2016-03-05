@@ -6,6 +6,7 @@ import (
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/util"
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 // Account ...
@@ -51,6 +52,21 @@ type User struct {
 // TableName specifies table name
 func (u *User) TableName() string {
 	return "account_users"
+}
+
+// Confirmation ...
+type Confirmation struct {
+	gorm.Model
+	UserID      sql.NullInt64 `sql:"index;not null"`
+	User        *User
+	Reference   string `sql:"type:varchar(40);unique;not null"`
+	EmailSent   bool   `sql:"index;not null"`
+	EmailSentAt pq.NullTime
+}
+
+// TableName specifies table name
+func (c *Confirmation) TableName() string {
+	return "account_confirmations"
 }
 
 // newAccount creates new Account instance

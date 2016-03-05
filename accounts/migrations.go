@@ -47,6 +47,11 @@ func migrate0001(db *gorm.DB) error {
 		return fmt.Errorf("Error creating account_users table: %s", err)
 	}
 
+	// Create account_confirmations table
+	if err := db.CreateTable(new(Confirmation)).Error; err != nil {
+		return fmt.Errorf("Error creating account_confirmations table: %s", err)
+	}
+
 	// Add foreign key on account_accounts.oauth_client_id
 	err = db.Model(new(Account)).AddForeignKey(
 		"oauth_client_id",
@@ -93,6 +98,18 @@ func migrate0001(db *gorm.DB) error {
 	if err != nil {
 		return fmt.Errorf("Error creating foreign key on "+
 			"account_users.role_id for account_roles(id): %s", err)
+	}
+
+	// Add foreign key on account_confirmations.user_id
+	err = db.Model(new(Confirmation)).AddForeignKey(
+		"user_id",
+		"account_users(id)",
+		"RESTRICT",
+		"RESTRICT",
+	).Error
+	if err != nil {
+		return fmt.Errorf("Error creating foreign key on "+
+			"account_confirmations.user_id for account_users(id): %s", err)
 	}
 
 	// Save a record to migrations table,

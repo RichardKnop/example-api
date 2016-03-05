@@ -32,6 +32,10 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
+	// Check that the mock object expectations were met
+	suite.emailServiceMock.AssertExpectations(suite.T())
+	suite.emailFactoryMock.AssertExpectations(suite.T())
+
 	// Check the status code
 	if !assert.Equal(suite.T(), 200, w.Code) {
 		log.Print(w.Body.String())

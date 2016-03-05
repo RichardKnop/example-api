@@ -6,6 +6,7 @@ import (
 
 	"github.com/RichardKnop/recall/config"
 	"github.com/RichardKnop/recall/database"
+	"github.com/RichardKnop/recall/email"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -34,12 +35,14 @@ var testMigrations = []func(*gorm.DB) error{
 // AccountsTestSuite needs to be exported so the tests run
 type AccountsTestSuite struct {
 	suite.Suite
-	cnf      *config.Config
-	db       *gorm.DB
-	service  *Service
-	accounts []*Account
-	users    []*User
-	router   *mux.Router
+	cnf              *config.Config
+	db               *gorm.DB
+	emailServiceMock *email.ServiceMock
+	emailFactoryMock *EmailFactoryMock
+	service          *Service
+	accounts         []*Account
+	users            []*User
+	router           *mux.Router
 }
 
 // The SetupSuite method will be run by testify once, at the very
@@ -70,11 +73,17 @@ func (suite *AccountsTestSuite) SetupSuite() {
 		log.Fatal(err)
 	}
 
+	// Initialise mocks
+	suite.emailServiceMock = new(email.ServiceMock)
+	suite.emailFactoryMock = new(EmailFactoryMock)
+
 	// Initialise the service
 	suite.service = NewService(
 		suite.cnf,
 		suite.db,
 		oauth.NewService(suite.cnf, suite.db),
+		suite.emailServiceMock,
+		suite.emailFactoryMock,
 	)
 
 	// Register routes
@@ -97,6 +106,12 @@ func (suite *AccountsTestSuite) SetupTest() {
 
 	// Service.CreateAccount also creates a new oauth.Client instance
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.Client))
+
+	// Reset mocks
+	suite.emailServiceMock.ExpectedCalls = suite.emailServiceMock.ExpectedCalls[:0]
+	suite.emailServiceMock.Calls = suite.emailServiceMock.Calls[:0]
+	suite.emailFactoryMock.ExpectedCalls = suite.emailFactoryMock.ExpectedCalls[:0]
+	suite.emailFactoryMock.Calls = suite.emailFactoryMock.Calls[:0]
 }
 
 // The TearDownTest method will be run after every test in the suite.

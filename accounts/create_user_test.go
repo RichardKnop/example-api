@@ -46,14 +46,16 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	}
 
 	// Count before
-	var (
-		countBefore int
-	)
+	var countBefore int
 	suite.db.Model(new(User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
+
+	// Check that the mock object expectations were met
+	suite.emailServiceMock.AssertExpectations(suite.T())
+	suite.emailFactoryMock.AssertExpectations(suite.T())
 
 	// Check the status code
 	if !assert.Equal(suite.T(), 201, w.Code) {
@@ -61,9 +63,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	}
 
 	// Count after
-	var (
-		countAfter int
-	)
+	var countAfter int
 	suite.db.Model(new(User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 

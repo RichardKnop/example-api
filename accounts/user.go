@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/util"
@@ -12,6 +13,14 @@ var (
 	errSuperuserOnlyManually = errors.New("Superusers can only be created manually")
 	errUserNotFound          = errors.New("User not found")
 )
+
+// GetName returns user's full name
+func (u *User) GetName() string {
+	if u.FirstName.Valid && u.LastName.Valid {
+		return fmt.Sprintf("%s %s", u.FirstName.String, u.LastName.String)
+	}
+	return ""
+}
 
 // FindUserByOauthUserID looks up a user by oauth user ID and returns it
 func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*User, error) {

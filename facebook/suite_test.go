@@ -7,6 +7,7 @@ import (
 	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/config"
 	"github.com/RichardKnop/recall/database"
+	"github.com/RichardKnop/recall/email"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"
@@ -83,6 +84,8 @@ func (suite *FacebookTestSuite) SetupSuite() {
 			suite.cnf,
 			suite.db,
 			oauth.NewService(suite.cnf, suite.db),
+			new(email.ServiceMock),
+			new(accounts.EmailFactoryMock),
 		),
 		suite.adapterMock,
 	)
