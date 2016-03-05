@@ -45,6 +45,7 @@ type User struct {
 	Role        *Role
 	FirstName   sql.NullString `sql:"type:varchar(100)"`
 	LastName    sql.NullString `sql:"type:varchar(100)"`
+	Confirmed   bool           `sql:"index;not null"`
 }
 
 // TableName specifies table name
@@ -67,7 +68,7 @@ func newAccount(oauthClient *oauth.Client, name, description string) *Account {
 }
 
 // newUser creates new User instance
-func newUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, firstName, lastName string) *User {
+func newUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, firstName, lastName string, confirmed bool) *User {
 	accountID := util.PositiveIntOrNull(int64(account.ID))
 	oauthUserID := util.PositiveIntOrNull(int64(oauthUser.ID))
 	roleID := util.PositiveIntOrNull(int64(role.ID))
@@ -78,6 +79,7 @@ func newUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, fi
 		FacebookID:  util.StringOrNull(facebookID),
 		FirstName:   util.StringOrNull(firstName),
 		LastName:    util.StringOrNull(lastName),
+		Confirmed:   confirmed,
 	}
 	if accountID.Valid {
 		user.Account = account

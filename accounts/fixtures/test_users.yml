@@ -9,6 +9,7 @@
     role_id: 1
     first_name: 'test_first_name_1'
     last_name: 'test_last_name_1'
+    confirmed: true
     created_at: 'ON_INSERT_NOW()'
     updated_at: 'ON_UPDATE_NOW()'
 
@@ -22,5 +23,6 @@
     facebook_id: 'facebook_id_2'
     first_name: 'test_first_name_2'
     last_name: 'test_last_name_2'
+    confirmed: true
     created_at: 'ON_INSERT_NOW()'
     updated_at: 'ON_UPDATE_NOW()'

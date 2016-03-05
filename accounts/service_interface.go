@@ -5,6 +5,7 @@ import (
 
 	"github.com/RichardKnop/recall/config"
 	"github.com/RichardKnop/recall/oauth"
+	"github.com/jinzhu/gorm"
 )
 
 // ServiceInterface defines exported methods
@@ -19,6 +20,7 @@ type ServiceInterface interface {
 	FindUserByID(userID uint) (*User, error)
 	FindUserByFacebookID(facebookID string) (*User, error)
 	CreateUser(account *Account, userRequest *UserRequest) (*User, error)
+	CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserRequest) (*User, error)
 	UpdateUser(user *User, userRequest *UserRequest) error
 	CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error)
 	CreateSuperuser(account *Account, email, password string) (*User, error)

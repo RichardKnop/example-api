@@ -5,6 +5,7 @@ import (
 
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/util"
+	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -67,44 +68,17 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 		return nil, errSuperuserOnlyManually
 	}
 
-	// If a role is not defined in the user request,
-	// fall back to the user role
-	if userRequest.Role == "" {
-		userRequest.Role = roles.User
-	}
-
-	// Fetch the role object
-	role, err := s.findRoleByName(userRequest.Role)
-	if err != nil {
-		return nil, err
-	}
-
 	// Begin a transaction
 	tx := s.db.Begin()
 
-	// Create a new oauth user
-	oauthUser, err := s.GetOauthService().CreateUserTx(
+	user, err := s.createUserCommon(
 		tx,
-		userRequest.Email,
-		userRequest.Password,
+		account,
+		userRequest,
+		"",    // facebook ID
+		false, // confirmed
 	)
 	if err != nil {
-		tx.Rollback() // rollback the transaction
-		return nil, err
-	}
-
-	// Create a new user
-	user := newUser(
-		account,
-		oauthUser,
-		role,
-		"", // facebook ID
-		userRequest.FirstName,
-		userRequest.LastName,
-	)
-
-	// Save the user to the database
-	if err := tx.Create(user).Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
@@ -116,6 +90,16 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 	}
 
 	return user, nil
+}
+
+// CreateUserTx creates a new oauth user and a new account user in a transaction
+func (s *Service) CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserRequest) (*User, error) {
+	// Superusers can only be created manually
+	if userRequest.Role == roles.Superuser {
+		return nil, errSuperuserOnlyManually
+	}
+
+	return s.createUserCommon(tx, account, userRequest, "", false)
 }
 
 // UpdateUser updates an existing user
@@ -133,38 +117,22 @@ func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 
 // CreateFacebookUser creates a new user with facebook ID
 func (s *Service) CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
-	// Fetch the user role from the database
-	role, err := s.findRoleByName(roles.User)
-	if err != nil {
-		return nil, err
+	// Superusers can only be created manually
+	if userRequest.Role == roles.Superuser {
+		return nil, errSuperuserOnlyManually
 	}
 
 	// Begin a transaction
 	tx := s.db.Begin()
 
-	// Create a new oauth user
-	oauthUser, err := s.GetOauthService().CreateUserTx(
+	user, err := s.createUserCommon(
 		tx,
-		userRequest.Email,
-		"", // no password
+		account,
+		userRequest,
+		facebookID,
+		true, // confirmed
 	)
 	if err != nil {
-		tx.Rollback() // rollback the transaction
-		return nil, err
-	}
-
-	// Create a new user
-	user := newUser(
-		account,
-		oauthUser,
-		role,
-		facebookID,
-		userRequest.FirstName,
-		userRequest.LastName,
-	)
-
-	// Save the user to the database
-	if err := tx.Create(user).Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
@@ -180,23 +148,55 @@ func (s *Service) CreateFacebookUser(account *Account, facebookID string, userRe
 
 // CreateSuperuser creates a new superuser account
 func (s *Service) CreateSuperuser(account *Account, email, password string) (*User, error) {
+	// Begin a transaction
+	tx := s.db.Begin()
+
+	userRequest := &UserRequest{
+		Email:    email,
+		Password: password,
+		Role:     roles.Superuser,
+	}
+	user, err := s.createUserCommon(
+		tx,
+		account,
+		userRequest,
+		"",   // facebook ID
+		true, // confirmed
+	)
+	if err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *UserRequest, facebookID string, confirmed bool) (*User, error) {
+	// If a role is not defined in the user request,
+	// fall back to the user role
+	if userRequest.Role == "" {
+		userRequest.Role = roles.User
+	}
+
 	// Fetch the role object
-	role, err := s.findRoleByName(roles.Superuser)
+	role, err := s.findRoleByName(userRequest.Role)
 	if err != nil {
 		return nil, err
 	}
 
-	// Begin a transaction
-	tx := s.db.Begin()
-
 	// Create a new oauth user
 	oauthUser, err := s.GetOauthService().CreateUserTx(
-		tx,
-		email,
-		password,
+		db,
+		userRequest.Email,
+		userRequest.Password,
 	)
 	if err != nil {
-		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
 
@@ -205,20 +205,14 @@ func (s *Service) CreateSuperuser(account *Account, email, password string) (*Us
 		account,
 		oauthUser,
 		role,
-		"", // facebook ID
-		"", // first name
-		"", // last name
+		facebookID,
+		userRequest.FirstName,
+		userRequest.LastName,
+		confirmed,
 	)
 
 	// Save the user to the database
-	if err := tx.Create(user).Error; err != nil {
-		tx.Rollback() // rollback the transaction
-		return nil, err
-	}
-
-	// Commit the transaction
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback() // rollback the transaction
+	if err := db.Create(user).Error; err != nil {
 		return nil, err
 	}
 

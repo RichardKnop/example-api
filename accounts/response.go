@@ -15,6 +15,7 @@ type UserResponse struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Role      string `json:"role"`
+	Confirmed bool `json:"confirmed"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
@@ -27,6 +28,7 @@ func NewUserResponse(user *User) (*UserResponse, error) {
 		FirstName: user.FirstName.String,
 		LastName:  user.LastName.String,
 		Role:      user.Role.Name,
+		Confirmed: user.Confirmed,
 		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),
 	}

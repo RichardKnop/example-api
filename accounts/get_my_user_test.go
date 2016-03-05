@@ -51,6 +51,7 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 		FirstName: "test_first_name_2",
 		LastName:  "test_last_name_2",
 		Role:      roles.User,
+		Confirmed: true,
 		CreatedAt: suite.users[1].CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt: suite.users[1].UpdatedAt.UTC().Format(time.RFC3339),
 	}

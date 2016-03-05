@@ -5,6 +5,7 @@ import (
 
 	"github.com/RichardKnop/recall/config"
 	"github.com/RichardKnop/recall/oauth"
+	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -197,6 +198,29 @@ func (_m *ServiceMock) CreateUser(account *Account, userRequest *UserRequest) (*
 	var r1 error
 	if rf, ok := ret.Get(1).(func(*Account, *UserRequest) error); ok {
 		r1 = rf(account, userRequest)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateUserTx ...
+func (_m *ServiceMock) CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserRequest) (*User, error) {
+	ret := _m.Called(tx, account, userRequest)
+
+	var r0 *User
+	if rf, ok := ret.Get(0).(func(*gorm.DB, *Account, *UserRequest) *User); ok {
+		r0 = rf(tx, account, userRequest)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*User)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*gorm.DB, *Account, *UserRequest) error); ok {
+		r1 = rf(tx, account, userRequest)
 	} else {
 		r1 = ret.Error(1)
 	}
