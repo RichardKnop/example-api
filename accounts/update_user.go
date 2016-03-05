@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -42,7 +41,7 @@ func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal the request body into the request prototype
 	userRequest := new(UserRequest)
 	if err := json.Unmarshal(payload, userRequest); err != nil {
-		log.Printf("Failed to unmarshal user request: %s", payload)
+		logger.Errorf("Failed to unmarshal user request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -70,7 +69,7 @@ func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Update the user
 	if err := s.UpdateUser(user, userRequest); err != nil {
-		log.Printf("Update user error: %s", err)
+		logger.Errorf("Update user error: %s", err)
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

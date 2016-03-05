@@ -14,6 +14,10 @@
 			"Rev": "b68154475bf16ba22d742ee8be918805fb8a0da6"
 		},
 		{
+			"ImportPath": "github.com/RichardKnop/logging",
+			"Rev": "51e3c3d1765f56bc1bb7b564fd38534d0b98d67c"
+		},
+		{
 			"ImportPath": "github.com/codegangsta/cli",
 			"Comment": "1.2.0-187-gc31a797",
 			"Rev": "c31a7975863e7810c92e2e288a9ab074f9a88f29"
