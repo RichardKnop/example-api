@@ -6,6 +6,7 @@ import (
 	"github.com/RichardKnop/recall/session"
 	"github.com/RichardKnop/recall/util"
 	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 )
 
 // parseFormMiddleware parses the form so r.Form becomes available
@@ -170,6 +171,35 @@ func (m *clientMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, nex
 	}
 
 	context.Set(r, clientKey, client)
+
+	next(w, r)
+}
+
+// confirmationMiddleware takes reference variable from the URI and
+// makes a database lookup for a confirmation with the same reference
+type confirmationMiddleware struct {
+	service ServiceInterface
+}
+
+// newConfirmationMiddleware creates a new confirmationMiddleware instance
+func newConfirmationMiddleware(service ServiceInterface) *confirmationMiddleware {
+	return &confirmationMiddleware{service: service}
+}
+
+// ServeHTTP as per the negroni.Handler interface
+func (m *confirmationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	vars := mux.Vars(r)
+
+	// Fetch the confirmation
+	confirmation, err := m.service.GetAccountsService().FindConfirmationByReference(
+		vars["reference"], // confirmation ref
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	context.Set(r, confirmationKey, confirmation)
 
 	next(w, r)
 }

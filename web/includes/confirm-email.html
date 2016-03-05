@@ -1,0 +1,13 @@
+{{ define "title"}}Confirm Email{{ end }}
+
+{{ define "content" }}
+<div class="container">
+  {{ if .error }}
+  <div class="alert alert-danger" role="alert">{{ .error }}div>
+  {{ else }}
+  <div class="page-header">
+    <h1>Your email has been confimed</h1>
+  </div>
+  {{ end }}
+</div> <!-- /container -->
+{{ end }}

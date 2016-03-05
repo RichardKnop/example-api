@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/session"
 	"github.com/gorilla/context"
@@ -11,12 +12,16 @@ import (
 
 type contextKey int
 
-const sessionServiceKey contextKey = 0
-const clientKey contextKey = 1
+const (
+	sessionServiceKey contextKey = 0
+	clientKey         contextKey = 1
+	confirmationKey   contextKey = 2
+)
 
 var (
 	errSessionServiceNotPresent = errors.New("Session service not present in the request context")
 	errClientNotPresent         = errors.New("Client not present in the request context")
+	errConfirmationNotPresent   = errors.New("Confirmation not present in the request context")
 )
 
 // Returns *session.Service from the request context
@@ -47,4 +52,19 @@ func getClient(r *http.Request) (*oauth.Client, error) {
 	}
 
 	return client, nil
+}
+
+// Returns *accounts.Confirmation from the request context
+func getConfirmation(r *http.Request) (*accounts.Confirmation, error) {
+	val, ok := context.GetOk(r, confirmationKey)
+	if !ok {
+		return nil, errConfirmationNotPresent
+	}
+
+	confirmation, ok := val.(*accounts.Confirmation)
+	if !ok {
+		return nil, errConfirmationNotPresent
+	}
+
+	return confirmation, nil
 }

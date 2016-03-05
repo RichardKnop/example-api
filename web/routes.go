@@ -38,6 +38,17 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			},
 		},
 		routes.Route{
+			Name:        "confirm_email",
+			Method:      "GET",
+			Pattern:     "/confirm-email/{reference}",
+			HandlerFunc: service.confirmEmail,
+			Middlewares: []negroni.Handler{
+				new(parseFormMiddleware),
+				newGuestMiddleware(service),
+				newConfirmationMiddleware(service),
+			},
+		},
+		routes.Route{
 			Name:        "login_form",
 			Method:      "GET",
 			Pattern:     "/login",

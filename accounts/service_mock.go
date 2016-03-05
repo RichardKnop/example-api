@@ -242,6 +242,43 @@ func (_m *ServiceMock) UpdateUser(user *User, userRequest *UserRequest) error {
 	return r0
 }
 
+// FindConfirmationByReference ...
+func (_m *ServiceMock) FindConfirmationByReference(reference string) (*Confirmation, error) {
+	ret := _m.Called(reference)
+
+	var r0 *Confirmation
+	if rf, ok := ret.Get(0).(func(string) *Confirmation); ok {
+		r0 = rf(reference)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Confirmation)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(reference)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ConfirmUser ...
+func (_m *ServiceMock) ConfirmUser(user *User) error {
+	ret := _m.Called(user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*User) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // CreateFacebookUser ...
 func (_m *ServiceMock) CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
 	ret := _m.Called(account, facebookID, userRequest)
