@@ -38,6 +38,9 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		),
 	)
 
+	// Mock confirmation email
+	suite.mockConfirmationEmail()
+
 	// Check the routing
 	match := new(mux.RouteMatch)
 	suite.router.Match(r, match)
@@ -46,12 +49,19 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	}
 
 	// Count before
-	var countBefore int
+	var (
+		countBefore              int
+		confirmationsCountBefore int
+	)
 	suite.db.Model(new(User)).Count(&countBefore)
+	suite.db.Model(new(Confirmation)).Count(&confirmationsCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
+
+	// Sleep for the email goroutine to finish
+	time.Sleep(5 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.emailServiceMock.AssertExpectations(suite.T())
@@ -63,9 +73,14 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	}
 
 	// Count after
-	var countAfter int
+	var (
+		countAfter              int
+		confirmationsCountAfter int
+	)
 	suite.db.Model(new(User)).Count(&countAfter)
+	suite.db.Model(new(Confirmation)).Count(&confirmationsCountAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
+	assert.Equal(suite.T(), confirmationsCountBefore+1, confirmationsCountAfter)
 
 	// Fetch the created user
 	user := new(User)
@@ -73,7 +88,15 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		Preload("Role").Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
+	// Fetch the created confirmation
+	confirmation := new(Confirmation)
+	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
+		First(confirmation).RecordNotFound())
+
 	// And correct data was saved
+	assert.Equal(suite.T(), "test@user2", confirmation.User.OauthUser.Username)
+	assert.True(suite.T(), confirmation.EmailSent)
+	assert.True(suite.T(), confirmation.EmailSentAt.Valid)
 	assert.Equal(suite.T(), "test@user2", user.OauthUser.Username)
 	assert.Equal(suite.T(), "", user.FirstName.String)
 	assert.Equal(suite.T(), "", user.LastName.String)

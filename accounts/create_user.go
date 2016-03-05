@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/RichardKnop/recall/response"
+	"github.com/RichardKnop/recall/util"
 )
 
 // Handles requests to create a new user (POST /v1/accounts/users)
@@ -45,13 +47,51 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Begin transaction
+	tx := s.db.Begin()
+
 	// Create a new user account
-	user, err := s.CreateUser(authenticatedAccount, userRequest)
+	user, err := s.CreateUserTx(tx, authenticatedAccount, userRequest)
 	if err != nil {
+		tx.Rollback() // rollback the transaction
 		logger.Errorf("Create user error: %s", err)
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Create a new invitation
+	confirmation := newConfirmation(user)
+	if err := tx.Create(confirmation).Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		logger.Errorf("Create confirmation error: %s", err)
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Send confirmation email
+	go func() {
+		confirmationEmail := s.emailFactory.NewConfirmationEmail(confirmation)
+
+		// Attemtp to send the confirmation email
+		if err := s.emailService.Send(confirmationEmail); err != nil {
+			logger.Errorf("Send email error: %s", err)
+			return
+		}
+
+		// If the email was sent successfully, update the email_sent flag
+		now := time.Now()
+		s.db.Model(&confirmation).UpdateColumns(Confirmation{
+			EmailSent:   true,
+			EmailSentAt: util.TimeOrNull(&now),
+		})
+	}()
 
 	// Create response
 	userResponse, err := NewUserResponse(user)

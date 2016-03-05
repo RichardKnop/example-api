@@ -10,6 +10,7 @@ import (
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	// sqlite driver
 	_ "github.com/mattn/go-sqlite3"
@@ -99,6 +100,7 @@ func (suite *AccountsTestSuite) TearDownSuite() {
 
 // The SetupTest method will be run before every test in the suite.
 func (suite *AccountsTestSuite) SetupTest() {
+	suite.db.Unscoped().Delete(new(Confirmation))
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(User))
 
 	// Service.CreateUser also creates a new oauth.User instance
@@ -124,4 +126,14 @@ func (suite *AccountsTestSuite) TearDownTest() {
 // a normal test function and pass our suite to suite.Run
 func TestAccountsTestSuite(t *testing.T) {
 	suite.Run(t, new(AccountsTestSuite))
+}
+
+// Mock sending confirmation email
+func (suite *AccountsTestSuite) mockConfirmationEmail() {
+	emailMock := new(email.Email)
+	suite.emailFactoryMock.On(
+		"NewConfirmationEmail",
+		mock.AnythingOfType("*accounts.Confirmation"),
+	).Return(emailMock)
+	suite.emailServiceMock.On("Send", emailMock).Return(nil)
 }

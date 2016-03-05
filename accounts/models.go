@@ -7,6 +7,7 @@ import (
 	"github.com/RichardKnop/recall/util"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
+	"github.com/pborman/uuid"
 )
 
 // Account ...
@@ -107,4 +108,18 @@ func newUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, fi
 		user.Role = role
 	}
 	return user
+}
+
+// newConfirmation creates new Confirmation instance
+func newConfirmation(user *User) *Confirmation {
+	userID := util.PositiveIntOrNull(int64(user.ID))
+	confirmation := &Confirmation{
+		UserID:      userID,
+		Reference:   uuid.New(),
+		EmailSentAt: util.TimeOrNull(nil),
+	}
+	if userID.Valid {
+		confirmation.User = user
+	}
+	return confirmation
 }
