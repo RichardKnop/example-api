@@ -21,7 +21,7 @@ Example request:
 ```
 curl --compressed -v localhost:8080/v1/accounts/users \
 	-H "Content-Type: application/json" \
-	-u test_client:test_secret \
+	-u test_client_1:test_secret \
 	-d '{
 		"email": "test@user",
 		"password": "test_password"
