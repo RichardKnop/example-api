@@ -25,6 +25,5 @@ func (s *Service) FindConfirmationByReference(reference string) (*Confirmation, 
 
 // ConfirmUser sets User.Confirmed to true
 func (s *Service) ConfirmUser(user *User) error {
-	// Update max alarms
 	return s.db.Model(user).UpdateColumns(User{Confirmed: true}).Error
 }
