@@ -18,7 +18,7 @@ func (suite *AccountsTestSuite) TestFindRoleByName() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errRoleNotFound, err)
+		assert.Equal(suite.T(), ErrRoleNotFound, err)
 	}
 
 	role, err = suite.service.findRoleByName(roles.User)

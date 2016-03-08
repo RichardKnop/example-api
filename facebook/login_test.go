@@ -273,7 +273,7 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 	// Check the response body
 	assert.Equal(
 		suite.T(),
-		fmt.Sprintf("{\"error\":\"%s\"}", errAccountMismatch.Error()),
+		fmt.Sprintf("{\"error\":\"%s\"}", ErrAccountMismatch.Error()),
 		strings.TrimSpace(w.Body.String()),
 	)
 }

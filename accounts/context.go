@@ -9,24 +9,28 @@ import (
 
 type contextKey int
 
-const authenticatedAccountKey contextKey = 0
-const authenticatedUserKey contextKey = 1
+const (
+	authenticatedAccountKey contextKey = 0
+	authenticatedUserKey    contextKey = 1
+)
 
 var (
-	errAccountAuthenticationRequired = errors.New("Account authentication required")
-	errUserAuthenticationRequired    = errors.New("User authentication required")
+	// ErrAccountAuthenticationRequired ...
+	ErrAccountAuthenticationRequired = errors.New("Account authentication required")
+	// ErrUserAuthenticationRequired ...
+	ErrUserAuthenticationRequired = errors.New("User authentication required")
 )
 
 // GetAuthenticatedAccount returns *Account from the request context
 func GetAuthenticatedAccount(r *http.Request) (*Account, error) {
 	val, ok := context.GetOk(r, authenticatedAccountKey)
 	if !ok {
-		return nil, errAccountAuthenticationRequired
+		return nil, ErrAccountAuthenticationRequired
 	}
 
 	authenticatedAccount, ok := val.(*Account)
 	if !ok {
-		return nil, errAccountAuthenticationRequired
+		return nil, ErrAccountAuthenticationRequired
 	}
 
 	return authenticatedAccount, nil
@@ -36,12 +40,12 @@ func GetAuthenticatedAccount(r *http.Request) (*Account, error) {
 func GetAuthenticatedUser(r *http.Request) (*User, error) {
 	val, ok := context.GetOk(r, authenticatedUserKey)
 	if !ok {
-		return nil, errUserAuthenticationRequired
+		return nil, ErrUserAuthenticationRequired
 	}
 
 	authenticatedUser, ok := val.(*User)
 	if !ok {
-		return nil, errUserAuthenticationRequired
+		return nil, ErrUserAuthenticationRequired
 	}
 
 	return authenticatedUser, nil

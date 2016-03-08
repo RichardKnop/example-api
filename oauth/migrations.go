@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/RichardKnop/recall/migrations"
 	"github.com/jinzhu/gorm"
@@ -24,11 +25,11 @@ func migrate0001(db *gorm.DB) error {
 	found := !db.Where("name = ?", migrationName).First(migration).RecordNotFound()
 
 	if found {
-		logger.Infof("Skipping %s migration", migrationName)
+		log.Printf("Skipping %s migration", migrationName)
 		return nil
 	}
 
-	logger.Infof("Running %s migration", migrationName)
+	log.Printf("Running %s migration", migrationName)
 
 	var err error
 

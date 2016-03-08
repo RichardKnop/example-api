@@ -26,7 +26,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, errAccountAuthenticationRequired, err)
+		assert.Equal(t, ErrAccountAuthenticationRequired, err)
 	}
 
 	// Set a context value of an invalid type
@@ -39,7 +39,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, errAccountAuthenticationRequired, err)
+		assert.Equal(t, ErrAccountAuthenticationRequired, err)
 	}
 
 	// Set a valid context value
@@ -73,7 +73,7 @@ func TestGetAuthenticatedUser(t *testing.T) {
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, errUserAuthenticationRequired, err)
+		assert.Equal(t, ErrUserAuthenticationRequired, err)
 	}
 
 	// Set a context value of an invalid type
@@ -86,7 +86,7 @@ func TestGetAuthenticatedUser(t *testing.T) {
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, errUserAuthenticationRequired, err)
+		assert.Equal(t, ErrUserAuthenticationRequired, err)
 	}
 
 	// Set a valid context value

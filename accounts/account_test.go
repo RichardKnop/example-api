@@ -18,7 +18,7 @@ func (suite *AccountsTestSuite) TestFindAccountByOauthClientID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errAccountNotFound, err)
+		assert.Equal(suite.T(), ErrAccountNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -48,7 +48,7 @@ func (suite *AccountsTestSuite) TestFindAccountByID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errAccountNotFound, err)
+		assert.Equal(suite.T(), ErrAccountNotFound, err)
 	}
 
 	// Now let's pass a valid ID

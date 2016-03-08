@@ -34,7 +34,7 @@ func (m *AccountAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 		oauthAccessToken, err := m.service.GetOauthService().Authenticate(string(token))
 		if err != nil {
 			// For security reasons, return a general error message
-			response.UnauthorizedError(w, errAccountAuthenticationRequired.Error())
+			response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
 			return
 		}
 
@@ -42,7 +42,7 @@ func (m *AccountAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 		account, err := m.service.FindAccountByOauthClientID(oauthAccessToken.Client.ID)
 		if err != nil {
 			// For security reasons, return a general error message
-			response.UnauthorizedError(w, errAccountAuthenticationRequired.Error())
+			response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
 			return
 		}
 
@@ -55,7 +55,7 @@ func (m *AccountAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 	clientID, secret, ok := r.BasicAuth()
 	if !ok {
 		// For security reasons, return a general error message
-		response.UnauthorizedError(w, errAccountAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
 		return
 	}
 
@@ -63,7 +63,7 @@ func (m *AccountAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 	oauthClient, err := m.service.GetOauthService().AuthClient(clientID, secret)
 	if err != nil {
 		// For security reasons, return a general error message
-		response.UnauthorizedError(w, errAccountAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
 		return
 	}
 
@@ -71,7 +71,7 @@ func (m *AccountAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 	account, err := m.service.FindAccountByOauthClientID(oauthClient.ID)
 	if err != nil {
 		// For security reasons, return a general error message
-		response.UnauthorizedError(w, errAccountAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
 		return
 	}
 

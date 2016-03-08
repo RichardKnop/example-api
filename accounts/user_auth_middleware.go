@@ -31,7 +31,7 @@ func (m *UserAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 	token, err := util.ParseBearerToken(r)
 	if err != nil {
 		// For security reasons, return a general error message
-		response.UnauthorizedError(w, errUserAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrUserAuthenticationRequired.Error())
 		return
 	}
 
@@ -39,14 +39,14 @@ func (m *UserAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 	oauthAccessToken, err := m.service.GetOauthService().Authenticate(string(token))
 	if err != nil {
 		// For security reasons, return a general error message
-		response.UnauthorizedError(w, errUserAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrUserAuthenticationRequired.Error())
 		return
 	}
 
 	// Access token has no user, this probably means client credentials grant
 	if oauthAccessToken.User == nil {
 		// For security reasons, return a general error message
-		response.UnauthorizedError(w, errUserAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrUserAuthenticationRequired.Error())
 		return
 	}
 
@@ -54,7 +54,7 @@ func (m *UserAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 	user, err := m.service.FindUserByOauthUserID(oauthAccessToken.User.ID)
 	if err != nil {
 		// For security reasons, return a general error message
-		response.UnauthorizedError(w, errUserAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrUserAuthenticationRequired.Error())
 		return
 	}
 

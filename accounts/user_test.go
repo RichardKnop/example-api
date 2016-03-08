@@ -31,7 +31,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserNotFound, err)
+		assert.Equal(suite.T(), ErrUserNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -61,7 +61,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserNotFound, err)
+		assert.Equal(suite.T(), ErrUserNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -91,7 +91,7 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserNotFound, err)
+		assert.Equal(suite.T(), ErrUserNotFound, err)
 	}
 
 	// Let's try to find a user by a bogus ID
@@ -102,7 +102,7 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserNotFound, err)
+		assert.Equal(suite.T(), ErrUserNotFound, err)
 	}
 
 	// Now let's pass a valid ID

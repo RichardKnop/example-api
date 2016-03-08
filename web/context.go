@@ -19,21 +19,24 @@ const (
 )
 
 var (
-	errSessionServiceNotPresent = errors.New("Session service not present in the request context")
-	errClientNotPresent         = errors.New("Client not present in the request context")
-	errConfirmationNotPresent   = errors.New("Confirmation not present in the request context")
+	// ErrSessionServiceNotPresent ...
+	ErrSessionServiceNotPresent = errors.New("Session service not present in the request context")
+	// ErrClientNotPresent ...
+	ErrClientNotPresent = errors.New("Client not present in the request context")
+	// ErrConfirmationNotPresent ...
+	ErrConfirmationNotPresent = errors.New("Confirmation not present in the request context")
 )
 
 // Returns *session.Service from the request context
 func getSessionService(r *http.Request) (session.ServiceInterface, error) {
 	val, ok := context.GetOk(r, sessionServiceKey)
 	if !ok {
-		return nil, errSessionServiceNotPresent
+		return nil, ErrSessionServiceNotPresent
 	}
 
 	sessionService, ok := val.(session.ServiceInterface)
 	if !ok {
-		return nil, errSessionServiceNotPresent
+		return nil, ErrSessionServiceNotPresent
 	}
 
 	return sessionService, nil
@@ -43,12 +46,12 @@ func getSessionService(r *http.Request) (session.ServiceInterface, error) {
 func getClient(r *http.Request) (*oauth.Client, error) {
 	val, ok := context.GetOk(r, clientKey)
 	if !ok {
-		return nil, errClientNotPresent
+		return nil, ErrClientNotPresent
 	}
 
 	client, ok := val.(*oauth.Client)
 	if !ok {
-		return nil, errClientNotPresent
+		return nil, ErrClientNotPresent
 	}
 
 	return client, nil
@@ -58,12 +61,12 @@ func getClient(r *http.Request) (*oauth.Client, error) {
 func getConfirmation(r *http.Request) (*accounts.Confirmation, error) {
 	val, ok := context.GetOk(r, confirmationKey)
 	if !ok {
-		return nil, errConfirmationNotPresent
+		return nil, ErrConfirmationNotPresent
 	}
 
 	confirmation, ok := val.(*accounts.Confirmation)
 	if !ok {
-		return nil, errConfirmationNotPresent
+		return nil, ErrConfirmationNotPresent
 	}
 
 	return confirmation, nil

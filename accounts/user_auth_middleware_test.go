@@ -35,7 +35,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			errUserAuthenticationRequired,
+			ErrUserAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
@@ -44,7 +44,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	authenticatedUser, err = GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserAuthenticationRequired, err)
+		assert.Equal(suite.T(), ErrUserAuthenticationRequired, err)
 	}
 
 	// Send a request with empty bearer token through the middleware
@@ -63,7 +63,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			errUserAuthenticationRequired,
+			ErrUserAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
@@ -72,7 +72,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	authenticatedUser, err = GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserAuthenticationRequired, err)
+		assert.Equal(suite.T(), ErrUserAuthenticationRequired, err)
 	}
 
 	// Send a request with incorrect bearer token through the middleware
@@ -91,7 +91,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			errUserAuthenticationRequired,
+			ErrUserAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
@@ -100,7 +100,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	authenticatedUser, err = GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserAuthenticationRequired, err)
+		assert.Equal(suite.T(), ErrUserAuthenticationRequired, err)
 	}
 
 	// Send a request with client bearer token through the middleware
@@ -119,7 +119,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			errUserAuthenticationRequired,
+			ErrUserAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
@@ -128,7 +128,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	authenticatedUser, err = GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errUserAuthenticationRequired, err)
+		assert.Equal(suite.T(), ErrUserAuthenticationRequired, err)
 	}
 
 	// Send a request with correct bearer token through the middleware

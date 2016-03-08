@@ -35,7 +35,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			errAccountAuthenticationRequired,
+			ErrAccountAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
@@ -44,7 +44,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 	authenticatedAccount, err = GetAuthenticatedAccount(r)
 	assert.Nil(suite.T(), authenticatedAccount)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errAccountAuthenticationRequired, err)
+		assert.Equal(suite.T(), ErrAccountAuthenticationRequired, err)
 	}
 
 	// Send a request with incorrect basic auth through the middleware
@@ -63,7 +63,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			errAccountAuthenticationRequired,
+			ErrAccountAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
@@ -72,7 +72,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 	authenticatedAccount, err = GetAuthenticatedAccount(r)
 	assert.Nil(suite.T(), authenticatedAccount)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), errAccountAuthenticationRequired, err)
+		assert.Equal(suite.T(), ErrAccountAuthenticationRequired, err)
 	}
 
 	// Send a request with correct basic auth through the middleware

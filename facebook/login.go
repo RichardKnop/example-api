@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	errAccountMismatch = errors.New("Account mismatch")
+	// ErrAccountMismatch ...
+	ErrAccountMismatch = errors.New("Account mismatch")
 )
 
 // Handles requests to login with Facebook access token (POST /v1/facebook/login)
@@ -75,7 +76,7 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check that the same account is being used
 	if authenticatedAccount.ID != user.Account.ID {
-		response.UnauthorizedError(w, errAccountMismatch.Error())
+		response.UnauthorizedError(w, ErrAccountMismatch.Error())
 		return
 	}
 

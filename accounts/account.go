@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	errAccountNotFound = errors.New("Account not found")
+	// ErrAccountNotFound ...
+	ErrAccountNotFound = errors.New("Account not found")
 )
 
 // FindAccountByOauthClientID looks up an account by oauth client ID and returns it
@@ -20,7 +21,7 @@ func (s *Service) FindAccountByOauthClientID(oauthClientID uint) (*Account, erro
 
 	// Not found
 	if notFound {
-		return nil, errAccountNotFound
+		return nil, ErrAccountNotFound
 	}
 
 	return account, nil
@@ -35,7 +36,7 @@ func (s *Service) FindAccountByID(accountID uint) (*Account, error) {
 
 	// Not found
 	if notFound {
-		return nil, errAccountNotFound
+		return nil, ErrAccountNotFound
 	}
 
 	return account, nil
