@@ -17,7 +17,7 @@ import (
 
 func (suite *AccountsTestSuite) TestGetMyUser() {
 	// Prepare a request
-	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/users/me", nil)
+	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/me", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer test_user_token")
 

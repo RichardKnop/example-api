@@ -6,7 +6,7 @@ import (
 	"github.com/RichardKnop/recall/response"
 )
 
-// Handles requests to get own user data (GET /v1/accounts/users/me)
+// Handles requests to get own user data (GET /v1/accounts/me)
 func (s *Service) getMyUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)

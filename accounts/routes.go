@@ -27,7 +27,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 		routes.Route{
 			Name:        "get_my_user",
 			Method:      "GET",
-			Pattern:     "/users/me",
+			Pattern:     "/me",
 			HandlerFunc: service.getMyUserHandler,
 			Middlewares: []negroni.Handler{
 				NewUserAuthMiddleware(service),
