@@ -18,7 +18,6 @@ Example request:
 
 ```
 curl --compressed -v localhost:8080/v1/facebook/login \
-	-H "Content-Type: application/json" \
 	-u test_client_1_1:test_secret \
 	-d "access_token=facebook_access_token" \
 	-d "scope=read_write"
