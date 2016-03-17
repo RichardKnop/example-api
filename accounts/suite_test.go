@@ -12,8 +12,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	// sqlite driver
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var testDbPath = "/tmp/accounts_testdb.sqlite"

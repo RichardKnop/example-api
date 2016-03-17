@@ -13,8 +13,6 @@ import (
 	fb "github.com/huandu/facebook"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/suite"
-	// sqlite driver
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var testDbPath = "/tmp/facebook_testdb.sqlite"
