@@ -62,7 +62,7 @@ func (suite *AccountsTestSuite) SetupSuite() {
 
 	// Fetch test accounts
 	suite.accounts = make([]*Account, 0)
-	if suite.db.Preload("OauthClient").Find(&suite.accounts).Error != nil {
+	if suite.db.Preload("OauthClient").Order("id").Find(&suite.accounts).Error != nil {
 		log.Fatal(err)
 	}
 

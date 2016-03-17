@@ -61,14 +61,14 @@ func (suite *FacebookTestSuite) SetupSuite() {
 
 	// Fetch test accounts
 	suite.accounts = make([]*accounts.Account, 0)
-	if suite.db.Preload("OauthClient").Find(&suite.accounts).Error != nil {
+	if suite.db.Preload("OauthClient").Order("id").Find(&suite.accounts).Error != nil {
 		log.Fatal(err)
 	}
 
 	// Fetch test users
 	suite.users = make([]*accounts.User, 0)
 	err = suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role").Find(&suite.users).Error
+		Preload("Role").Order("id").Find(&suite.users).Error
 	if err != nil {
 		log.Fatal(err)
 	}
