@@ -17,6 +17,7 @@ type ServiceInterface interface {
 	FindAccountByID(accountID uint) (*Account, error)
 	CreateAccount(name, description, key, secret, redirectURI string) (*Account, error)
 	FindUserByOauthUserID(oauthUserID uint) (*User, error)
+	FindUserByEmail(email string) (*User, error)
 	FindUserByID(userID uint) (*User, error)
 	FindUserByFacebookID(facebookID string) (*User, error)
 	CreateUser(account *Account, userRequest *UserRequest) (*User, error)

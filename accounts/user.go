@@ -41,6 +41,22 @@ func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*User, error) {
 	return user, nil
 }
 
+// FindUserByEmail looks up a user by email and returns it
+func (s *Service) FindUserByEmail(email string) (*User, error) {
+	// Fetch the user from the database
+	user := new(User)
+	notFound := s.db.Joins("inner join oauth_users on oauth_users.id = account_users.oauth_user_id").
+		Where("oauth_users.username = ?", email).Preload("Account.OauthClient").
+		Preload("OauthUser").Preload("Role").First(user).RecordNotFound()
+
+	// Not found
+	if notFound {
+		return nil, ErrUserNotFound
+	}
+
+	return user, nil
+}
+
 // FindUserByID looks up a user by ID and returns it
 func (s *Service) FindUserByID(userID uint) (*User, error) {
 	// Fetch the user from the database

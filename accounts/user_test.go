@@ -47,6 +47,36 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 	}
 }
 
+func (suite *AccountsTestSuite) TestFindUserByEmail() {
+	var (
+		user *User
+		err  error
+	)
+
+	// Let's try to find a user by a bogus email
+	user, err = suite.service.FindUserByEmail("bogus")
+
+	// User should be nil
+	assert.Nil(suite.T(), user)
+
+	// Correct error should be returned
+	if assert.NotNil(suite.T(), err) {
+		assert.Equal(suite.T(), ErrUserNotFound, err)
+	}
+
+	// Now let's pass a valid email
+	user, err = suite.service.FindUserByEmail("test@user")
+
+	// Error should be nil
+	assert.Nil(suite.T(), err)
+
+	// Correct user should be returned
+	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
+	}
+}
+
 func (suite *AccountsTestSuite) TestFindUserByID() {
 	var (
 		user *User
