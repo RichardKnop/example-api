@@ -5,7 +5,8 @@
 
 # 2. Load fixtures
 /go/bin/recall loaddata \
-  oauth/fixtures/scopes.yml
+  oauth/fixtures/scopes.yml \
+  accounts/fixtures/roles.yml
 
 # Finally, run the server
 /go/bin/recall runserver
