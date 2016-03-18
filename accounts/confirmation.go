@@ -5,7 +5,8 @@ import (
 )
 
 var (
-	errConfirmationNotFound = errors.New("Confirmation not found")
+	// ErrConfirmationNotFound ...
+	ErrConfirmationNotFound = errors.New("Confirmation not found")
 )
 
 // FindConfirmationByReference looks up a confirmation by a reference
@@ -17,7 +18,7 @@ func (s *Service) FindConfirmationByReference(reference string) (*Confirmation, 
 
 	// Not found
 	if notFound {
-		return nil, errConfirmationNotFound
+		return nil, ErrConfirmationNotFound
 	}
 
 	return confirmation, nil
