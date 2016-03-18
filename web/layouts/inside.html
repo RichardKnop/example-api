@@ -41,7 +41,10 @@
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
+          {{ if .hideLogout }}
+          {{ else }}
           <li><a href="/web/logout{{ .queryString }}">Log Out</a></li>
+          {{ end }}
         </ul>
       </div><!--/.nav-collapse -->
     </div>
