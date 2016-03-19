@@ -59,7 +59,7 @@ func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Requ
 	go func() {
 		passwordResetEmail := s.emailFactory.NewPasswordResetEmail(passwordReset)
 
-		// Attempt to send the password reset email
+		// Try to send the password reset email
 		if err := s.emailService.Send(passwordResetEmail); err != nil {
 			logger.Errorf("Send email error: %s", err)
 			return

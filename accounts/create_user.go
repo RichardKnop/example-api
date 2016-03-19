@@ -79,7 +79,7 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		confirmationEmail := s.emailFactory.NewConfirmationEmail(confirmation)
 
-		// Attemtp to send the confirmation email
+		// Try to send the confirmation email
 		if err := s.emailService.Send(confirmationEmail); err != nil {
 			logger.Errorf("Send email error: %s", err)
 			return
