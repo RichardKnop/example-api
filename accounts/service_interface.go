@@ -25,6 +25,8 @@ type ServiceInterface interface {
 	UpdateUser(user *User, userRequest *UserRequest) error
 	FindConfirmationByReference(reference string) (*Confirmation, error)
 	ConfirmUser(user *User) error
+	FindPasswordResetByReference(reference string) (*PasswordReset, error)
+	ResetPassword(passwordReset *PasswordReset, password string) error
 	CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error)
 	CreateSuperuser(account *Account, email, password string) (*User, error)
 
@@ -32,4 +34,5 @@ type ServiceInterface interface {
 	createUserHandler(w http.ResponseWriter, r *http.Request)
 	getMyUserHandler(w http.ResponseWriter, r *http.Request)
 	updateUserHandler(w http.ResponseWriter, r *http.Request)
+	createPasswordResetHandler(w http.ResponseWriter, r *http.Request)
 }

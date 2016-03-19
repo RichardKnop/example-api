@@ -81,6 +81,38 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			},
 		},
 		routes.Route{
+			Name:        "password_reset_form",
+			Method:      "GET",
+			Pattern:     "/password-reset/{reference}",
+			HandlerFunc: service.passwordResetForm,
+			Middlewares: []negroni.Handler{
+				new(parseFormMiddleware),
+				newGuestMiddleware(service),
+				newPasswordResetMiddleware(service),
+			},
+		},
+		routes.Route{
+			Name:        "password_reset",
+			Method:      "POST",
+			Pattern:     "/password-reset/{reference}",
+			HandlerFunc: service.passwordReset,
+			Middlewares: []negroni.Handler{
+				new(parseFormMiddleware),
+				newGuestMiddleware(service),
+				newPasswordResetMiddleware(service),
+			},
+		},
+		routes.Route{
+			Name:        "password_reset_success",
+			Method:      "GET",
+			Pattern:     "/password-reset-success",
+			HandlerFunc: service.passwordResetSuccess,
+			Middlewares: []negroni.Handler{
+				new(parseFormMiddleware),
+				newGuestMiddleware(service),
+			},
+		},
+		routes.Route{
 			Name:        "authorize_form",
 			Method:      "GET",
 			Pattern:     "/authorize",

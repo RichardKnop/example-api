@@ -203,3 +203,32 @@ func (m *confirmationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reques
 
 	next(w, r)
 }
+
+// passwordResetMiddleware takes reference variable from the URI and
+// makes a database lookup for a password reset with the same reference
+type passwordResetMiddleware struct {
+	service ServiceInterface
+}
+
+// newPasswordResetMiddleware creates a new passwordResetMiddleware instance
+func newPasswordResetMiddleware(service ServiceInterface) *passwordResetMiddleware {
+	return &passwordResetMiddleware{service: service}
+}
+
+// ServeHTTP as per the negroni.Handler interface
+func (m *passwordResetMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	vars := mux.Vars(r)
+
+	// Fetch the confirmation
+	passwordReset, err := m.service.GetAccountsService().FindPasswordResetByReference(
+		vars["reference"], // password reset ref
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	context.Set(r, passwordResetKey, passwordReset)
+
+	next(w, r)
+}

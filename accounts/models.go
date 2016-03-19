@@ -70,6 +70,21 @@ func (c *Confirmation) TableName() string {
 	return "account_confirmations"
 }
 
+// PasswordReset ...
+type PasswordReset struct {
+	gorm.Model
+	UserID      sql.NullInt64 `sql:"index;not null"`
+	User        *User
+	Reference   string `sql:"type:varchar(40);unique;not null"`
+	EmailSent   bool   `sql:"index;not null"`
+	EmailSentAt pq.NullTime
+}
+
+// TableName specifies table name
+func (p *PasswordReset) TableName() string {
+	return "account_password_resets"
+}
+
 // newAccount creates new Account instance
 func newAccount(oauthClient *oauth.Client, name, description string) *Account {
 	oauthClientID := util.PositiveIntOrNull(int64(oauthClient.ID))
@@ -122,4 +137,18 @@ func newConfirmation(user *User) *Confirmation {
 		confirmation.User = user
 	}
 	return confirmation
+}
+
+// newPasswordReset creates new PasswordReset instance
+func newPasswordReset(user *User) *PasswordReset {
+	userID := util.PositiveIntOrNull(int64(user.ID))
+	passwordReset := &PasswordReset{
+		UserID:      userID,
+		Reference:   uuid.New(),
+		EmailSentAt: util.TimeOrNull(nil),
+	}
+	if userID.Valid {
+		passwordReset.User = user
+	}
+	return passwordReset
 }

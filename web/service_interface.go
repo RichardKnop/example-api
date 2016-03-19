@@ -22,4 +22,7 @@ type ServiceInterface interface {
 	loginForm(w http.ResponseWriter, r *http.Request)
 	login(w http.ResponseWriter, r *http.Request)
 	logout(w http.ResponseWriter, r *http.Request)
+	passwordResetForm(w http.ResponseWriter, r *http.Request)
+	passwordReset(w http.ResponseWriter, r *http.Request)
+	passwordResetSuccess(w http.ResponseWriter, r *http.Request)
 }

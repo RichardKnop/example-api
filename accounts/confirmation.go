@@ -24,7 +24,7 @@ func (s *Service) FindConfirmationByReference(reference string) (*Confirmation, 
 	return confirmation, nil
 }
 
-// ConfirmUser sets User.Confirmed to true
+// ConfirmUser sets confirmed flag to true
 func (s *Service) ConfirmUser(user *User) error {
 	return s.db.Model(user).UpdateColumns(User{Confirmed: true}).Error
 }

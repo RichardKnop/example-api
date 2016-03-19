@@ -16,6 +16,7 @@ const (
 	sessionServiceKey contextKey = 0
 	clientKey         contextKey = 1
 	confirmationKey   contextKey = 2
+	passwordResetKey  contextKey = 3
 )
 
 var (
@@ -25,6 +26,8 @@ var (
 	ErrClientNotPresent = errors.New("Client not present in the request context")
 	// ErrConfirmationNotPresent ...
 	ErrConfirmationNotPresent = errors.New("Confirmation not present in the request context")
+	// ErrPasswordResetNotPresent ...
+	ErrPasswordResetNotPresent = errors.New("Password reset not present in the request context")
 )
 
 // Returns *session.Service from the request context
@@ -70,4 +73,19 @@ func getConfirmation(r *http.Request) (*accounts.Confirmation, error) {
 	}
 
 	return confirmation, nil
+}
+
+// Returns *accounts.PasswordReset from the request context
+func getPasswordReset(r *http.Request) (*accounts.PasswordReset, error) {
+	val, ok := context.GetOk(r, passwordResetKey)
+	if !ok {
+		return nil, ErrPasswordResetNotPresent
+	}
+
+	passwordReset, ok := val.(*accounts.PasswordReset)
+	if !ok {
+		return nil, ErrPasswordResetNotPresent
+	}
+
+	return passwordReset, nil
 }

@@ -50,28 +50,14 @@ func (s *Service) CreateUserTx(tx *gorm.DB, username, password string) (*User, e
 	return createUserCommon(tx, username, password)
 }
 
-// SetPassword saves a new user to database
+// SetPassword sets a user password
 func (s *Service) SetPassword(user *User, password string) error {
-	// Cannot set password to empty
-	if password == "" {
-		return ErrCannotSetEmptyUserPassword
-	}
+	return s.setPasswordCommon(s.db, user, password)
+}
 
-	// Create a bcrypt hash
-	passwordHash, err := pass.HashPassword(password)
-	if err != nil {
-		return err
-	}
-
-	// Set the password on the user object
-	if err := s.db.Model(user).UpdateColumn(
-		"password",
-		string(passwordHash),
-	).Error; err != nil {
-		return err
-	}
-
-	return nil
+// SetPasswordTx sets a user password in a transaction
+func (s *Service) SetPasswordTx(tx *gorm.DB, user *User, password string) error {
+	return s.setPasswordCommon(tx, user, password)
 }
 
 // AuthUser authenticates user
@@ -116,4 +102,20 @@ func createUserCommon(db *gorm.DB, username, password string) (*User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (s *Service) setPasswordCommon(db *gorm.DB, user *User, password string) error {
+	// Cannot set password to empty
+	if password == "" {
+		return ErrCannotSetEmptyUserPassword
+	}
+
+	// Create a bcrypt hash
+	passwordHash, err := pass.HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	// Set the password on the user object
+	return db.Model(user).UpdateColumn("password", string(passwordHash)).Error
 }
