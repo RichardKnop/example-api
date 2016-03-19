@@ -15,6 +15,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func (suite *AccountsTestSuite) TestGetMyUserRequiresUserAuthentication() {
+	r, err := http.NewRequest("", "", nil)
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
+
+	w := httptest.NewRecorder()
+
+	suite.service.getMyUserHandler(w, r)
+
+	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated user")
+}
+
 func (suite *AccountsTestSuite) TestGetMyUser() {
 	// Prepare a request
 	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/me", nil)

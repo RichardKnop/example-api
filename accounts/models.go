@@ -38,13 +38,13 @@ func (r *Role) TableName() string {
 // User ...
 type User struct {
 	gorm.Model
-	AccountID   sql.NullInt64  `sql:"index;not null"`
-	OauthUserID sql.NullInt64  `sql:"index;not null"`
-	RoleID      sql.NullInt64  `sql:"index;not null"`
-	FacebookID  sql.NullString `sql:"type:varchar(60);unique"`
+	AccountID   sql.NullInt64 `sql:"index;not null"`
+	OauthUserID sql.NullInt64 `sql:"index;not null"`
+	RoleID      sql.NullInt64 `sql:"index;not null"`
 	Account     *Account
 	OauthUser   *oauth.User
 	Role        *Role
+	FacebookID  sql.NullString `sql:"type:varchar(60);unique"`
 	FirstName   sql.NullString `sql:"type:varchar(100)"`
 	LastName    sql.NullString `sql:"type:varchar(100)"`
 	Confirmed   bool           `sql:"index;not null"`
