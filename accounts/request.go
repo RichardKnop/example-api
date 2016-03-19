@@ -8,3 +8,8 @@ type UserRequest struct {
 	LastName  string `json:"last_name"`
 	Role      string `json:"role"`
 }
+
+// PasswordResetRequest ...
+type PasswordResetRequest struct {
+	Email string `json:"email"`
+}

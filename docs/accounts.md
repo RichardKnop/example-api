@@ -9,6 +9,7 @@
     * [Create User](#create-user)
     * [Get Me](#get-me)
     * [Update User](#update-user)
+  * [Reset Password](#reset-password)
 
 # Accounts
 
@@ -72,7 +73,7 @@ Example response:
 	"first_name": "",
 	"last_name": "",
 	"role": "user",
-	"confirmed": false,
+	"confirmed": true,
 	"created_at": "2015-12-17T06:17:54Z",
 	"updated_at": "2015-12-17T06:17:54Z"
 }
@@ -107,8 +108,23 @@ Example response:
 	"first_name": "test_first_name_updated",
 	"last_name": "test_last_name_updated",
 	"role": "user",
-	"confirmed": false,
+	"confirmed": true,
 	"created_at": "2015-12-17T06:17:54Z",
 	"updated_at": "2015-12-18T07:09:15Z"
 }
 ```
+
+## Reset Password
+
+Example request:
+
+```
+curl --compressed -v localhost:8080/v1/accounts/passwordreset \
+	-H "Content-Type: application/json" \
+	-u test_client_1:test_secret \
+	-d '{
+		"email": "test@user"
+	}'
+```
+
+Returns `204` empty response on success.

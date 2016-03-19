@@ -24,10 +24,12 @@ func init() {
 		"web/layouts/outside.html": []string{
 			"web/includes/register.html",
 			"web/includes/login.html",
+			"web/includes/password-reset.html",
 		},
 		"web/layouts/inside.html": []string{
 			"web/includes/authorize.html",
 			"web/includes/confirm-email.html",
+			"web/includes/password-reset-success.html",
 		},
 	}
 
