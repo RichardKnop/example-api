@@ -124,7 +124,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		Role:      roles.User,
 		Confirmed: false,
 		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
-		UpdatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
+		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
