@@ -151,7 +151,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 	assert.Equal(suite.T(), "John", user.FirstName.String)
 	assert.Equal(suite.T(), "Reese", user.LastName.String)
 	assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
-	assert.Equal(suite.T(), roles.User, user.Role.Name)
+	assert.Equal(suite.T(), roles.User, user.Role.ID)
 
 	// Fetch oauth tokens
 	accessToken := new(oauth.AccessToken)
