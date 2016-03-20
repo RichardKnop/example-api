@@ -1,5 +1,9 @@
 ---
 
+#----------#
+# Accounts #
+#----------#
+
 - table: 'account_accounts'
   pk:
     id: 1

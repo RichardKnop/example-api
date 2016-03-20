@@ -1,5 +1,9 @@
 ---
 
+#-------#
+# Users #
+#-------#
+
 - table: 'account_users'
   pk:
     id: 1
