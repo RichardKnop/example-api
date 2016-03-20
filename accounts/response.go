@@ -27,7 +27,7 @@ func NewUserResponse(user *User) (*UserResponse, error) {
 		Email:     user.OauthUser.Username,
 		FirstName: user.FirstName.String,
 		LastName:  user.LastName.String,
-		Role:      user.Role.Name,
+		Role:      user.RoleID.String,
 		Confirmed: user.Confirmed,
 		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),

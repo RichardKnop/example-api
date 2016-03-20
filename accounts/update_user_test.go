@@ -136,7 +136,7 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 	// Check that the correct data was saved
 	assert.Equal(suite.T(), "John", user.FirstName.String)
 	assert.Equal(suite.T(), "Reese", user.LastName.String)
-	assert.Equal(suite.T(), roles.User, user.Role.Name)
+	assert.Equal(suite.T(), roles.User, user.Role.ID)
 	assert.True(suite.T(), user.Confirmed)
 
 	// Check the response body

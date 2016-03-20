@@ -100,7 +100,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	assert.Equal(suite.T(), "test@newuser", user.OauthUser.Username)
 	assert.Equal(suite.T(), "", user.FirstName.String)
 	assert.Equal(suite.T(), "", user.LastName.String)
-	assert.Equal(suite.T(), roles.User, user.Role.Name)
+	assert.Equal(suite.T(), roles.User, user.Role.ID)
 	assert.False(suite.T(), user.Confirmed)
 
 	// Check the Location header

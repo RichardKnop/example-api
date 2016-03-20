@@ -44,6 +44,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
+		assert.Equal(suite.T(), roles.User, user.Role.ID)
 	}
 }
 
@@ -74,6 +75,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
+		assert.Equal(suite.T(), roles.User, user.Role.ID)
 	}
 }
 
@@ -104,6 +106,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
+		assert.Equal(suite.T(), roles.User, user.Role.ID)
 	}
 }
 
@@ -145,7 +148,7 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
-		assert.Equal(suite.T(), roles.User, user.Role.Name)
+		assert.Equal(suite.T(), roles.User, user.Role.ID)
 	}
 }
 

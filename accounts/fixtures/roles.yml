@@ -6,16 +6,16 @@
 
 - table: 'account_roles'
   pk:
-    id: 1
+    id: 'superuser'
   fields:
-    name: 'superuser'
+    name: 'Superuser'
     created_at: 'ON_INSERT_NOW()'
     updated_at: 'ON_UPDATE_NOW()'
 
 - table: 'account_roles'
   pk:
-    id: 2
+    id: 'user'
   fields:
-    name: 'user'
+    name: 'User'
     created_at: 'ON_INSERT_NOW()'
     updated_at: 'ON_UPDATE_NOW()'

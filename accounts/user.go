@@ -226,7 +226,7 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 	}
 
 	// Fetch the role object
-	role, err := s.findRoleByName(userRequest.Role)
+	role, err := s.findRoleByID(userRequest.Role)
 	if err != nil {
 		return nil, err
 	}
