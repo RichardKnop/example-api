@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	errUpdateUserPermission = errors.New("Need permission to update users")
+	// ErrUpdateUserPermission ...
+	ErrUpdateUserPermission = errors.New("Need permission to update users")
 )
 
 // Handles requests to update a user (PUT /v1/accounts/users/{id:[0-9]+})
@@ -100,5 +101,5 @@ func checkUpdateUserPermissions(authenticatedUser, user *User) error {
 	}
 
 	// The user doesn't have the permission
-	return errUpdateUserPermission
+	return ErrUpdateUserPermission
 }
