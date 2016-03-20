@@ -29,6 +29,7 @@ func (suite *AccountsTestSuite) TestUpdateUserRequiresUserAuthentication() {
 
 func (suite *AccountsTestSuite) TestUpdateUser() {
 	payload, err := json.Marshal(&UserRequest{
+		Email:     "test@user",
 		FirstName: "John",
 		LastName:  "Reese",
 	})

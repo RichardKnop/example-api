@@ -14,6 +14,10 @@ var (
 	ErrSuperuserOnlyManually = errors.New("Superusers can only be created manually")
 	// ErrUserNotFound ...
 	ErrUserNotFound = errors.New("User not found")
+	// ErrEmailTaken ...
+	ErrEmailTaken = errors.New("Email already taken")
+	// ErrEmailCannotBeChanged ...
+	ErrEmailCannotBeChanged = errors.New("Email cannot be changed")
 )
 
 // GetName returns user's full name
@@ -131,6 +135,11 @@ func (s *Service) CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserR
 
 // UpdateUser updates an existing user
 func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
+	// Check if email is already taken if
+	if user.OauthUser.Username != userRequest.Email {
+		return ErrEmailCannotBeChanged
+	}
+
 	// Update basic metadata
 	if err := s.db.Model(user).UpdateColumns(User{
 		FirstName: util.StringOrNull(userRequest.FirstName),
@@ -205,6 +214,11 @@ func (s *Service) CreateSuperuser(account *Account, email, password string) (*Us
 }
 
 func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *UserRequest, facebookID string, confirmed bool) (*User, error) {
+	// Check if email is already taken
+	if s.GetOauthService().UserExists(userRequest.Email) {
+		return nil, ErrEmailTaken
+	}
+
 	// If a role is not defined in the user request,
 	// fall back to the user role
 	if userRequest.Role == "" {

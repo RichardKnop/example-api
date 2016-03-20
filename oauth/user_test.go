@@ -58,7 +58,7 @@ func (suite *OauthTestSuite) TestCreateUser() {
 
 	// We try to insert a unique user
 	user, err = suite.service.CreateUser(
-		"test@user2",    // username
+		"test@newuser",    // username
 		"test_password", // password
 	)
 
@@ -67,7 +67,7 @@ func (suite *OauthTestSuite) TestCreateUser() {
 
 	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test@user2", user.Username)
+		assert.Equal(suite.T(), "test@newuser", user.Username)
 	}
 }
 

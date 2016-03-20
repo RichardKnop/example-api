@@ -101,10 +101,10 @@ func (suite *AccountsTestSuite) TearDownSuite() {
 func (suite *AccountsTestSuite) SetupTest() {
 	suite.db.Unscoped().Delete(new(Confirmation))
 	suite.db.Unscoped().Delete(new(PasswordReset))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(User))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(User))
 
 	// Service.CreateUser also creates a new oauth.User instance
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.User))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.User))
 
 	// Service.CreateAccount also creates a new oauth.Client instance
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.Client))

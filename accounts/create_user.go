@@ -41,12 +41,6 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if oauth user exists
-	if s.GetOauthService().UserExists(userRequest.Email) {
-		response.Error(w, "Email taken", http.StatusBadRequest)
-		return
-	}
-
 	// Begin transaction
 	tx := s.db.Begin()
 
@@ -55,7 +49,11 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		tx.Rollback() // rollback the transaction
 		logger.Errorf("Create user error: %s", err)
-		response.Error(w, err.Error(), http.StatusInternalServerError)
+		code, ok := errStatusCodeMap[err]
+		if !ok {
+			code = http.StatusInternalServerError
+		}
+		response.Error(w, err.Error(), code)
 		return
 	}
 
