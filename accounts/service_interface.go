@@ -27,7 +27,7 @@ type ServiceInterface interface {
 	ConfirmUser(user *User) error
 	FindPasswordResetByReference(reference string) (*PasswordReset, error)
 	ResetPassword(passwordReset *PasswordReset, password string) error
-	CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error)
+	GetOrCreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error)
 	CreateSuperuser(account *Account, email, password string) (*User, error)
 
 	// Needed for the newRoutes to be able to register handlers

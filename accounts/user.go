@@ -151,24 +151,69 @@ func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 	return nil
 }
 
-// CreateFacebookUser creates a new user with facebook ID
-func (s *Service) CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
-	// Superusers can only be created manually
-	if userRequest.Role == roles.Superuser {
-		return nil, ErrSuperuserOnlyManually
+// GetOrCreateFacebookUser either returns an existing user
+// or updates an existing email user with facebook ID or creates a new user
+func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
+	// Does a user with this facebook ID already exist?
+	user, err := s.FindUserByFacebookID(facebookID)
+
+	// User with this facebook ID alraedy exists, return
+	if err == nil {
+		return user, nil
+	}
+
+	// Does a user with this email already exist?
+	user, err = s.FindUserByEmail(userRequest.Email)
+
+	// User with this email already exists, update the record and return
+	if err == nil {
+		// Set the facebook ID and first / last name
+		err = s.db.Model(user).UpdateColumns(User{
+			FacebookID: util.StringOrNull(facebookID),
+			FirstName:  util.StringOrNull(userRequest.FirstName),
+			LastName:   util.StringOrNull(userRequest.LastName),
+			Confirmed:  true,
+		}).Error
+		if err != nil {
+			return nil, err
+		}
+
+		return user, nil
+	}
+
+	// Fetch the user role from the database
+	role, err := s.findRoleByID(roles.User)
+	if err != nil {
+		return nil, err
 	}
 
 	// Begin a transaction
 	tx := s.db.Begin()
 
-	user, err := s.createUserCommon(
+	// Create a new oauth user
+	oauthUser, err := s.GetOauthService().CreateUserTx(
 		tx,
-		account,
-		userRequest,
-		facebookID,
-		true, // confirmed
+		userRequest.Email,
+		"", // no password
 	)
 	if err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
+	// Create a new user
+	user = newUser(
+		account,
+		oauthUser,
+		role,
+		facebookID,
+		userRequest.FirstName,
+		userRequest.LastName,
+		true, // confirmed
+	)
+
+	// Save the user to the database
+	if err := tx.Create(user).Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
 	}

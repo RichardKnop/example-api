@@ -339,8 +339,8 @@ func (_m *ServiceMock) ResetPassword(passwordReset *PasswordReset, password stri
 	return r0
 }
 
-// CreateFacebookUser ...
-func (_m *ServiceMock) CreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
+// GetOrCreateFacebookUser ...
+func (_m *ServiceMock) GetOrCreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
 	ret := _m.Called(account, facebookID, userRequest)
 
 	var r0 *User
