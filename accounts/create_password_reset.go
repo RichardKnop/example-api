@@ -8,6 +8,7 @@ import (
 
 	"github.com/RichardKnop/recall/response"
 	"github.com/RichardKnop/recall/util"
+	"github.com/jinzhu/gorm"
 )
 
 // Handles requests to reset a password (POST /v1/accounts/passwordreset)
@@ -70,6 +71,7 @@ func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Requ
 		s.db.Model(passwordReset).UpdateColumns(PasswordReset{
 			EmailSent:   true,
 			EmailSentAt: util.TimeOrNull(&now),
+			Model:       gorm.Model{UpdatedAt: now},
 		})
 	}()
 

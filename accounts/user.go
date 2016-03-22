@@ -3,6 +3,7 @@ package accounts
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/util"
@@ -144,6 +145,7 @@ func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 	if err := s.db.Model(user).UpdateColumns(User{
 		FirstName: util.StringOrNull(userRequest.FirstName),
 		LastName:  util.StringOrNull(userRequest.LastName),
+		Model:     gorm.Model{UpdatedAt: time.Now()},
 	}).Error; err != nil {
 		return err
 	}
@@ -173,6 +175,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 			FirstName:  util.StringOrNull(userRequest.FirstName),
 			LastName:   util.StringOrNull(userRequest.LastName),
 			Confirmed:  true,
+			Model:      gorm.Model{UpdatedAt: time.Now()},
 		}).Error
 		if err != nil {
 			return nil, err

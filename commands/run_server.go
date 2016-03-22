@@ -3,8 +3,8 @@ package commands
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/email"
 	"github.com/RichardKnop/recall/accounts"
+	"github.com/RichardKnop/recall/email"
 	"github.com/RichardKnop/recall/facebook"
 	"github.com/RichardKnop/recall/health"
 	"github.com/RichardKnop/recall/oauth"

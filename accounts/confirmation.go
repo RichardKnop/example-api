@@ -2,6 +2,9 @@ package accounts
 
 import (
 	"errors"
+	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -26,5 +29,8 @@ func (s *Service) FindConfirmationByReference(reference string) (*Confirmation, 
 
 // ConfirmUser sets confirmed flag to true
 func (s *Service) ConfirmUser(user *User) error {
-	return s.db.Model(user).UpdateColumns(User{Confirmed: true}).Error
+	return s.db.Model(user).UpdateColumns(User{
+		Confirmed: true,
+		Model:     gorm.Model{UpdatedAt: time.Now()},
+	}).Error
 }

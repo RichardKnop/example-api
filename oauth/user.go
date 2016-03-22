@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"errors"
+	"time"
 
 	pass "github.com/RichardKnop/recall/password"
 	"github.com/RichardKnop/recall/util"
@@ -117,5 +118,8 @@ func (s *Service) setPasswordCommon(db *gorm.DB, user *User, password string) er
 	}
 
 	// Set the password on the user object
-	return db.Model(user).UpdateColumn("password", string(passwordHash)).Error
+	return db.Model(user).UpdateColumns(User{
+		Password: util.StringOrNull(string(passwordHash)),
+		Model:    gorm.Model{UpdatedAt: time.Now()},
+	}).Error
 }

@@ -15,7 +15,7 @@ type UserResponse struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Role      string `json:"role"`
-	Confirmed bool `json:"confirmed"`
+	Confirmed bool   `json:"confirmed"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }

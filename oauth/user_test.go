@@ -58,7 +58,7 @@ func (suite *OauthTestSuite) TestCreateUser() {
 
 	// We try to insert a unique user
 	user, err = suite.service.CreateUser(
-		"test@newuser",    // username
+		"test@newuser",  // username
 		"test_password", // password
 	)
 
