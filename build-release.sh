@@ -37,8 +37,8 @@ function main() {
   read -p "Container name (default: recall): " container_name
   [ -z "$container_name" ] && container_name="recall"
 
-  read -p "S3 bucket (default: recall.builds): " s3_bucket
-  [ -z "$s3_bucket" ] && s3_bucket="recall.builds"
+  read -p "S3 bucket (default: recall.releases): " s3_bucket
+  [ -z "$s3_bucket" ] && s3_bucket="recall.releases"
 
   local -r github=`git config --get remote.origin.url`
   declare -r temp_dir=$(mktemp -d "/tmp/${container_name}-${new_version}.XXXX")
