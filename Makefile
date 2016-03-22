@@ -22,5 +22,8 @@ test-oauth:
 test-accounts:
 	bash -c 'go test -timeout=30s github.com/RichardKnop/recall/accounts'
 
+test-facebook:
+	bash -c 'go test -timeout=60s github.com/RichardKnop/recall/facebook'
+
 test:
-	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=30s'
+	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=60s'

@@ -152,60 +152,86 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 	}
 }
 
-func (suite *AccountsTestSuite) TestCreateFacebookUser() {
+func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	var (
-		user *User
-		err  error
+		countBefore, countAfter int
+		user                    *User
+		err                     error
 	)
 
-	// We try to create a facebook user with a non unique email
-	user, err = suite.service.CreateFacebookUser(
-		suite.accounts[0], // account
-		"new_facebook_id", // facebook ID
-		&UserRequest{
-			Email:     "test@user",
-			FirstName: "John",
-			LastName:  "Reese",
-		},
-	)
+	// Count before
+	suite.db.Model(new(User)).Count(&countBefore)
 
-	// User object should be nil
-	assert.Nil(suite.T(), user)
-
-	// Correct error should be returned
-	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrEmailTaken, err)
-	}
-
-	// We try to create a facebook user with a non unique facebook ID
-	user, err = suite.service.CreateFacebookUser(
+	// Let's try passing an existing facebook ID
+	user, err = suite.service.GetOrCreateFacebookUser(
 		suite.accounts[0], // account
 		"facebook_id_2",   // facebook ID
-		&UserRequest{
-			Email:     "test@newuser",
-			FirstName: "John",
-			LastName:  "Reese",
-		},
+		new(UserRequest),  // not important in this case
 	)
 
-	// User object should be nil
-	assert.Nil(suite.T(), user)
+	// Count after
+	suite.db.Model(new(User)).Count(&countAfter)
+	assert.Equal(suite.T(), countBefore, countAfter)
 
-	// Correct error should be returned
-	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), "UNIQUE constraint failed: account_users.facebook_id", err.Error())
+	// Error should be nil
+	assert.Nil(suite.T(), err)
+
+	// Correct user object should be returned
+	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
+		assert.Equal(suite.T(), "facebook_id_2", user.FacebookID.String)
+		assert.Equal(suite.T(), "test_first_name_2", user.FirstName.String)
+		assert.Equal(suite.T(), "test_last_name_2", user.LastName.String)
+		assert.True(suite.T(), user.Confirmed)
 	}
 
-	// We try to get or create a new facebook user
-	user, err = suite.service.CreateFacebookUser(
-		suite.accounts[0], // account
-		"new_facebook_id", // facebook ID
+	// Count before
+	suite.db.Model(new(User)).Count(&countBefore)
+
+	// Let's try passing an existing email
+	user, err = suite.service.GetOrCreateFacebookUser(
+		suite.accounts[0],  // account
+		"user_facebook_id", // facebook ID
+		&UserRequest{
+			Email:     "test@user",
+			FirstName: "Harold",
+			LastName:  "Finch",
+		},
+	)
+
+	// Count after
+	suite.db.Model(new(User)).Count(&countAfter)
+	assert.Equal(suite.T(), countBefore, countAfter)
+
+	// Error should be nil
+	assert.Nil(suite.T(), err)
+
+	// Correct user object should be returned
+	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
+		assert.Equal(suite.T(), "user_facebook_id", user.FacebookID.String)
+		assert.Equal(suite.T(), "Harold", user.FirstName.String)
+		assert.Equal(suite.T(), "Finch", user.LastName.String)
+		assert.True(suite.T(), user.Confirmed)
+	}
+
+	// Count before
+	suite.db.Model(new(User)).Count(&countBefore)
+
+	// We pass new facebook ID and new email
+	user, err = suite.service.GetOrCreateFacebookUser(
+		suite.accounts[0],     // account
+		"newuser_facebook_id", // facebook ID
 		&UserRequest{
 			Email:     "test@newuser",
 			FirstName: "John",
 			LastName:  "Reese",
 		},
 	)
+
+	// Count after
+	suite.db.Model(new(User)).Count(&countAfter)
+	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Error should be nil
 	assert.Nil(suite.T(), err)
@@ -213,9 +239,10 @@ func (suite *AccountsTestSuite) TestCreateFacebookUser() {
 	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test@newuser", user.OauthUser.Username)
-		assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
+		assert.Equal(suite.T(), "newuser_facebook_id", user.FacebookID.String)
 		assert.Equal(suite.T(), "John", user.FirstName.String)
 		assert.Equal(suite.T(), "Reese", user.LastName.String)
+		assert.True(suite.T(), user.Confirmed)
 	}
 }
 
