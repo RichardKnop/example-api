@@ -28,7 +28,7 @@ func (p *Account) TableName() string {
 // Role is a one of roles user can have
 type Role struct {
 	database.TimestampModel
-	ID   string `gorm:"primary_key"`
+	ID   string `gorm:"primary_key" sql:"type:varchar(20)"`
 	Name string `sql:"type:varchar(50);unique;not null"`
 }
 
@@ -42,7 +42,7 @@ type User struct {
 	gorm.Model
 	AccountID   sql.NullInt64  `sql:"index;not null"`
 	OauthUserID sql.NullInt64  `sql:"index;not null"`
-	RoleID      sql.NullString `sql:"index;not null"`
+	RoleID      sql.NullString `sql:"type:varchar(20);index;not null"`
 	Account     *Account
 	OauthUser   *oauth.User
 	Role        *Role
