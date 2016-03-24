@@ -11,7 +11,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	)
 
 	// Insert a test password reset
-	testPasswordReset := newPasswordReset(suite.users[1])
+	testPasswordReset := NewPasswordReset(suite.users[1])
 	err = suite.db.Create(testPasswordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 
@@ -42,7 +42,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 
 func (suite *AccountsTestSuite) TestResetPassword() {
 	// Insert a test password reset
-	passwordReset := newPasswordReset(suite.users[1])
+	passwordReset := NewPasswordReset(suite.users[1])
 	err := suite.db.Create(passwordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 

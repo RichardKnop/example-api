@@ -87,8 +87,8 @@ func (p *PasswordReset) TableName() string {
 	return "account_password_resets"
 }
 
-// newAccount creates new Account instance
-func newAccount(oauthClient *oauth.Client, name, description string) *Account {
+// NewAccount creates new Account instance
+func NewAccount(oauthClient *oauth.Client, name, description string) *Account {
 	oauthClientID := util.PositiveIntOrNull(int64(oauthClient.ID))
 	account := &Account{
 		OauthClientID: oauthClientID,
@@ -101,8 +101,8 @@ func newAccount(oauthClient *oauth.Client, name, description string) *Account {
 	return account
 }
 
-// newUser creates new User instance
-func newUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, firstName, lastName string, confirmed bool) *User {
+// NewUser creates new User instance
+func NewUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, firstName, lastName string, confirmed bool) *User {
 	accountID := util.PositiveIntOrNull(int64(account.ID))
 	oauthUserID := util.PositiveIntOrNull(int64(oauthUser.ID))
 	roleID := util.StringOrNull(role.ID)
@@ -127,8 +127,8 @@ func newUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, fi
 	return user
 }
 
-// newConfirmation creates new Confirmation instance
-func newConfirmation(user *User) *Confirmation {
+// NewConfirmation creates new Confirmation instance
+func NewConfirmation(user *User) *Confirmation {
 	userID := util.PositiveIntOrNull(int64(user.ID))
 	confirmation := &Confirmation{
 		UserID:      userID,
@@ -141,8 +141,8 @@ func newConfirmation(user *User) *Confirmation {
 	return confirmation
 }
 
-// newPasswordReset creates new PasswordReset instance
-func newPasswordReset(user *User) *PasswordReset {
+// NewPasswordReset creates new PasswordReset instance
+func NewPasswordReset(user *User) *PasswordReset {
 	userID := util.PositiveIntOrNull(int64(user.ID))
 	passwordReset := &PasswordReset{
 		UserID:      userID,

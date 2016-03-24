@@ -60,7 +60,7 @@ func (s *Service) CreateAccount(name, description, key, secret, redirectURI stri
 	}
 
 	// Create a new account
-	account := newAccount(oauthClient, name, description)
+	account := NewAccount(oauthClient, name, description)
 
 	// Save the account to the database
 	if err := tx.Create(account).Error; err != nil {

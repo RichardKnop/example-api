@@ -76,7 +76,7 @@ func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
 	passwordReset, err := s.findUserPasswordReset(user)
 	if err != nil {
 		// Create a new password reset
-		passwordReset = newPasswordReset(user)
+		passwordReset = NewPasswordReset(user)
 	}
 
 	// Save the password reset to the database

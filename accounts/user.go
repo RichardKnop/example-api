@@ -205,7 +205,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 	}
 
 	// Create a new user
-	user = newUser(
+	user = NewUser(
 		account,
 		oauthUser,
 		role,
@@ -290,7 +290,7 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 	}
 
 	// Create a new user
-	user := newUser(
+	user := NewUser(
 		account,
 		oauthUser,
 		role,

@@ -10,7 +10,7 @@ func (suite *AccountsTestSuite) TestFindConfirmationByReference() {
 		err          error
 	)
 
-	testConfirmation := newConfirmation(suite.users[1])
+	testConfirmation := NewConfirmation(suite.users[1])
 	err = suite.db.Create(testConfirmation).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 

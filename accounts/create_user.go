@@ -59,7 +59,7 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a new invitation
-	confirmation := newConfirmation(user)
+	confirmation := NewConfirmation(user)
 	if err := tx.Create(confirmation).Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		logger.Errorf("Create confirmation error: %s", err)
