@@ -11,9 +11,9 @@ import (
 type Service struct {
 	cnf          *config.Config
 	db           *gorm.DB
-	oauthService oauth.ServiceInterface // oauth service dependency injection
-	emailService email.ServiceInterface // email service dependency injection
-	emailFactory EmailFactoryInterface  // email factory dependency injection
+	oauthService oauth.ServiceInterface
+	emailService email.ServiceInterface
+	emailFactory EmailFactoryInterface
 }
 
 // NewService starts a new Service instance
