@@ -23,7 +23,7 @@ type UserResponse struct {
 // NewUserResponse creates new UserResponse instance
 func NewUserResponse(user *User) (*UserResponse, error) {
 	response := &UserResponse{
-		ID:        user.ID,
+		ID:        user.OauthUser.ID,
 		Email:     user.OauthUser.Username,
 		FirstName: user.FirstName.String,
 		LastName:  user.LastName.String,

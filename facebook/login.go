@@ -92,6 +92,7 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 	// Write the JSON access token to the response
 	accessTokenRespone := &oauth.AccessTokenResponse{
 		ID:           accessToken.ID,
+		UserID:       user.OauthUser.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    s.cnf.Oauth.AccessTokenLifetime,
 		TokenType:    oauth.TokenType,

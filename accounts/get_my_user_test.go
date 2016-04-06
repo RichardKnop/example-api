@@ -61,7 +61,7 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 				},
 			},
 		},
-		ID:        suite.users[1].ID,
+		ID:        suite.users[1].OauthUser.ID,
 		Email:     "test@user",
 		FirstName: "test_first_name_2",
 		LastName:  "test_last_name_2",

@@ -119,7 +119,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 				},
 			},
 		},
-		ID:        user.ID,
+		ID:        user.OauthUser.ID,
 		Email:     "test@newuser",
 		Role:      roles.User,
 		Confirmed: false,
