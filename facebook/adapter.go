@@ -26,10 +26,8 @@ func NewAdapter(cnf *config.Config) *Adapter {
 				cnf.Web.Host,
 			),
 			Scopes: []string{
+				"public_profile",
 				"email",
-				"user_birthday",
-				"user_location",
-				"user_about_me",
 			},
 			Endpoint: facebook.Endpoint, // https://godoc.org/golang.org/x/oauth2/facebook
 		},
@@ -50,6 +48,7 @@ func (a *Adapter) Exchange(code string) (*oauth2.Token, error) {
 func (a *Adapter) GetMe(accessToken string) (fb.Result, error) {
 	return fb.Get("/me", fb.Params{
 		"fields": []string{
+			"id",
 			"first_name",
 			"last_name",
 			"email",
