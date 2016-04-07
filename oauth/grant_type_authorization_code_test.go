@@ -70,7 +70,7 @@ func (suite *OauthTestSuite) TestAuthorizationCodeGrant() {
 	// Check the response body
 	expected, err := json.Marshal(&AccessTokenResponse{
 		ID:           accessToken.ID,
-		UserID:       accessToken.User.ID,
+		UserID:       accessToken.User.MetaUserID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
 		TokenType:    TokenType,

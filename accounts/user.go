@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/RichardKnop/recall/accounts/roles"
+	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/util"
 	"github.com/jinzhu/gorm"
 )
@@ -221,6 +222,13 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 		return nil, err
 	}
 
+	// Update the meta user ID field
+	err = tx.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: user.ID}).Error
+	if err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback() // rollback the transaction
@@ -302,6 +310,12 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 
 	// Save the user to the database
 	if err := db.Create(user).Error; err != nil {
+		return nil, err
+	}
+
+	// Update the meta user ID field
+	err = db.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: user.ID}).Error
+	if err != nil {
 		return nil, err
 	}
 

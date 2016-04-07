@@ -192,7 +192,7 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 	// Check the response body
 	expected, err := json.Marshal(&oauth.AccessTokenResponse{
 		ID:           accessToken.ID,
-		UserID:       user.OauthUser.ID,
+		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
 		TokenType:    oauth.TokenType,
@@ -275,7 +275,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesFacebookIDOfExistingUser() {
 	// Check the response body
 	expected, err := json.Marshal(&oauth.AccessTokenResponse{
 		ID:           accessToken.ID,
-		UserID:       user.OauthUser.ID,
+		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
 		TokenType:    oauth.TokenType,
@@ -340,6 +340,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 	assert.False(suite.T(), notFound)
 
 	// And correct data was saved
+	assert.Equal(suite.T(), user.ID, user.OauthUser.MetaUserID)
 	assert.Equal(suite.T(), "test@newuser", user.OauthUser.Username)
 	assert.Equal(suite.T(), "John", user.FirstName.String)
 	assert.Equal(suite.T(), "Reese", user.LastName.String)
@@ -356,7 +357,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 	// Check the response body
 	expected, err := json.Marshal(&oauth.AccessTokenResponse{
 		ID:           accessToken.ID,
-		UserID:       user.OauthUser.ID,
+		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
 		TokenType:    oauth.TokenType,

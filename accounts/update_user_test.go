@@ -148,7 +148,7 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 				},
 			},
 		},
-		ID:        user.OauthUser.ID,
+		ID:        user.ID,
 		Email:     "test@user",
 		FirstName: "John",
 		LastName:  "Reese",

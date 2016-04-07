@@ -94,6 +94,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		First(confirmation).RecordNotFound())
 
 	// And correct data was saved
+	assert.Equal(suite.T(), user.ID, user.OauthUser.MetaUserID)
 	assert.Equal(suite.T(), "test@newuser", confirmation.User.OauthUser.Username)
 	assert.True(suite.T(), confirmation.EmailSent)
 	assert.True(suite.T(), confirmation.EmailSentAt.Valid)
@@ -119,7 +120,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 				},
 			},
 		},
-		ID:        user.OauthUser.ID,
+		ID:        user.ID,
 		Email:     "test@newuser",
 		Role:      roles.User,
 		Confirmed: false,

@@ -38,8 +38,9 @@ func (s *Scope) TableName() string {
 // User ...
 type User struct {
 	gorm.Model
-	Username string         `sql:"type:varchar(254);unique;not null"`
-	Password sql.NullString `sql:"type:varchar(60)"`
+	Username   string         `sql:"type:varchar(254);unique;not null"`
+	Password   sql.NullString `sql:"type:varchar(60)"`
+	MetaUserID uint           `sql:"index"`
 }
 
 // TableName specifies table name
