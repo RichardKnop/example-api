@@ -90,6 +90,29 @@ func (_m *ServiceMock) FindAccountByID(accountID uint) (*Account, error) {
 	return r0, r1
 }
 
+// FindAccountByName ...
+func (_m *ServiceMock) FindAccountByName(name string) (*Account, error) {
+	ret := _m.Called(name)
+
+	var r0 *Account
+	if rf, ok := ret.Get(0).(func(string) *Account); ok {
+		r0 = rf(name)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Account)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateAccount ...
 func (_m *ServiceMock) CreateAccount(name string, description string, key string, secret string, redirectURI string) (*Account, error) {
 	ret := _m.Called(name, description, key, secret, redirectURI)

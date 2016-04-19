@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/RichardKnop/recall/accounts/roles"
+	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/util"
 	"github.com/stretchr/testify/assert"
 )
@@ -264,7 +265,7 @@ func (suite *AccountsTestSuite) TestCreateSuperuser() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrEmailTaken, err)
+		assert.Equal(suite.T(), oauth.ErrUsernameTaken, err)
 	}
 
 	// We try to insert a unique superuser

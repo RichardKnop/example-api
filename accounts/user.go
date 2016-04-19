@@ -16,8 +16,6 @@ var (
 	ErrSuperuserOnlyManually = errors.New("Superusers can only be created manually")
 	// ErrUserNotFound ...
 	ErrUserNotFound = errors.New("User not found")
-	// ErrEmailTaken ...
-	ErrEmailTaken = errors.New("Email already taken")
 )
 
 // GetName returns user's full name
@@ -265,7 +263,7 @@ func (s *Service) CreateSuperuser(account *Account, email, password string) (*Us
 func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *UserRequest, facebookID string, confirmed bool) (*User, error) {
 	// Check if email is already taken
 	if s.GetOauthService().UserExists(userRequest.Email) {
-		return nil, ErrEmailTaken
+		return nil, oauth.ErrUsernameTaken
 	}
 
 	// If a role is not defined in the user request,

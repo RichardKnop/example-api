@@ -18,6 +18,8 @@ var (
 	ErrCannotSetEmptyUserPassword = errors.New("Cannot set empty user password")
 	// ErrUserPasswordNotSet ...
 	ErrUserPasswordNotSet = errors.New("User password not set")
+	// ErrUsernameTaken ...
+	ErrUsernameTaken = errors.New("Username taken")
 )
 
 // UserExists returns true if user exists

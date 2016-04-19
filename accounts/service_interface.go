@@ -15,6 +15,7 @@ type ServiceInterface interface {
 	GetOauthService() oauth.ServiceInterface
 	FindAccountByOauthClientID(oauthClientID uint) (*Account, error)
 	FindAccountByID(accountID uint) (*Account, error)
+	FindAccountByName(name string) (*Account, error)
 	CreateAccount(name, description, key, secret, redirectURI string) (*Account, error)
 	FindUserByOauthUserID(oauthUserID uint) (*User, error)
 	FindUserByEmail(email string) (*User, error)
