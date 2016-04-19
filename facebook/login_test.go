@@ -88,9 +88,9 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 
 	// Mock fetching profile data from facebook
 	suite.mockFacebookGetMe(fb.Result{
-		"id":         interface{}("facebook_id_2"),
-		"email":      interface{}("test@user"),
-		"first_name": interface{}("Harold"),
+		"id":         interface{}("new_facebook_id"),
+		"email":      interface{}("new@user"),
+		"first_name": interface{}("John Reese"),
 		"last_name":  interface{}("Finch"),
 	}, nil)
 
@@ -204,7 +204,7 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 	}
 }
 
-func (suite *FacebookTestSuite) TestLoginUpdatesFacebookIDOfExistingUser() {
+func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 	// Prepare a request
 	r, err := http.NewRequest("POST", "http://1.2.3.4/v1/facebook/login", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -223,7 +223,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesFacebookIDOfExistingUser() {
 
 	// Mock fetching profile data from facebook
 	suite.mockFacebookGetMe(fb.Result{
-		"id":         interface{}("user_facebook_id"),
+		"id":         interface{}("new_facebook_id"),
 		"email":      interface{}(suite.users[1].OauthUser.Username),
 		"first_name": interface{}("Harold"),
 		"last_name":  interface{}("Finch"),
@@ -260,7 +260,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesFacebookIDOfExistingUser() {
 	assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 	assert.Equal(suite.T(), "Harold", user.FirstName.String)
 	assert.Equal(suite.T(), "Finch", user.LastName.String)
-	assert.Equal(suite.T(), "user_facebook_id", user.FacebookID.String)
+	assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
 	assert.Equal(suite.T(), roles.User, user.Role.ID)
 	assert.True(suite.T(), user.Confirmed)
 
@@ -306,8 +306,8 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 
 	// Mock fetching profile data from facebook
 	suite.mockFacebookGetMe(fb.Result{
-		"id":         interface{}("newuser_facebook_id"),
-		"email":      interface{}("test@newuser"),
+		"id":         interface{}("new_facebook_id"),
+		"email":      interface{}("new@user"),
 		"first_name": interface{}("John"),
 		"last_name":  interface{}("Reese"),
 	}, nil)
@@ -341,10 +341,10 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 
 	// And correct data was saved
 	assert.Equal(suite.T(), user.ID, user.OauthUser.MetaUserID)
-	assert.Equal(suite.T(), "test@newuser", user.OauthUser.Username)
+	assert.Equal(suite.T(), "new@user", user.OauthUser.Username)
 	assert.Equal(suite.T(), "John", user.FirstName.String)
 	assert.Equal(suite.T(), "Reese", user.LastName.String)
-	assert.Equal(suite.T(), "newuser_facebook_id", user.FacebookID.String)
+	assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
 	assert.Equal(suite.T(), roles.User, user.Role.ID)
 	assert.True(suite.T(), user.Confirmed)
 
