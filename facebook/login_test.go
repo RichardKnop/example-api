@@ -88,10 +88,10 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 
 	// Mock fetching profile data from facebook
 	suite.mockFacebookGetMe(fb.Result{
-		"id":         interface{}("new_facebook_id"),
-		"email":      interface{}("new@user"),
-		"first_name": interface{}("John Reese"),
-		"last_name":  interface{}("Finch"),
+		"id":         interface{}("facebook_id_2"),
+		"email":      interface{}("test@user"),
+		"first_name": interface{}("test_first_name_2"),
+		"last_name":  interface{}("test_last_name_2"),
 	}, nil)
 
 	// Count before

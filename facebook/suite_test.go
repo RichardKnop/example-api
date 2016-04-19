@@ -105,8 +105,8 @@ func (suite *FacebookTestSuite) SetupTest() {
 	// loginHandler also creates a new user and oauth tokens
 	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
 	suite.db.Unscoped().Delete(new(oauth.AccessToken))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(accounts.User))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.User))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(accounts.User))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.User))
 
 	// Reset mocks
 	suite.adapterMock.ExpectedCalls = suite.adapterMock.ExpectedCalls[:0]
