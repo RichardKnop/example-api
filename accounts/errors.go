@@ -9,6 +9,5 @@ var (
 		ErrSuperuserOnlyManually: http.StatusBadRequest,
 		ErrRoleNotFound:          http.StatusBadRequest,
 		ErrEmailTaken:            http.StatusBadRequest,
-		ErrEmailCannotBeChanged:  http.StatusBadRequest,
 	}
 )

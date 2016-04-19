@@ -18,8 +18,6 @@ var (
 	ErrUserNotFound = errors.New("User not found")
 	// ErrEmailTaken ...
 	ErrEmailTaken = errors.New("Email already taken")
-	// ErrEmailCannotBeChanged ...
-	ErrEmailCannotBeChanged = errors.New("Email cannot be changed")
 )
 
 // GetName returns user's full name
@@ -137,11 +135,6 @@ func (s *Service) CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserR
 
 // UpdateUser updates an existing user
 func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
-	// Check if email is already taken if
-	if user.OauthUser.Username != userRequest.Email {
-		return ErrEmailCannotBeChanged
-	}
-
 	// Update basic metadata
 	if err := s.db.Model(user).UpdateColumns(User{
 		FirstName: util.StringOrNull(userRequest.FirstName),
