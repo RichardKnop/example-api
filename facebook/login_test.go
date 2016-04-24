@@ -191,7 +191,6 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 
 	// Check the response body
 	expected, err := json.Marshal(&oauth.AccessTokenResponse{
-		ID:           accessToken.ID,
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
@@ -274,7 +273,6 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 
 	// Check the response body
 	expected, err := json.Marshal(&oauth.AccessTokenResponse{
-		ID:           accessToken.ID,
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
@@ -356,7 +354,6 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 
 	// Check the response body
 	expected, err := json.Marshal(&oauth.AccessTokenResponse{
-		ID:           accessToken.ID,
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
