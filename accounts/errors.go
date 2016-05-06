@@ -8,8 +8,10 @@ import (
 
 var (
 	errStatusCodeMap = map[error]int{
-		ErrSuperuserOnlyManually: http.StatusBadRequest,
-		ErrRoleNotFound:          http.StatusBadRequest,
-		oauth.ErrUsernameTaken:   http.StatusBadRequest,
+		ErrSuperuserOnlyManually:     http.StatusBadRequest,
+		ErrRoleNotFound:              http.StatusBadRequest,
+		oauth.ErrUsernameTaken:       http.StatusBadRequest,
+		oauth.ErrUserPasswordNotSet:  http.StatusBadRequest,
+		oauth.ErrInvalidUserPassword: http.StatusBadRequest,
 	}
 )

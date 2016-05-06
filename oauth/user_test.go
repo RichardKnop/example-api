@@ -86,11 +86,11 @@ func (suite *OauthTestSuite) TestSetPassword() {
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 
 	// Try to set an empty password
-	err = suite.service.SetPassword(user, "")
+	err = suite.service.SetPassword(user, "short")
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrCannotSetEmptyUserPassword, err)
+		assert.Equal(suite.T(), ErrPasswordTooShort, err)
 	}
 
 	// Try changing the password

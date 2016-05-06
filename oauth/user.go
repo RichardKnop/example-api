@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	pass "github.com/RichardKnop/recall/password"
@@ -10,12 +11,18 @@ import (
 )
 
 var (
+	// MinPasswordLength defines minimum password length
+	MinPasswordLength = 6
+
+	// ErrPasswordTooShort ...
+	ErrPasswordTooShort = fmt.Errorf(
+		"Password must be at least %d characters long",
+		MinPasswordLength,
+	)
 	// ErrUserNotFound ...
 	ErrUserNotFound = errors.New("User not found")
 	// ErrInvalidUserPassword ...
 	ErrInvalidUserPassword = errors.New("Invalid user password")
-	// ErrCannotSetEmptyUserPassword ...
-	ErrCannotSetEmptyUserPassword = errors.New("Cannot set empty user password")
 	// ErrUserPasswordNotSet ...
 	ErrUserPasswordNotSet = errors.New("User password not set")
 	// ErrUsernameTaken ...
@@ -93,6 +100,9 @@ func createUserCommon(db *gorm.DB, username, password string) (*User, error) {
 
 	// If the password is being set already, create a bcrypt hash
 	if password != "" {
+		if len(password) < MinPasswordLength {
+			return nil, ErrPasswordTooShort
+		}
 		passwordHash, err := pass.HashPassword(password)
 		if err != nil {
 			return nil, err
@@ -108,9 +118,8 @@ func createUserCommon(db *gorm.DB, username, password string) (*User, error) {
 }
 
 func (s *Service) setPasswordCommon(db *gorm.DB, user *User, password string) error {
-	// Cannot set password to empty
-	if password == "" {
-		return ErrCannotSetEmptyUserPassword
+	if len(password) < MinPasswordLength {
+		return ErrPasswordTooShort
 	}
 
 	// Create a bcrypt hash

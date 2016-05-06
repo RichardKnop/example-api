@@ -4,6 +4,7 @@ import (
 	"log"
 	"testing"
 
+	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/config"
 	"github.com/RichardKnop/recall/database"
 	"github.com/RichardKnop/recall/email"
@@ -41,6 +42,8 @@ type AccountsTestSuite struct {
 	service          *Service
 	accounts         []*Account
 	users            []*User
+	superuserRole    *Role
+	userRole         *Role
 	router           *mux.Router
 }
 
@@ -69,6 +72,18 @@ func (suite *AccountsTestSuite) SetupSuite() {
 	suite.users = make([]*User, 0)
 	err = suite.db.Preload("Account").Preload("OauthUser").Preload("Role").
 		Order("id").Find(&suite.users).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Fetch test roles
+	suite.superuserRole = new(Role)
+	err = suite.db.Where("id = ?", roles.Superuser).First(&suite.superuserRole).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	suite.userRole = new(Role)
+	err = suite.db.Where("id = ?", roles.User).First(&suite.userRole).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -126,6 +141,12 @@ func (suite *AccountsTestSuite) TearDownTest() {
 // a normal test function and pass our suite to suite.Run
 func TestAccountsTestSuite(t *testing.T) {
 	suite.Run(t, new(AccountsTestSuite))
+}
+
+// Checks that the mock object expectations were met
+func (suite *AccountsTestSuite) assertMockExpectations() {
+	suite.emailServiceMock.AssertExpectations(suite.T())
+	suite.emailFactoryMock.AssertExpectations(suite.T())
 }
 
 // Mock sending confirmation email
