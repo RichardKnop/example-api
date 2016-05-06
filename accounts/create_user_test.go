@@ -64,8 +64,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	time.Sleep(5 * time.Millisecond)
 
 	// Check that the mock object expectations were met
-	suite.emailServiceMock.AssertExpectations(suite.T())
-	suite.emailFactoryMock.AssertExpectations(suite.T())
+	suite.assertMockExpectations()
 
 	// Check the status code
 	if !assert.Equal(suite.T(), 201, w.Code) {
