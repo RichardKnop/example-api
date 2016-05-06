@@ -171,18 +171,18 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
-					Href: fmt.Sprintf("/v1/accounts/users/%d", testUser.ID),
+					Href: fmt.Sprintf("/v1/accounts/users/%d", user.ID),
 				},
 			},
 		},
-		ID:        testUser.ID,
+		ID:        user.ID,
 		Email:     "harold@finch",
 		FirstName: "Harold",
 		LastName:  "Finch",
 		Role:      roles.User,
 		Confirmed: false,
-		CreatedAt: testUser.CreatedAt.UTC().Format(time.RFC3339),
-		UpdatedAt: testUser.UpdatedAt.UTC().Format(time.RFC3339),
+		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
+		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
