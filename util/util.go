@@ -10,6 +10,13 @@ import (
 	"github.com/lib/pq"
 )
 
+// ParseTimestamp parses a string representation of a timestamp in RFC3339
+// format and returns a time.Time instance
+func ParseTimestamp(timestamp string) (time.Time, error) {
+	// RFC3339 = "2006-01-02T15:04:05Z07:00"
+	return time.Parse(time.RFC3339, timestamp)
+}
+
 // IntOrNull returns properly configured sql.NullInt64
 func IntOrNull(n int64) sql.NullInt64 {
 	return sql.NullInt64{Int64: n, Valid: true}
