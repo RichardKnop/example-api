@@ -46,8 +46,10 @@ type SendgridConfig struct {
 
 // WebConfig stores web related config like scheme and host
 type WebConfig struct {
-	Scheme string
-	Host   string
+	Scheme    string
+	Host      string
+	AppScheme string
+	AppHost   string
 }
 
 // Config stores all configuration options

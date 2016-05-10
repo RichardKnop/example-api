@@ -10,7 +10,7 @@ import (
 var confirmationEmailTemplate = `
 Hello %s,
 
-Thank you foir joining %s.
+Thank you for joining %s.
 
 Please confirm your email: %s.
 
@@ -49,6 +49,13 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) *email.E
 		name = "friend"
 	}
 
+	// App link
+	appLink := fmt.Sprintf(
+		"%s://%s",
+		f.cnf.Web.AppScheme,
+		f.cnf.Web.AppHost,
+	)
+
 	// Confirmation link where the user can confirm his/her email
 	link := fmt.Sprintf(
 		"%s://%s/web/confirm-email/%s",
@@ -58,15 +65,15 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) *email.E
 	)
 
 	// The email subject
-	subject := fmt.Sprintf("You have joined %s", f.cnf.Web.Host)
+	subject := fmt.Sprintf("Thank you for joining %s", f.cnf.Web.AppHost)
 
 	// Replace placeholders in the email template
 	emailText := fmt.Sprintf(
 		confirmationEmailTemplate,
 		name,
-		f.cnf.Web.Host,
+		appLink,
 		link,
-		f.cnf.Web.Host,
+		appLink,
 	)
 
 	return &email.Email{
@@ -75,7 +82,7 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) *email.E
 			Email: confirmation.User.OauthUser.Username,
 			Name:  confirmation.User.GetName(),
 		}},
-		From: fmt.Sprintf("noreply@%s", f.cnf.Web.Host),
+		From: fmt.Sprintf("noreply@%s", f.cnf.Web.AppHost),
 		Text: emailText,
 	}
 }
@@ -88,6 +95,13 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) *emai
 		name = "friend"
 	}
 
+	// App link
+	appLink := fmt.Sprintf(
+		"%s://%s",
+		f.cnf.Web.AppScheme,
+		f.cnf.Web.AppHost,
+	)
+
 	// Password reset link where the user can set a new password
 	link := fmt.Sprintf(
 		"%s://%s/web/password-reset/%s",
@@ -97,14 +111,14 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) *emai
 	)
 
 	// The email subject
-	subject := fmt.Sprintf("Reset password for %s", f.cnf.Web.Host)
+	subject := fmt.Sprintf("Reset password for %s", f.cnf.Web.AppHost)
 
 	// Replace placeholders in the email template
 	emailText := fmt.Sprintf(
 		passwordResetEmailTemplate,
 		name,
 		link,
-		f.cnf.Web.Host,
+		appLink,
 	)
 
 	return &email.Email{
@@ -113,7 +127,7 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) *emai
 			Email: passwordReset.User.OauthUser.Username,
 			Name:  passwordReset.User.GetName(),
 		}},
-		From: fmt.Sprintf("noreply@%s", f.cnf.Web.Host),
+		From: fmt.Sprintf("noreply@%s", f.cnf.Web.AppHost),
 		Text: emailText,
 	}
 }

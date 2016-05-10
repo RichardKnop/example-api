@@ -48,8 +48,10 @@ var cnf = &Config{
 		APIKey: "sendgrid_api_key",
 	},
 	Web: WebConfig{
-		Scheme: "http",
-		Host:   "localhost:8080",
+		Scheme:    "http",
+		Host:      "localhost:8080",
+		AppScheme: "http",
+		AppHost:   "localhost:8000",
 	},
 	IsDevelopment: true,
 }
