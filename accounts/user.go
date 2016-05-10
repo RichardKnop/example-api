@@ -209,45 +209,19 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 		return user, nil
 	}
 
-	// Fetch the user role from the database
-	role, err := s.findRoleByID(roles.User)
-	if err != nil {
-		return nil, err
-	}
+	// Facebook registration only creates regular users
+	userRequest.Role = roles.User
 
 	// Begin a transaction
 	tx := s.db.Begin()
 
-	// Create a new oauth user
-	oauthUser, err := s.GetOauthService().CreateUserTx(
+	user, err = s.createUserCommon(
 		tx,
-		userRequest.Email,
-		"", // no password
-	)
-	if err != nil {
-		tx.Rollback() // rollback the transaction
-		return nil, err
-	}
-
-	// Create a new user
-	user = NewUser(
 		account,
-		oauthUser,
-		role,
-		facebookID,
-		userRequest.FirstName,
-		userRequest.LastName,
-		true, // confirmed
+		userRequest,
+		facebookID, // facebook ID
+		true,       // confirmed
 	)
-
-	// Save the user to the database
-	if err := tx.Create(user).Error; err != nil {
-		tx.Rollback() // rollback the transaction
-		return nil, err
-	}
-
-	// Update the meta user ID field
-	err = tx.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: user.ID}).Error
 	if err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
