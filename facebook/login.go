@@ -53,9 +53,16 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 		lastName   = fmt.Sprintf("%s", resp["last_name"])
 		user       *accounts.User
 	)
-	log.Print("Fetched Facebook user's data")
-	log.Printf("Facebook ID: %s", facebookID)
-	log.Printf("Email: %s", email)
+
+	logger.Info("Fetched Facebook user's data")
+	logger.Infof("%v", resp)
+
+	// There is an edge case where Facebook does not return a valid email
+	// User could have registered with a phone number or have an unconfirmed
+	// email address. In such rare case, default to {facebook_id}@facebook.com
+	if resp["email"] == nil || email == "%!s(<nil>)" {
+		email = fmt.Sprintf("%s@facebook.com", facebookID)
+	}
 
 	// Get or create a new user based on facebook ID and other details
 	user, err = s.GetAccountsService().GetOrCreateFacebookUser(
