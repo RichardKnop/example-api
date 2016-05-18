@@ -54,8 +54,8 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 		user       *accounts.User
 	)
 
-	logger.Info("Fetched Facebook user's data")
-	logger.Infof("%v", resp)
+	log.Print("Fetched Facebook user's data")
+	log.Printf("%v", resp)
 
 	// There is an edge case where Facebook does not return a valid email
 	// User could have registered with a phone number or have an unconfirmed
