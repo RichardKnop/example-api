@@ -222,6 +222,12 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 			return nil, err
 		}
 
+		// Commit the transaction
+		if err := tx.Commit().Error; err != nil {
+			tx.Rollback() // rollback the transaction
+			return nil, err
+		}
+
 		return user, nil
 	}
 
