@@ -112,11 +112,37 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 		return nil, err
 	}
 
+	// Create a new invitation
+	confirmation := NewConfirmation(user)
+	if err := tx.Create(confirmation).Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
+
+	// Send confirmation email
+	go func() {
+		confirmationEmail := s.emailFactory.NewConfirmationEmail(confirmation)
+
+		// Try to send the confirmation email
+		if err := s.emailService.Send(confirmationEmail); err != nil {
+			logger.Errorf("Send email error: %s", err)
+			return
+		}
+
+		// If the email was sent successfully, update the email_sent flag
+		now := time.Now()
+		s.db.Model(confirmation).UpdateColumns(Confirmation{
+			EmailSent:   true,
+			EmailSentAt: util.TimeOrNull(&now),
+			Model:       gorm.Model{UpdatedAt: now},
+		})
+	}()
 
 	return user, nil
 }

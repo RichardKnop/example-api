@@ -143,7 +143,7 @@ Example response:
 Example request:
 
 ```
-curl --compressed -v localhost:8080/v1/accounts/passwordreset \
+curl --compressed -v localhost:8080/v1/accounts/password-reset \
 	-H "Content-Type: application/json" \
 	-u test_client_1:test_secret \
 	-d '{

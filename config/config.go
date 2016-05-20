@@ -52,6 +52,11 @@ type WebConfig struct {
 	AppHost   string
 }
 
+// RecallConfig stores app specific config
+type RecallConfig struct {
+	PasswordResetLifetime int
+}
+
 // Config stores all configuration options
 type Config struct {
 	Database      DatabaseConfig
@@ -60,5 +65,6 @@ type Config struct {
 	Facebook      FacebookConfig
 	Sendgrid      SendgridConfig
 	Web           WebConfig
+	Recall        RecallConfig
 	IsDevelopment bool
 }

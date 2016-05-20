@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"errors"
+	"time"
 
 	"github.com/RichardKnop/recall/util"
 )
@@ -15,8 +16,12 @@ var (
 func (s *Service) FindPasswordResetByReference(reference string) (*PasswordReset, error) {
 	// Fetch the password reset from the database
 	passwordReset := new(PasswordReset)
-	notFound := s.db.Where("reference = ?", reference).
-		Preload("User.OauthUser").First(passwordReset).RecordNotFound()
+	validFor := time.Duration(s.cnf.Recall.PasswordResetLifetime) * time.Second
+	notFound := s.db.Where(
+		"reference = ? AND created_at > ?",
+		reference,
+		time.Now().Add(-validFor),
+	).Preload("User.OauthUser").First(passwordReset).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -70,17 +75,27 @@ func (s *Service) findUserPasswordReset(user *User) (*PasswordReset, error) {
 }
 
 func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
-	var passwordReset *PasswordReset
+	// Begin a transaction
+	tx := s.db.Begin()
 
-	// Does the user have an open password reset?
-	passwordReset, err := s.findUserPasswordReset(user)
-	if err != nil {
-		// Create a new password reset
-		passwordReset = NewPasswordReset(user)
+	// Soft delete old password resets
+	if err := tx.Where("user_id = ?", user.ID).Delete(new(PasswordReset)).Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
 	}
 
+	// Create a new password reset
+	passwordReset := NewPasswordReset(user)
+
 	// Save the password reset to the database
-	if err := s.db.Create(passwordReset).Error; err != nil {
+	if err := tx.Create(passwordReset).Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
 

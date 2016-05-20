@@ -60,12 +60,6 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
-	// Sleep for the email goroutine to finish
-	time.Sleep(5 * time.Millisecond)
-
-	// Check that the mock object expectations were met
-	suite.assertMockExpectations()
-
 	// Check the status code
 	if !assert.Equal(suite.T(), 201, w.Code) {
 		log.Print(w.Body.String())
@@ -90,18 +84,20 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	// Fetch the created confirmation
 	confirmation := new(Confirmation)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
-		First(confirmation).RecordNotFound())
+		Last(confirmation).RecordNotFound())
 
 	// And correct data was saved
 	assert.Equal(suite.T(), user.ID, user.OauthUser.MetaUserID)
-	assert.Equal(suite.T(), "test@newuser", confirmation.User.OauthUser.Username)
-	assert.True(suite.T(), confirmation.EmailSent)
-	assert.True(suite.T(), confirmation.EmailSentAt.Valid)
 	assert.Equal(suite.T(), "test@newuser", user.OauthUser.Username)
 	assert.Equal(suite.T(), "", user.FirstName.String)
 	assert.Equal(suite.T(), "", user.LastName.String)
 	assert.Equal(suite.T(), roles.User, user.Role.ID)
 	assert.False(suite.T(), user.Confirmed)
+	assert.Equal(suite.T(), "test@newuser", confirmation.User.OauthUser.Username)
+
+	// Email should not have been sent yet
+	assert.False(suite.T(), confirmation.EmailSent)
+	assert.False(suite.T(), confirmation.EmailSentAt.Valid)
 
 	// Check the Location header
 	assert.Equal(
@@ -134,4 +130,19 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
 		)
 	}
+
+	// Sleep for the email goroutine to finish
+	time.Sleep(10 * time.Millisecond)
+
+	// Check that the mock object expectations were met
+	suite.assertMockExpectations()
+
+	// Refresh the confirmation
+	confirmation = new(Confirmation)
+	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
+		Last(confirmation).RecordNotFound())
+
+	// Email should have been sent
+	assert.True(suite.T(), confirmation.EmailSent)
+	assert.True(suite.T(), confirmation.EmailSentAt.Valid)
 }

@@ -53,6 +53,9 @@ var cnf = &Config{
 		AppScheme: "http",
 		AppHost:   "localhost:8000",
 	},
+	Recall: RecallConfig{
+		PasswordResetLifetime: 604800, // 7 days
+	},
 	IsDevelopment: true,
 }
 

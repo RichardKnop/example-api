@@ -1,22 +1,51 @@
 package accounts
 
 import (
+	"time"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	var (
 		passwordReset *PasswordReset
+		validFor      = time.Duration(suite.service.cnf.Recall.PasswordResetLifetime) * time.Second
 		err           error
 	)
 
 	// Insert a test password reset
 	testPasswordReset := NewPasswordReset(suite.users[1])
 	err = suite.db.Create(testPasswordReset).Error
-	assert.NoError(suite.T(), err, "Inserting test data failed")
+	assert.NoError(suite.T(), err, "Inserting test password reset failed")
+	err = suite.db.Model(testPasswordReset).UpdateColumn(
+		"created_at",
+		time.Now().Add(-validFor).Add(time.Second),
+	).Error
+	assert.NoError(suite.T(), err, "Updating test password reset failed")
+
+	// Insert a test expired password reset
+	testExpiredPasswordReset := NewPasswordReset(suite.users[1])
+	err = suite.db.Create(testExpiredPasswordReset).Error
+	assert.NoError(suite.T(), err, "Inserting test expired password reset failed")
+	err = suite.db.Model(testExpiredPasswordReset).UpdateColumn(
+		"created_at",
+		time.Now().Add(-validFor).Add(-time.Second),
+	).Error
+	assert.NoError(suite.T(), err, "Updating test expired password reset failed")
 
 	// Let's try to find a password reset by a bogus reference
 	passwordReset, err = suite.service.FindPasswordResetByReference("bogus")
+
+	// Password reset should be nil
+	assert.Nil(suite.T(), passwordReset)
+
+	// Correct error should be returned
+	if assert.NotNil(suite.T(), err) {
+		assert.Equal(suite.T(), ErrPasswordResetNotFound, err)
+	}
+
+	// Now let's pass a valid reference of an expired password reset
+	passwordReset, err = suite.service.FindPasswordResetByReference(testExpiredPasswordReset.Reference)
 
 	// Password reset should be nil
 	assert.Nil(suite.T(), passwordReset)

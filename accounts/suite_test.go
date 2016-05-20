@@ -15,7 +15,10 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var testDbPath = "/tmp/accounts_testdb.sqlite"
+var (
+	testDbUser = "recall"
+	testDbName = "recall_accounts_test"
+)
 
 var testFixtures = []string{
 	"../oauth/fixtures/test_clients.yml",
@@ -55,7 +58,12 @@ func (suite *AccountsTestSuite) SetupSuite() {
 	suite.cnf = config.NewConfig(false, false)
 
 	// Create the test database
-	db, err := database.CreateTestDatabase(testDbPath, testMigrations, testFixtures)
+	db, err := database.CreateTestDatabasePostgres(
+		testDbUser,
+		testDbName,
+		testMigrations,
+		testFixtures,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -116,7 +124,11 @@ func (suite *AccountsTestSuite) TearDownSuite() {
 func (suite *AccountsTestSuite) SetupTest() {
 	suite.db.Unscoped().Delete(new(Confirmation))
 	suite.db.Unscoped().Delete(new(PasswordReset))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(oauth.AccessToken))
+	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
+
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(User))
+	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(Account))
 
 	// Service.CreateUser also creates a new oauth.User instance
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.User))

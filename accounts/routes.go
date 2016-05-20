@@ -45,7 +45,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 		routes.Route{
 			Name:        "create_password_reset",
 			Method:      "POST",
-			Pattern:     "/passwordreset",
+			Pattern:     "/password-reset",
 			HandlerFunc: service.createPasswordResetHandler,
 			Middlewares: []negroni.Handler{
 				NewAccountAuthMiddleware(service),
