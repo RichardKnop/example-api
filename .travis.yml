@@ -4,9 +4,15 @@ language: go
 go:
   - 1.6
 
+services:
+  - postgresql
+
 branches:
   only:
     - master
+
+before_script:
+  - createuser --createdb recall
 
 script:
   - make test
