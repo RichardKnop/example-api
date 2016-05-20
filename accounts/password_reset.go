@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RichardKnop/recall/util"
+	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -98,6 +99,25 @@ func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
 		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
+
+	// Send password reset email
+	go func() {
+		passwordResetEmail := s.emailFactory.NewPasswordResetEmail(passwordReset)
+
+		// Try to send the password reset email
+		if err := s.emailService.Send(passwordResetEmail); err != nil {
+			logger.Errorf("Send email error: %s", err)
+			return
+		}
+
+		// If the email was sent successfully, update the email_sent flag
+		now := time.Now()
+		s.db.Model(passwordReset).UpdateColumns(PasswordReset{
+			EmailSent:   true,
+			EmailSentAt: util.TimeOrNull(&now),
+			Model:       gorm.Model{UpdatedAt: now},
+		})
+	}()
 
 	return passwordReset, nil
 }

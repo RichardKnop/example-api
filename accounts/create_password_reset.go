@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/RichardKnop/recall/response"
-	"github.com/RichardKnop/recall/util"
-	"github.com/jinzhu/gorm"
 )
 
 // Handles requests to reset a password (POST /v1/accounts/passwordreset)
@@ -49,31 +46,12 @@ func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Create a new password reset
-	passwordReset, err := s.createPasswordReset(user)
+	_, err = s.createPasswordReset(user)
 	if err != nil {
 		logger.Errorf("Create password reset error: %s", err)
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// Send password reset email
-	go func() {
-		passwordResetEmail := s.emailFactory.NewPasswordResetEmail(passwordReset)
-
-		// Try to send the password reset email
-		if err := s.emailService.Send(passwordResetEmail); err != nil {
-			logger.Errorf("Send email error: %s", err)
-			return
-		}
-
-		// If the email was sent successfully, update the email_sent flag
-		now := time.Now()
-		s.db.Model(passwordReset).UpdateColumns(PasswordReset{
-			EmailSent:   true,
-			EmailSentAt: util.TimeOrNull(&now),
-			Model:       gorm.Model{UpdatedAt: now},
-		})
-	}()
 
 	// 204 no content response
 	response.NoContent(w)
