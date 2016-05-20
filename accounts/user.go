@@ -112,7 +112,7 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 		return nil, err
 	}
 
-	// Create a new invitation
+	// Create a new confirmation
 	confirmation := NewConfirmation(user)
 	if err := tx.Create(confirmation).Error; err != nil {
 		tx.Rollback() // rollback the transaction
@@ -163,21 +163,24 @@ func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 	tx := s.db.Begin()
 
 	// Optionally also update password
-	if userRequest.Password != "" && userRequest.NewPassword != "" {
-		// Verify the old password
-		oauthUser, err := s.oauthService.AuthUser(
-			user.OauthUser.Username,
-			userRequest.Password,
-		)
-		if err != nil {
-			tx.Rollback() // rollback the transaction
-			return err
+	if userRequest.NewPassword != "" {
+		// Verify the old password, if the user doesn't have a password yet
+		// (user logged in with Facebook), skip this check
+		if user.OauthUser.Password.Valid {
+			_, err := s.oauthService.AuthUser(
+				user.OauthUser.Username,
+				userRequest.Password,
+			)
+			if err != nil {
+				tx.Rollback() // rollback the transaction
+				return err
+			}
 		}
 
 		// Set the new password
 		if err := s.oauthService.SetPasswordTx(
 			tx,
-			oauthUser,
+			user.OauthUser,
 			userRequest.NewPassword,
 		); err != nil {
 			tx.Rollback() // rollback the transaction
@@ -207,22 +210,33 @@ func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 // GetOrCreateFacebookUser either returns an existing user
 // or updates an existing email user with facebook ID or creates a new user
 func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
-	// Does a user with this facebook ID already exist?
-	user, err := s.FindUserByFacebookID(facebookID)
+	var (
+		user       *User
+		err        error
+		userExists bool
+	)
 
-	// User with this facebook ID alraedy exists, return
+	// Does a user with this facebook ID already exist?
+	user, err = s.FindUserByFacebookID(facebookID)
+	// User with this facebook ID alraedy exists
 	if err == nil {
-		return user, nil
+		userExists = true
 	}
 
-	// Does a user with this email already exist?
-	user, err = s.FindUserByEmail(userRequest.Email)
+	if userExists == false {
+		// Does a user with this email already exist?
+		user, err = s.FindUserByEmail(userRequest.Email)
+		// User with this email already exists
+		if err == nil {
+			userExists = true
+		}
+	}
 
 	// Begin a transaction
 	tx := s.db.Begin()
 
-	// User with this email already exists, update the record and return
-	if err == nil {
+	// User already exists, update the record and return
+	if userExists {
 		if userRequest.Email != user.OauthUser.Username {
 			// Update the email if it changed (should not happen)
 			err = tx.Model(user.OauthUser).UpdateColumns(oauth.User{
@@ -235,7 +249,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 			}
 		}
 
-		// Set the facebook ID and first / last name
+		// Set the facebook ID, first name, last name
 		err = tx.Model(user).UpdateColumns(User{
 			FacebookID: util.StringOrNull(facebookID),
 			FirstName:  util.StringOrNull(userRequest.FirstName),

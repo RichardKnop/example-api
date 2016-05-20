@@ -9,7 +9,7 @@ import (
 
 var (
 	// ErrInvalidUsernameOrPassword ...
-	ErrInvalidUsernameOrPassword = errors.New("Invalid sername or password")
+	ErrInvalidUsernameOrPassword = errors.New("Invalid username or password")
 )
 
 func (s *Service) passwordGrant(w http.ResponseWriter, r *http.Request, client *Client) {
