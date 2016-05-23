@@ -73,8 +73,8 @@
 		},
 		{
 			"ImportPath": "github.com/jinzhu/gorm",
-			"Comment": "v1.0-12-g57c7212",
-			"Rev": "57c72125b3087e1ed02c16f23a1f381cde3aaf2c"
+			"Comment": "v1.0-18-g2752245",
+			"Rev": "27522453dea253cf90dcb5345286a5fcf0fbed7c"
 		},
 		{
 			"ImportPath": "github.com/jinzhu/inflection",
@@ -119,8 +119,8 @@
 		},
 		{
 			"ImportPath": "github.com/sendgrid/smtpapi-go",
-			"Comment": "v0.4.0-1-gb616837",
-			"Rev": "b616837442153d876b2d0b84d09e5e48a2aa91ee"
+			"Comment": "v0.4.0-7-gb88787c",
+			"Rev": "b88787cc8801ef961d7daef0bcb79ae3f50bfd52"
 		},
 		{
 			"ImportPath": "github.com/stretchr/objx",

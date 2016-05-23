@@ -21,6 +21,7 @@ type SMTPAPIHeader struct {
 	SendAt     int64               `json:"send_at,omitempty"`
 	SendEachAt []int64             `json:"send_each_at,omitempty"`
 	IpPool     string              `json:"ip_pool,omitempty"`
+	BatchID    string              `json:"batch_id,omitempty"`
 }
 
 // Filter represents an App/Filter and its settings
@@ -184,4 +185,9 @@ func escapeUnicode(input string) string {
 func (h *SMTPAPIHeader) JSONString() (string, error) {
 	headers, e := json.Marshal(h)
 	return escapeUnicode(string(headers)), e
+}
+
+// Load allows you to load a pre-formed x-smtpapi header
+func (h *SMTPAPIHeader) Load(b []byte) error {
+	return json.Unmarshal(b, h)
 }
