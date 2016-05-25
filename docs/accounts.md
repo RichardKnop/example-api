@@ -24,19 +24,19 @@ Example response:
 
 ```json
 {
-	"_links": {
-		"self": {
-			"href": "/v1/accounts/users/1"
-		}
-	},
-	"id": 1,
-	"email": "test@user",
-	"first_name": "",
-	"last_name": "",
-	"role": "user",
-	"confirmed": false,
-	"created_at": "2015-12-17T06:17:54Z",
-	"updated_at": "2015-12-17T06:17:54Z"
+    "_links": {
+        "self": {
+            "href": "/v1/accounts/users/1"
+        }
+    },
+    "id": 1,
+    "email": "test@user",
+    "first_name": "",
+    "last_name": "",
+    "role": "user",
+    "confirmed": false,
+    "created_at": "2015-12-17T06:17:54Z",
+    "updated_at": "2015-12-17T06:17:54Z"
 }
 ```
 
@@ -54,19 +54,19 @@ Example response:
 
 ```json
 {
-	"_links": {
-		"self": {
-			"href": "/v1/accounts/users/1"
-		}
-	},
-	"id": 1,
-	"email": "test@user",
-	"first_name": "",
-	"last_name": "",
-	"role": "user",
-	"confirmed": true,
-	"created_at": "2015-12-17T06:17:54Z",
-	"updated_at": "2015-12-17T06:17:54Z"
+    "_links": {
+        "self": {
+            "href": "/v1/accounts/users/1"
+        }
+    },
+    "id": 1,
+    "email": "test@user",
+    "first_name": "",
+    "last_name": "",
+    "role": "user",
+    "confirmed": true,
+    "created_at": "2015-12-17T06:17:54Z",
+    "updated_at": "2015-12-17T06:17:54Z"
 }
 ```
 
@@ -88,19 +88,19 @@ Example response:
 
 ```json
 {
-	"_links": {
-		"self": {
-			"href": "/v1/accounts/users/1"
-		}
-	},
-	"id": 1,
-	"email": "test@user",
-	"first_name": "test_first_name_updated",
-	"last_name": "test_last_name_updated",
-	"role": "user",
-	"confirmed": true,
-	"created_at": "2015-12-17T06:17:54Z",
-	"updated_at": "2015-12-18T07:09:15Z"
+    "_links": {
+        "self": {
+            "href": "/v1/accounts/users/1"
+        }
+    },
+    "id": 1,
+    "email": "test@user",
+    "first_name": "test_first_name_updated",
+    "last_name": "test_last_name_updated",
+    "role": "user",
+    "confirmed": true,
+    "created_at": "2015-12-17T06:17:54Z",
+    "updated_at": "2015-12-18T07:09:15Z"
 }
 ```
 
@@ -122,19 +122,19 @@ Example response:
 
 ```json
 {
-	"_links": {
-		"self": {
-			"href": "/v1/accounts/users/1"
-		}
-	},
-	"id": 1,
-	"email": "test@user",
-	"first_name": "test_first_name",
-	"last_name": "test_last_name",
-	"role": "user",
-	"confirmed": true,
-	"created_at": "2015-12-17T06:17:54Z",
-	"updated_at": "2015-12-18T07:09:15Z"
+    "_links": {
+        "self": {
+            "href": "/v1/accounts/users/1"
+        }
+    },
+    "id": 1,
+    "email": "test@user",
+    "first_name": "test_first_name",
+    "last_name": "test_last_name",
+    "role": "user",
+    "confirmed": true,
+    "created_at": "2015-12-17T06:17:54Z",
+    "updated_at": "2015-12-18T07:09:15Z"
 }
 ```
 

@@ -53,44 +53,44 @@ Load a development configuration into `etcd`:
 
 ```
 curl -L http://localhost:2379/v2/keys/config/recall.json -XPUT -d value='{
-	"Database": {
-		"Type": "postgres",
-		"Host": "localhost",
-		"Port": 5432,
-		"User": "recall",
-		"Password": "",
-		"DatabaseName": "recall",
-		"MaxIdleConns": 5,
-		"MaxOpenConns": 5
-	},
-	"Oauth": {
-		"AccessTokenLifetime": 3600,
-		"RefreshTokenLifetime": 1209600,
-		"AuthCodeLifetime": 3600
-	},
-	"Session": {
-		"Secret": "test_secret",
-		"Path": "/",
-		"MaxAge": 604800,
-		"HTTPOnly": true
-	},
-	"Facebook": {
-		"AppID": "facebook_app_id",
-		"AppSecret": "facebook_app_secret"
-	},
-	"Sendgrid": {
-		"APIKey": "sendgrid_api_key"
-	},
-	"Web": {
-		"Scheme": "http",
-		"Host": "localhost:8080",
-		"AppScheme": "http",
-		"AppHost": "localhost:8000"
-	},
-	"Recall": {
-		"PasswordResetLifetime": 604800
-	},
-	"IsDevelopment": true
+    "Database": {
+        "Type": "postgres",
+        "Host": "localhost",
+        "Port": 5432,
+        "User": "recall",
+        "Password": "",
+        "DatabaseName": "recall",
+        "MaxIdleConns": 5,
+        "MaxOpenConns": 5
+    },
+    "Oauth": {
+        "AccessTokenLifetime": 3600,
+        "RefreshTokenLifetime": 1209600,
+        "AuthCodeLifetime": 3600
+    },
+    "Session": {
+        "Secret": "test_secret",
+        "Path": "/",
+        "MaxAge": 604800,
+        "HTTPOnly": true
+    },
+    "Facebook": {
+        "AppID": "facebook_app_id",
+        "AppSecret": "facebook_app_secret"
+    },
+    "Sendgrid": {
+        "APIKey": "sendgrid_api_key"
+    },
+    "Web": {
+        "Scheme": "http",
+        "Host": "localhost:8080",
+        "AppScheme": "http",
+        "AppHost": "localhost:8000"
+    },
+    "Recall": {
+        "PasswordResetLifetime": 604800
+    },
+    "IsDevelopment": true
 }'
 ```
 
