@@ -3,12 +3,28 @@ package util
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/lib/pq"
 )
+
+var (
+	emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+)
+
+// ValidateEmail validates an email address based on a regular expression
+func ValidateEmail(email string) bool {
+	return emailRegex.MatchString(email)
+}
+
+// FormatTime formats a time object to RFC3339
+func FormatTime(timestamp time.Time) string {
+	return timestamp.UTC().Format(time.RFC3339)
+}
 
 // ParseTimestamp parses a string representation of a timestamp in RFC3339
 // format and returns a time.Time instance
@@ -104,4 +120,14 @@ func ParseBearerToken(r *http.Request) ([]byte, error) {
 
 	bearerToken := strings.TrimPrefix(auth, "Bearer ")
 	return []byte(bearerToken), nil
+}
+
+// GetCurrentURL returns the current request URL
+func GetCurrentURL(r *http.Request) string {
+	url := r.URL.Path
+	qs := r.URL.Query().Encode()
+	if qs != "" {
+		url = fmt.Sprintf("%s?%s", url, qs)
+	}
+	return url
 }

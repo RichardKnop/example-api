@@ -90,6 +90,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	testPasswordReset := NewPasswordReset(suite.users[1])
 	err := suite.db.Create(testPasswordReset).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test password reset")
+	testPasswordReset.User = suite.users[1]
 
 	// Prepare a request
 	payload, err := json.Marshal(&PasswordResetRequest{suite.users[1].OauthUser.Username})

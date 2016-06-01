@@ -123,6 +123,7 @@ func (suite *AccountsTestSuite) TearDownSuite() {
 // The SetupTest method will be run before every test in the suite.
 func (suite *AccountsTestSuite) SetupTest() {
 	suite.db.Unscoped().Delete(new(Confirmation))
+	suite.db.Unscoped().Delete(new(Invitation))
 	suite.db.Unscoped().Delete(new(PasswordReset))
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(oauth.AccessToken))
 	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
@@ -167,6 +168,16 @@ func (suite *AccountsTestSuite) mockConfirmationEmail() {
 	suite.emailFactoryMock.On(
 		"NewConfirmationEmail",
 		mock.AnythingOfType("*accounts.Confirmation"),
+	).Return(emailMock)
+	suite.emailServiceMock.On("Send", emailMock).Return(nil)
+}
+
+// Mock sending invitation email
+func (suite *AccountsTestSuite) mockInvitationEmail() {
+	emailMock := new(email.Email)
+	suite.emailFactoryMock.On(
+		"NewInvitationEmail",
+		mock.AnythingOfType("*accounts.Invitation"),
 	).Return(emailMock)
 	suite.emailServiceMock.On("Send", emailMock).Return(nil)
 }

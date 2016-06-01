@@ -167,7 +167,11 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	user, err = suite.service.GetOrCreateFacebookUser(
 		suite.accounts[0], // account
 		"facebook_id_2",   // facebook ID
-		new(UserRequest),  // not important in this case
+		&UserRequest{
+			Email:     "test@user",
+			FirstName: "John",
+			LastName:  "Reese",
+		},
 	)
 
 	// Count after
@@ -181,8 +185,8 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 		assert.Equal(suite.T(), "facebook_id_2", user.FacebookID.String)
-		assert.Equal(suite.T(), "test_first_name_2", user.FirstName.String)
-		assert.Equal(suite.T(), "test_last_name_2", user.LastName.String)
+		assert.Equal(suite.T(), "John", user.FirstName.String)
+		assert.Equal(suite.T(), "Reese", user.LastName.String)
 		assert.True(suite.T(), user.Confirmed)
 	}
 
@@ -191,8 +195,8 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// Let's try passing an existing email
 	user, err = suite.service.GetOrCreateFacebookUser(
-		suite.accounts[0],  // account
-		"user_facebook_id", // facebook ID
+		suite.accounts[0],   // account
+		"finch_facebook_id", // facebook ID
 		&UserRequest{
 			Email:     "test@user",
 			FirstName: "Harold",
@@ -210,7 +214,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
-		assert.Equal(suite.T(), "user_facebook_id", user.FacebookID.String)
+		assert.Equal(suite.T(), "finch_facebook_id", user.FacebookID.String)
 		assert.Equal(suite.T(), "Harold", user.FirstName.String)
 		assert.Equal(suite.T(), "Finch", user.LastName.String)
 		assert.True(suite.T(), user.Confirmed)
@@ -221,10 +225,10 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// We pass new facebook ID and new email
 	user, err = suite.service.GetOrCreateFacebookUser(
-		suite.accounts[0],     // account
-		"newuser_facebook_id", // facebook ID
+		suite.accounts[0],   // account
+		"reese_facebook_id", // facebook ID
 		&UserRequest{
-			Email:     "test@newuser",
+			Email:     "john@reese",
 			FirstName: "John",
 			LastName:  "Reese",
 		},
@@ -239,8 +243,9 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test@newuser", user.OauthUser.Username)
-		assert.Equal(suite.T(), "newuser_facebook_id", user.FacebookID.String)
+		assert.Equal(suite.T(), user.ID, user.OauthUser.MetaUserID)
+		assert.Equal(suite.T(), "john@reese", user.OauthUser.Username)
+		assert.Equal(suite.T(), "reese_facebook_id", user.FacebookID.String)
 		assert.Equal(suite.T(), "John", user.FirstName.String)
 		assert.Equal(suite.T(), "Reese", user.LastName.String)
 		assert.True(suite.T(), user.Confirmed)
@@ -280,9 +285,11 @@ func (suite *AccountsTestSuite) TestCreateSuperuser() {
 
 	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), user.ID, user.OauthUser.MetaUserID)
 		assert.Equal(suite.T(), "test@newsuperuser", user.OauthUser.Username)
 		assert.False(suite.T(), user.FacebookID.Valid)
 		assert.False(suite.T(), user.FirstName.Valid)
 		assert.False(suite.T(), user.LastName.Valid)
+		assert.True(suite.T(), user.Confirmed)
 	}
 }

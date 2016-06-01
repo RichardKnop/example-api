@@ -14,7 +14,7 @@ import (
 
 var (
 	// ErrUpdateUserPermission ...
-	ErrUpdateUserPermission = errors.New("Need permission to update users")
+	ErrUpdateUserPermission = errors.New("Need permission to update user")
 )
 
 // Handles requests to update a user (PUT /v1/accounts/users/{id:[0-9]+})
@@ -71,11 +71,7 @@ func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Update the user
 	if err := s.UpdateUser(user, userRequest); err != nil {
 		logger.Errorf("Update user error: %s", err)
-		code, ok := errStatusCodeMap[err]
-		if !ok {
-			code = http.StatusInternalServerError
-		}
-		response.Error(w, err.Error(), code)
+		response.Error(w, err.Error(), getErrStatusCode(err))
 		return
 	}
 
@@ -90,7 +86,7 @@ func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkUpdateUserPermissions(authenticatedUser, user *User) error {
-	// Superadmins can update any users
+	// Superusers can update any users
 	if authenticatedUser.Role.Name == roles.Superuser {
 		return nil
 	}

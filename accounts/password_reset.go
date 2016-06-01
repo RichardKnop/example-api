@@ -94,6 +94,9 @@ func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
 		return nil, err
 	}
 
+	// Assign related object
+	passwordReset.User = user
+
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback() // rollback the transaction

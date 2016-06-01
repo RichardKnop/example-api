@@ -408,6 +408,158 @@ func (_m *ServiceMock) CreateSuperuser(account *Account, email string, password 
 	return r0, r1
 }
 
+// FindInvitationByID ...
+func (_m *ServiceMock) FindInvitationByID(invitationID uint) (*Invitation, error) {
+	ret := _m.Called(invitationID)
+
+	var r0 *Invitation
+	if rf, ok := ret.Get(0).(func(uint) *Invitation); ok {
+		r0 = rf(invitationID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Invitation)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(invitationID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FindInvitationByReference ...
+func (_m *ServiceMock) FindInvitationByReference(reference string) (*Invitation, error) {
+	ret := _m.Called(reference)
+
+	var r0 *Invitation
+	if rf, ok := ret.Get(0).(func(string) *Invitation); ok {
+		r0 = rf(reference)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Invitation)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(reference)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// InviteUser ...
+func (_m *ServiceMock) InviteUser(invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error) {
+	ret := _m.Called(invitedByUser, invitationRequest)
+
+	var r0 *Invitation
+	if rf, ok := ret.Get(0).(func(*User, *InvitationRequest) *Invitation); ok {
+		r0 = rf(invitedByUser, invitationRequest)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Invitation)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*User, *InvitationRequest) error); ok {
+		r1 = rf(invitedByUser, invitationRequest)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// InviteUserTx ...
+func (_m *ServiceMock) InviteUserTx(tx *gorm.DB, invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error) {
+	ret := _m.Called(tx, invitedByUser, invitationRequest)
+
+	var r0 *Invitation
+	if rf, ok := ret.Get(0).(func(*gorm.DB, *User, *InvitationRequest) *Invitation); ok {
+		r0 = rf(tx, invitedByUser, invitationRequest)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Invitation)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*gorm.DB, *User, *InvitationRequest) error); ok {
+		r1 = rf(tx, invitedByUser, invitationRequest)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ConfirmInvitation ...
+func (_m *ServiceMock) ConfirmInvitation(invitation *Invitation, password string) error {
+	ret := _m.Called(invitation, password)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*Invitation, string) error); ok {
+		r0 = rf(invitation, password)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetAccountFromQueryString ...
+func (_m *ServiceMock) GetAccountFromQueryString(r *http.Request) (*Account, error) {
+	ret := _m.Called(r)
+
+	var r0 *Account
+	if rf, ok := ret.Get(0).(func(*http.Request) *Account); ok {
+		r0 = rf(r)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Account)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*http.Request) error); ok {
+		r1 = rf(r)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetUserFromQueryString ...
+func (_m *ServiceMock) GetUserFromQueryString(r *http.Request) (*User, error) {
+	ret := _m.Called(r)
+
+	var r0 *User
+	if rf, ok := ret.Get(0).(func(*http.Request) *User); ok {
+		r0 = rf(r)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*User)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*http.Request) error); ok {
+		r1 = rf(r)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 func (_m *ServiceMock) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
@@ -416,10 +568,22 @@ func (_m *ServiceMock) getMyUserHandler(w http.ResponseWriter, r *http.Request) 
 	_m.Called(w, r)
 }
 
+func (_m *ServiceMock) getUserHandler(w http.ResponseWriter, r *http.Request) {
+	_m.Called(w, r)
+}
+
 func (_m *ServiceMock) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
 
+func (_m *ServiceMock) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
+	_m.Called(w, r)
+}
+
 func (_m *ServiceMock) createPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
+	_m.Called(w, r)
+}
+
+func (_m *ServiceMock) contactHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }

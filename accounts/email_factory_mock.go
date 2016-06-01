@@ -26,6 +26,22 @@ func (_m *EmailFactoryMock) NewConfirmationEmail(confirmation *Confirmation) *em
 	return r0
 }
 
+// NewInvitationEmail just records the activity, and returns what the Mock object tells it to
+func (_m *EmailFactoryMock) NewInvitationEmail(invitation *Invitation) *email.Email {
+	ret := _m.Called(invitation)
+
+	var r0 *email.Email
+	if rf, ok := ret.Get(0).(func(*Invitation) *email.Email); ok {
+		r0 = rf(invitation)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*email.Email)
+		}
+	}
+
+	return r0
+}
+
 // NewPasswordResetEmail ...
 func (_m *EmailFactoryMock) NewPasswordResetEmail(passwordReset *PasswordReset) *email.Email {
 	ret := _m.Called(passwordReset)

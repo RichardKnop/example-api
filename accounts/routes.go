@@ -34,10 +34,28 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			},
 		},
 		routes.Route{
+			Name:        "get_user",
+			Method:      "GET",
+			Pattern:     "/users/{id:[0-9]+}",
+			HandlerFunc: service.getUserHandler,
+			Middlewares: []negroni.Handler{
+				NewUserAuthMiddleware(service),
+			},
+		},
+		routes.Route{
 			Name:        "update_user",
 			Method:      "PUT",
 			Pattern:     "/users/{id:[0-9]+}",
 			HandlerFunc: service.updateUserHandler,
+			Middlewares: []negroni.Handler{
+				NewUserAuthMiddleware(service),
+			},
+		},
+		routes.Route{
+			Name:        "invite_user",
+			Method:      "POST",
+			Pattern:     "/invitations",
+			HandlerFunc: service.inviteUserHandler,
 			Middlewares: []negroni.Handler{
 				NewUserAuthMiddleware(service),
 			},

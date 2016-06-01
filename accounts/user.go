@@ -119,6 +119,9 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 		return nil, err
 	}
 
+	// Assign related object
+	confirmation.User = user
+
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback() // rollback the transaction
@@ -369,6 +372,11 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 	if err := db.Create(user).Error; err != nil {
 		return nil, err
 	}
+
+	// Assign related objects
+	user.Account = account
+	user.OauthUser = oauthUser
+	user.Role = role
 
 	// Update the meta user ID field
 	err = db.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: user.ID}).Error

@@ -97,6 +97,9 @@ func (s *Service) CreateAccount(name, description, key, secret, redirectURI stri
 		return nil, err
 	}
 
+	// Assign related object
+	account.OauthClient = oauthClient
+
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback() // rollback the transaction

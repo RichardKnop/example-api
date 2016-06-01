@@ -17,6 +17,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	testPasswordReset := NewPasswordReset(suite.users[1])
 	err = suite.db.Create(testPasswordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test password reset failed")
+	testPasswordReset.User = suite.users[1]
 	err = suite.db.Model(testPasswordReset).UpdateColumn(
 		"created_at",
 		time.Now().Add(-validFor).Add(time.Second),
@@ -27,6 +28,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	testExpiredPasswordReset := NewPasswordReset(suite.users[1])
 	err = suite.db.Create(testExpiredPasswordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test expired password reset failed")
+	testExpiredPasswordReset.User = suite.users[1]
 	err = suite.db.Model(testExpiredPasswordReset).UpdateColumn(
 		"created_at",
 		time.Now().Add(-validFor).Add(-time.Second),
@@ -74,6 +76,7 @@ func (suite *AccountsTestSuite) TestResetPassword() {
 	passwordReset := NewPasswordReset(suite.users[1])
 	err := suite.db.Create(passwordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
+	passwordReset.User = suite.users[1]
 
 	// Error should be nil
 	assert.Nil(

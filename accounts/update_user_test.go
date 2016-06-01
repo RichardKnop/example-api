@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"time"
 
 	"github.com/RichardKnop/jsonhal"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/password"
+	"github.com/RichardKnop/recall/util"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
@@ -102,6 +102,11 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
 
+	// Assign related objects
+	testUser.Account = suite.accounts[0]
+	testUser.OauthUser = testOauthUser
+	testUser.Role = suite.userRole
+
 	// Login the test user
 	testAccessToken, _, err = suite.service.oauthService.Login(
 		suite.accounts[0].OauthClient,
@@ -177,8 +182,8 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 		LastName:  "Finch",
 		Role:      roles.User,
 		Confirmed: true,
-		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
-		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),
+		CreatedAt: util.FormatTime(user.CreatedAt),
+		UpdatedAt: util.FormatTime(user.UpdatedAt),
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
@@ -215,6 +220,9 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 	)
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
+	testUser.Account = suite.accounts[0]
+	testUser.OauthUser = testOauthUser
+	testUser.Role = suite.userRole
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.oauthService.Login(
@@ -295,8 +303,8 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 		LastName:  "Finch",
 		Role:      roles.User,
 		Confirmed: false,
-		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
-		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),
+		CreatedAt: util.FormatTime(user.CreatedAt),
+		UpdatedAt: util.FormatTime(user.UpdatedAt),
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
@@ -374,8 +382,8 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 		LastName:  "Reese",
 		Role:      user.RoleID.String,
 		Confirmed: user.Confirmed,
-		CreatedAt: user.CreatedAt.UTC().Format(time.RFC3339),
-		UpdatedAt: user.UpdatedAt.UTC().Format(time.RFC3339),
+		CreatedAt: util.FormatTime(user.CreatedAt),
+		UpdatedAt: util.FormatTime(user.UpdatedAt),
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {

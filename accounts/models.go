@@ -72,6 +72,23 @@ func (c *Confirmation) TableName() string {
 	return "account_confirmations"
 }
 
+// Invitation ...
+type Invitation struct {
+	gorm.Model
+	InvitedUserID   sql.NullInt64 `sql:"index;not null"`
+	InvitedByUserID sql.NullInt64 `sql:"index;not null"`
+	InvitedByUser   *User
+	InvitedUser     *User
+	Reference       string `sql:"type:varchar(40);unique;not null"`
+	EmailSent       bool   `sql:"index;not null"`
+	EmailSentAt     pq.NullTime
+}
+
+// TableName specifies table name
+func (i *Invitation) TableName() string {
+	return "account_invitations"
+}
+
 // PasswordReset ...
 type PasswordReset struct {
 	gorm.Model
@@ -95,9 +112,6 @@ func NewAccount(oauthClient *oauth.Client, name, description string) *Account {
 		Name:          name,
 		Description:   util.StringOrNull(description),
 	}
-	if oauthClientID.Valid {
-		account.OauthClient = oauthClient
-	}
 	return account
 }
 
@@ -115,15 +129,6 @@ func NewUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, fi
 		LastName:    util.StringOrNull(lastName),
 		Confirmed:   confirmed,
 	}
-	if accountID.Valid {
-		user.Account = account
-	}
-	if oauthUserID.Valid {
-		user.OauthUser = oauthUser
-	}
-	if roleID.Valid {
-		user.Role = role
-	}
 	return user
 }
 
@@ -135,10 +140,20 @@ func NewConfirmation(user *User) *Confirmation {
 		Reference:   uuid.New(),
 		EmailSentAt: util.TimeOrNull(nil),
 	}
-	if userID.Valid {
-		confirmation.User = user
-	}
 	return confirmation
+}
+
+// NewInvitation creates new Invitation instance
+func NewInvitation(invitedUser, invitedByUser *User) *Invitation {
+	invitedUserID := util.PositiveIntOrNull(int64(invitedUser.ID))
+	invitedByUserID := util.PositiveIntOrNull(int64(invitedByUser.ID))
+	invitation := &Invitation{
+		InvitedUserID:   invitedUserID,
+		InvitedByUserID: invitedByUserID,
+		Reference:       uuid.New(),
+		EmailSentAt:     util.TimeOrNull(nil),
+	}
+	return invitation
 }
 
 // NewPasswordReset creates new PasswordReset instance
@@ -148,9 +163,6 @@ func NewPasswordReset(user *User) *PasswordReset {
 		UserID:      userID,
 		Reference:   uuid.New(),
 		EmailSentAt: util.TimeOrNull(nil),
-	}
-	if userID.Valid {
-		passwordReset.User = user
 	}
 	return passwordReset
 }

@@ -2,17 +2,16 @@ package accounts
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/RichardKnop/recall/response"
 )
 
-// Handles requests to create a new user (POST /v1/accounts/users)
-func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the authenticated client from the request context
-	authenticatedAccount, err := GetAuthenticatedAccount(r)
+// Handles requests to invite a new user (POST /v1/accounts/invitations)
+func (s *Service) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the authenticated user from the request context
+	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
 		return
@@ -32,29 +31,27 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Unmarshal the request body into the request prototype
-	userRequest := new(UserRequest)
-	if err := json.Unmarshal(payload, userRequest); err != nil {
-		logger.Errorf("Failed to unmarshal user request: %s", payload)
+	invitationRequest := new(InvitationRequest)
+	if err := json.Unmarshal(payload, invitationRequest); err != nil {
+		logger.Errorf("Failed to unmarshal invitation request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Create a new user account
-	user, err := s.CreateUser(authenticatedAccount, userRequest)
+	// Create a new invited user account
+	invitation, err := s.InviteUser(authenticatedUser, invitationRequest)
 	if err != nil {
-		logger.Errorf("Create user error: %s", err)
+		logger.Errorf("Invite user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))
 		return
 	}
 
 	// Create response
-	userResponse, err := NewUserResponse(user)
+	invitationResponse, err := NewInvitationResponse(invitation)
 	if err != nil {
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// Set Location header to the newly created resource
-	w.Header().Set("Location", fmt.Sprintf("/v1/accounts/users/%d", user.ID))
 	// Write JSON response
-	response.WriteJSON(w, userResponse, http.StatusCreated)
+	response.WriteJSON(w, invitationResponse, http.StatusCreated)
 }
