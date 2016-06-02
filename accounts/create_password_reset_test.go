@@ -52,7 +52,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 	suite.router.ServeHTTP(w, r)
 
 	// Sleep for the email goroutine to finish
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(15 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
@@ -158,7 +158,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	)
 
 	// Sleep for the email goroutine to finish
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(15 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()

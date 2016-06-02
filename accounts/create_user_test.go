@@ -133,7 +133,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	}
 
 	// Sleep for the email goroutine to finish
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(15 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
