@@ -167,6 +167,13 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 		"some_new_password",
 	))
 
+	// And the user meta data is unchanged
+	assert.Equal(suite.T(), "harold@finch", user.OauthUser.Username)
+	assert.Equal(suite.T(), "Harold", user.FirstName.String)
+	assert.Equal(suite.T(), "Finch", user.LastName.String)
+	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.True(suite.T(), user.Confirmed)
+
 	// Check the response body
 	expected := &UserResponse{
 		Hal: jsonhal.Hal{
@@ -288,6 +295,13 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 		"some_new_password",
 	))
 
+	// And the user meta data is unchanged
+	assert.Equal(suite.T(), "harold@finch", user.OauthUser.Username)
+	assert.Equal(suite.T(), "Harold", user.FirstName.String)
+	assert.Equal(suite.T(), "Finch", user.LastName.String)
+	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.False(suite.T(), user.Confirmed)
+
 	// Check the response body
 	expected := &UserResponse{
 		Hal: jsonhal.Hal{
@@ -317,18 +331,54 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 }
 
 func (suite *AccountsTestSuite) TestUpdateUser() {
+	var (
+		testOauthUser   *oauth.User
+		testUser        *User
+		testAccessToken *oauth.AccessToken
+		err             error
+	)
+
+	// Insert a test user
+	testOauthUser, err = suite.service.oauthService.CreateUser(
+		"harold@finch",
+		"test_password",
+	)
+	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
+	testUser = NewUser(
+		suite.accounts[0],
+		testOauthUser,
+		suite.userRole,
+		"",    // facebook ID
+		"",    // first name
+		"",    // last name
+		false, // confirmed
+	)
+	err = suite.db.Create(testUser).Error
+	assert.NoError(suite.T(), err, "Failed to insert a test user")
+	testUser.Account = suite.accounts[0]
+	testUser.OauthUser = testOauthUser
+	testUser.Role = suite.userRole
+
+	// Login the test user
+	testAccessToken, _, err = suite.service.oauthService.Login(
+		suite.accounts[0].OauthClient,
+		testUser.OauthUser,
+		"read_write", // scope
+	)
+	assert.NoError(suite.T(), err, "Failed to login the test user")
+
 	payload, err := json.Marshal(&UserRequest{
-		FirstName: "John",
-		LastName:  "Reese",
+		FirstName: "Harold",
+		LastName:  "Finch",
 	})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"PUT",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", suite.users[1].ID),
+		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", testUser.ID),
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
-	r.Header.Set("Authorization", "Bearer test_user_token")
+	r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", testAccessToken.Token))
 
 	// Check the routing
 	match := new(mux.RouteMatch)
@@ -361,11 +411,20 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 	// Fetch the updated user
 	user := new(User)
 	assert.False(suite.T(), suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role").First(user, suite.users[1].ID).RecordNotFound())
+		Preload("Role").First(user, testUser.ID).RecordNotFound())
 
-	// Check that the correct data was saved
-	assert.Equal(suite.T(), "John", user.FirstName.String)
-	assert.Equal(suite.T(), "Reese", user.LastName.String)
+	// Check that the password has NOT changed
+	assert.NoError(suite.T(), password.VerifyPassword(
+		user.OauthUser.Password.String,
+		"test_password",
+	))
+
+	// And correct data was saved
+	assert.Equal(suite.T(), "harold@finch", user.OauthUser.Username)
+	assert.Equal(suite.T(), "Harold", user.FirstName.String)
+	assert.Equal(suite.T(), "Finch", user.LastName.String)
+	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.False(suite.T(), user.Confirmed)
 
 	// Check the response body
 	expected := &UserResponse{
@@ -377,11 +436,11 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 			},
 		},
 		ID:        user.ID,
-		Email:     suite.users[1].OauthUser.Username,
-		FirstName: "John",
-		LastName:  "Reese",
-		Role:      user.RoleID.String,
-		Confirmed: user.Confirmed,
+		Email:     "harold@finch",
+		FirstName: "Harold",
+		LastName:  "Finch",
+		Role:      roles.User,
+		Confirmed: false,
 		CreatedAt: util.FormatTime(user.CreatedAt),
 		UpdatedAt: util.FormatTime(user.UpdatedAt),
 	}
