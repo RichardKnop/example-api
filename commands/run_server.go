@@ -9,7 +9,7 @@ import (
 	"github.com/RichardKnop/recall/health"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/web"
-	"github.com/codegangsta/negroni"
+	"github.com/urfave/negroni"
 	"github.com/gorilla/mux"
 	"github.com/phyber/negroni-gzip/gzip"
 )

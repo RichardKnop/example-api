@@ -3,7 +3,7 @@ package facebook
 import (
 	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/routes"
-	"github.com/codegangsta/negroni"
+	"github.com/urfave/negroni"
 	"github.com/gorilla/mux"
 )
 
