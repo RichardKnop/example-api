@@ -74,16 +74,29 @@ func (s *Service) InviteUserTx(tx *gorm.DB, invitedByUser *User, invitationReque
 
 // ConfirmInvitation sets password on the oauth user object and deletes the invitation
 func (s *Service) ConfirmInvitation(invitation *Invitation, password string) error {
-	// Set the password on oauth user object
-	if err := s.GetOauthService().SetPassword(
-		invitation.InvitedUser.OauthUser,
-		password,
-	); err != nil {
+	// Begin a transaction
+	tx := s.db.Begin()
+
+	// Set the new password
+	err := s.oauthService.SetPasswordTx(tx, invitation.InvitedUser.OauthUser, password)
+	if err != nil {
+		tx.Rollback() // rollback the transaction
 		return err
 	}
 
-	// Delete the Invitation
-	return s.db.Delete(invitation).Error
+	// Soft delete the invitation
+	if err := tx.Delete(invitation).Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return err
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback() // rollback the transaction
+		return err
+	}
+
+	return nil
 }
 
 func (s *Service) inviteUserCommon(db *gorm.DB, invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error) {

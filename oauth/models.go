@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/uuid"
 	"github.com/jinzhu/gorm"
-	"github.com/pborman/uuid"
 )
 
 // Client ...

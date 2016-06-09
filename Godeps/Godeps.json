@@ -19,6 +19,10 @@
 			"Rev": "15ee95bcedec408ada7a4835eeb57a0ecea67fc6"
 		},
 		{
+			"ImportPath": "github.com/RichardKnop/uuid",
+			"Rev": "c55201b036063326c5b1b89ccfe45a184973d073"
+		},
+		{
 			"ImportPath": "github.com/codegangsta/negroni",
 			"Comment": "v0.2.0-42-gfb7b7c0",
 			"Rev": "fb7b7c045dfb05dc81a5c3688c568550b5bd6e36"
@@ -93,11 +97,6 @@
 		{
 			"ImportPath": "github.com/oxtoacart/bpool",
 			"Rev": "4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6"
-		},
-		{
-			"ImportPath": "github.com/pborman/uuid",
-			"Comment": "v1.0-11-gc55201b",
-			"Rev": "c55201b036063326c5b1b89ccfe45a184973d073"
 		},
 		{
 			"ImportPath": "github.com/phyber/negroni-gzip/gzip",

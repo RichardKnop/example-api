@@ -1,12 +1,15 @@
 # Accounts
 
 * [Create User](#create-user)
+* [Confirm Email](#confirm-email)
 * [Get Me](#get-me)
 * [Get User](#get-user)
 * [Update User](#update-user)
 * [Change Password](#change-password)
-* [Invite User](#invite-user)
-* [Reset Password](#reset-password)
+* [Create Invitation](#create-invitation)
+* [Confirm Invitation](#confirm-invitation)
+* [Create Password Reset](#create-password-reset)
+* [Confirm Password Reset](#confirm-password-reset)
 
 ## Create User
 
@@ -41,6 +44,18 @@ Example response:
     "updated_at": "2015-12-17T06:17:54Z"
 }
 ```
+
+## Confirm Email
+
+Example request:
+
+```
+curl --compressed -v localhost:8080/v1/accounts/confirmations/bd89167b-0e82-46a0-8e30-cff25436f40f \
+	-H "Content-Type: application/json" \
+	-u test_client_1:test_secret
+```
+
+Returns `204` empty response on success.
 
 ## Get Me
 
@@ -169,7 +184,7 @@ Example response:
 }
 ```
 
-## Invite User
+## Create Invitation
 
 Example request:
 
@@ -178,7 +193,8 @@ curl --compressed -v localhost:8080/v1/accounts/invitations \
 	-H "Content-Type: application/json" \
 	-H "Authorization: Bearer 00ccd40e-72ca-4e79-a4b6-67c95e2e3f1c" \
 	-d '{
-		"email": "john@reese"
+		"email": "john@reese",
+		"role": "user"
 	}'
 ```
 
@@ -200,9 +216,26 @@ Example response:
 }
 ```
 
-The invited user should receive an email with a link to a web page where he/she can set a password and therefor activate the account.
+The invited user should receive an email with a link to a web page where he/she can set a password and therefor activate the account:
 
-## Reset Password
+![Set Password Screenshot][1]
+
+## Confirm Invitation
+
+Example request:
+
+```
+curl --compressed -v localhost:8080/v1/accounts/invitations/bd89167b-0e82-46a0-8e30-cff25436f40f \
+	-H "Content-Type: application/json" \
+	-H "Authorization: Bearer 00ccd40e-72ca-4e79-a4b6-67c95e2e3f1c" \
+	-d '{
+		"password": "new_password"
+	}'
+```
+
+Returns `204` empty response on success.
+
+## Create Password Reset
 
 Example request:
 
@@ -212,6 +245,21 @@ curl --compressed -v localhost:8080/v1/accounts/password-reset \
 	-u test_client_1:test_secret \
 	-d '{
 		"email": "test@user"
+	}'
+```
+
+Returns `204` empty response on success.
+
+## Confirm Password Reset
+
+Example request:
+
+```
+curl --compressed -v localhost:8080/v1/accounts/password-reset/bd89167b-0e82-46a0-8e30-cff25436f40f \
+	-H "Content-Type: application/json" \
+	-H "Authorization: Bearer 00ccd40e-72ca-4e79-a4b6-67c95e2e3f1c" \
+	-d '{
+		"password": "new_password"
 	}'
 ```
 

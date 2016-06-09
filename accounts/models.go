@@ -6,9 +6,9 @@ import (
 	"github.com/RichardKnop/recall/database"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
-	"github.com/pborman/uuid"
 )
 
 // Account ...

@@ -43,4 +43,7 @@ type ServiceInterface interface {
 	updateUserHandler(w http.ResponseWriter, r *http.Request)
 	inviteUserHandler(w http.ResponseWriter, r *http.Request)
 	createPasswordResetHandler(w http.ResponseWriter, r *http.Request)
+	confirmEmailHandler(w http.ResponseWriter, r *http.Request)
+	confirmInvitationHandler(w http.ResponseWriter, r *http.Request)
+	confirmPasswordResetHandler(w http.ResponseWriter, r *http.Request)
 }

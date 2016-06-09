@@ -20,6 +20,16 @@ type UserResponse struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
+// ConfirmationResponse ...
+type ConfirmationResponse struct {
+	jsonhal.Hal
+	ID        uint   `json:"id"`
+	Reference string `json:"reference"`
+	UserID    uint   `json:"user_id"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
 // InvitationResponse ...
 type InvitationResponse struct {
 	jsonhal.Hal
@@ -29,6 +39,16 @@ type InvitationResponse struct {
 	InvitedByUserID uint   `json:"invited_by_user_id"`
 	CreatedAt       string `json:"created_at"`
 	UpdatedAt       string `json:"updated_at"`
+}
+
+// PasswordResetResponse ...
+type PasswordResetResponse struct {
+	jsonhal.Hal
+	ID        uint   `json:"id"`
+	Reference string `json:"reference"`
+	UserID    uint   `json:"user_id"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 // NewUserResponse creates new UserResponse instance
@@ -54,6 +74,26 @@ func NewUserResponse(user *User) (*UserResponse, error) {
 	return response, nil
 }
 
+// NewConfirmationResponse creates new ConfirmationResponse instance
+func NewConfirmationResponse(confirmation *Confirmation) (*ConfirmationResponse, error) {
+	response := &ConfirmationResponse{
+		ID:        confirmation.ID,
+		Reference: confirmation.Reference,
+		UserID:    confirmation.User.ID,
+		CreatedAt: util.FormatTime(confirmation.CreatedAt),
+		UpdatedAt: util.FormatTime(confirmation.UpdatedAt),
+	}
+
+	// Set the self link
+	response.SetLink(
+		"self", // name
+		fmt.Sprintf("/v1/accounts/confirmations/%d", confirmation.ID), // href
+		"", // title
+	)
+
+	return response, nil
+}
+
 // NewInvitationResponse creates new InvitationResponse instance
 func NewInvitationResponse(invitation *Invitation) (*InvitationResponse, error) {
 	response := &InvitationResponse{
@@ -69,6 +109,26 @@ func NewInvitationResponse(invitation *Invitation) (*InvitationResponse, error) 
 	response.SetLink(
 		"self", // name
 		fmt.Sprintf("/v1/accounts/invitations/%d", invitation.ID), // href
+		"", // title
+	)
+
+	return response, nil
+}
+
+// NewPasswordResetResponse creates new PasswordResetResponse instance
+func NewPasswordResetResponse(passwordReset *PasswordReset) (*PasswordResetResponse, error) {
+	response := &PasswordResetResponse{
+		ID:        passwordReset.ID,
+		Reference: passwordReset.Reference,
+		UserID:    passwordReset.User.ID,
+		CreatedAt: util.FormatTime(passwordReset.CreatedAt),
+		UpdatedAt: util.FormatTime(passwordReset.UpdatedAt),
+	}
+
+	// Set the self link
+	response.SetLink(
+		"self", // name
+		fmt.Sprintf("/v1/accounts/password-resets/%d", passwordReset.ID), // href
 		"", // title
 	)
 
