@@ -138,10 +138,7 @@ func (suite *AccountsTestSuite) SetupTest() {
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.Client))
 
 	// Reset mocks
-	suite.emailServiceMock.ExpectedCalls = suite.emailServiceMock.ExpectedCalls[:0]
-	suite.emailServiceMock.Calls = suite.emailServiceMock.Calls[:0]
-	suite.emailFactoryMock.ExpectedCalls = suite.emailFactoryMock.ExpectedCalls[:0]
-	suite.emailFactoryMock.Calls = suite.emailFactoryMock.Calls[:0]
+	suite.resetMocks()
 }
 
 // The TearDownTest method will be run after every test in the suite.
@@ -156,10 +153,19 @@ func TestAccountsTestSuite(t *testing.T) {
 	suite.Run(t, new(AccountsTestSuite))
 }
 
+// Reset mocks
+func (suite *AccountsTestSuite) resetMocks() {
+	suite.emailServiceMock.ExpectedCalls = suite.emailServiceMock.ExpectedCalls[:0]
+	suite.emailServiceMock.Calls = suite.emailServiceMock.Calls[:0]
+	suite.emailFactoryMock.ExpectedCalls = suite.emailFactoryMock.ExpectedCalls[:0]
+	suite.emailFactoryMock.Calls = suite.emailFactoryMock.Calls[:0]
+}
+
 // Checks that the mock object expectations were met
 func (suite *AccountsTestSuite) assertMockExpectations() {
 	suite.emailServiceMock.AssertExpectations(suite.T())
 	suite.emailFactoryMock.AssertExpectations(suite.T())
+	suite.resetMocks()
 }
 
 // Mock sending confirmation email
