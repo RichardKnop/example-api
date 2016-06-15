@@ -15,7 +15,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/areatech/jsonhal"
+	"github.com/AreaHQ/jsonhal"
 )
 
 // HelloWorld ...

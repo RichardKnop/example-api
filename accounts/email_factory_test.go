@@ -13,9 +13,9 @@ func TestNewConfirmationEmail(t *testing.T) {
 	emailFactory := NewEmailFactory(&config.Config{
 		Web: config.WebConfig{
 			Scheme:    "https",
-			Host:      "api.pingli.st",
+			Host:      "api.recall",
 			AppScheme: "https",
-			AppHost:   "pingli.st",
+			AppHost:   "recall",
 		},
 	})
 	confirmation := &Confirmation{
@@ -30,22 +30,23 @@ func TestNewConfirmationEmail(t *testing.T) {
 	}
 	email := emailFactory.NewConfirmationEmail(confirmation)
 
-	assert.Equal(t, "Thank you for joining pingli.st", email.Subject)
+	assert.Equal(t, "Thank you for joining recall", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
 	assert.Equal(t, "john@reese", email.Recipients[0].Email)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "noreply@pingli.st", email.From)
+	assert.Equal(t, "noreply@recall", email.From.Email)
+	assert.Equal(t, "NOREPLY recall", email.From.Name)
 
 	expectedText := `
 Hello John Reese,
 
-Thank you for joining https://pingli.st.
+Thank you for joining https://recall.
 
-Please confirm your email: https://api.pingli.st/web/confirm-email/some-reference.
+Please confirm your email: https://api.recall/web/confirm-email/some-reference.
 
 Kind Regards,
 
-https://pingli.st Team
+https://recall Team
 `
 	assert.Equal(t, expectedText, email.Text)
 }
@@ -54,9 +55,9 @@ func TestNewInvitationEmail(t *testing.T) {
 	emailFactory := NewEmailFactory(&config.Config{
 		Web: config.WebConfig{
 			Scheme:    "https",
-			Host:      "api.pingli.st",
+			Host:      "api.recall",
 			AppScheme: "https",
-			AppHost:   "pingli.st",
+			AppHost:   "recall",
 		},
 	})
 	invitation := &Invitation{
@@ -78,22 +79,23 @@ func TestNewInvitationEmail(t *testing.T) {
 	}
 	email := emailFactory.NewInvitationEmail(invitation)
 
-	assert.Equal(t, "You have been invited to join pingli.st", email.Subject)
+	assert.Equal(t, "You have been invited to join recall", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
 	assert.Equal(t, "john@reese", email.Recipients[0].Email)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "harold@finch", email.From)
+	assert.Equal(t, "harold@finch", email.From.Email)
+	assert.Equal(t, "Harold Finch", email.From.Name)
 
 	expectedText := `
 Hello John Reese,
 
-You have been invited to join https://pingli.st by Harold Finch.
+You have been invited to join https://recall by Harold Finch.
 
-Follow this link to set your password please: https://api.pingli.st/web/confirm-invitation/some-reference.
+Follow this link to set your password please: https://api.recall/web/confirm-invitation/some-reference.
 
 Kind Regards,
 
-https://pingli.st Team
+https://recall Team
 `
 	assert.Equal(t, expectedText, email.Text)
 }
@@ -102,9 +104,9 @@ func TestNewPasswordResetEmail(t *testing.T) {
 	emailFactory := NewEmailFactory(&config.Config{
 		Web: config.WebConfig{
 			Scheme:    "https",
-			Host:      "api.pingli.st",
+			Host:      "api.recall",
 			AppScheme: "https",
-			AppHost:   "pingli.st",
+			AppHost:   "recall",
 		},
 	})
 	passwordReset := &PasswordReset{
@@ -119,22 +121,23 @@ func TestNewPasswordResetEmail(t *testing.T) {
 	}
 	email := emailFactory.NewPasswordResetEmail(passwordReset)
 
-	assert.Equal(t, "Reset password for pingli.st", email.Subject)
+	assert.Equal(t, "Reset password for recall", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
 	assert.Equal(t, "john@reese", email.Recipients[0].Email)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "noreply@pingli.st", email.From)
+	assert.Equal(t, "noreply@recall", email.From.Email)
+	assert.Equal(t, "NOREPLY recall", email.From.Name)
 
 	expectedText := `
 Hello John Reese,
 
 It seems you have forgotten your password.
 
-You can set a new password here: https://api.pingli.st/web/password-reset/some-reference.
+You can set a new password here: https://api.recall/web/password-reset/some-reference.
 
 Kind Regards,
 
-https://pingli.st Team
+https://recall Team
 `
 	assert.Equal(t, expectedText, email.Text)
 }

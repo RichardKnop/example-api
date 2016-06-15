@@ -1,11 +1,9 @@
 package email
 
 import (
-	"net/http"
-	"time"
-
 	"github.com/RichardKnop/recall/config"
 	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 // Service struct keeps config object to avoid passing it around
@@ -20,26 +18,29 @@ func NewService(cnf *config.Config) *Service {
 
 // Send sends email using sendgrid
 func (s *Service) Send(email *Email) error {
-	sg := sendgrid.NewSendGridClientWithApiKey(s.cnf.Sendgrid.APIKey)
-
-	// Add *http.Client instance, so we can customise options such as the timeout
-	sg.Client = &http.Client{
-		Transport: http.DefaultTransport,
-		Timeout:   10 * time.Second,
-	}
-
 	// Construct the mail
-	message := sendgrid.NewMail()
-	message.SetSubject(email.Subject)
+	m := new(mail.SGMailV3)
+	m.SetFrom(&mail.Email{Address: email.From.Email, Name: email.From.Name})
+	m.Subject = email.Subject
+	p := mail.NewPersonalization()
 	for _, recipient := range email.Recipients {
-		message.AddTo(recipient.Email)
-		if recipient.Name != "" {
-			message.AddToName(recipient.Name)
-		}
+		p.AddTos(&mail.Email{Address: recipient.Email, Name: recipient.Name})
 	}
-	message.SetFrom(email.From)
-	message.SetText(email.Text)
+	m.AddPersonalizations(p)
+	content := mail.NewContent("text/plain", email.Text)
+	m.AddContent(content)
 
 	// And send the mail
-	return sg.Send(message)
+	request := sendgrid.GetRequest(
+		s.cnf.Sendgrid.APIKey,
+		"/v3/mail/send",
+		"https://api.sendgrid.com",
+	)
+	request.Method = "POST"
+	request.Body = mail.GetRequestBody(m)
+	_, err := sendgrid.API(request)
+	if err != nil {
+		return err
+	}
+	return nil
 }

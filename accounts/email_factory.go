@@ -94,7 +94,10 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) *email.E
 			Email: confirmation.User.OauthUser.Username,
 			Name:  confirmation.User.GetName(),
 		}},
-		From: fmt.Sprintf("noreply@%s", f.cnf.Web.AppHost),
+		From: &email.Sender{
+			Email: fmt.Sprintf("noreply@%s", f.cnf.Web.AppHost),
+			Name:  fmt.Sprintf("NOREPLY %s", f.cnf.Web.AppHost),
+		},
 		Text: emailText,
 	}
 }
@@ -147,7 +150,10 @@ func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) *email.Email {
 			Email: invitation.InvitedUser.OauthUser.Username,
 			Name:  invitation.InvitedUser.GetName(),
 		}},
-		From: invitation.InvitedByUser.OauthUser.Username,
+		From: &email.Sender{
+			Email: invitation.InvitedByUser.OauthUser.Username,
+			Name:  invitation.InvitedByUser.GetName(),
+		},
 		Text: emailText,
 	}
 }
@@ -192,7 +198,10 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) *emai
 			Email: passwordReset.User.OauthUser.Username,
 			Name:  passwordReset.User.GetName(),
 		}},
-		From: fmt.Sprintf("noreply@%s", f.cnf.Web.AppHost),
+		From: &email.Sender{
+			Email: fmt.Sprintf("noreply@%s", f.cnf.Web.AppHost),
+			Name:  fmt.Sprintf("NOREPLY %s", f.cnf.Web.AppHost),
+		},
 		Text: emailText,
 	}
 }

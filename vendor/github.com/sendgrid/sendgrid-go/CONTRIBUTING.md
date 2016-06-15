@@ -11,7 +11,7 @@ Hello! Thank you for choosing to help contribute to one of the SendGrid open sou
 - [Creating a Pull Request](#creating_a_pull_request)
 
 <a name="roadmap"></a>
-We use [Milestones](https://github.com/sendgrid/smtpapi-go/milestones) to help define current roadmaps, please feel free to grab an issue from the current milestone. Please indicate that you have begun work on it to avoid collisions. Once a PR is made, community review, comments, suggestions and additional PRs are welcomed and encouraged.
+We use [Milestones](https://github.com/sendgrid/sendgrid-go/milestones) to help define current roadmaps, please feel free to grab an issue from the current milestone. Please indicate that you have begun work on it to avoid collisions. Once a PR is made, community review, comments, suggestions and additional PRs are welcomed and encouraged.
 
 <a name="cla"></a>
 ## CLAs and CCLAs
@@ -51,12 +51,12 @@ Before you decide to create a new issue, please try the following:
 
 ### Please use our Bug Report Template
 
-In order to make the process easier, we've included a [sample bug report template](https://github.com/sendgrid/smtpapi-go/.github/ISSUE_TEMPLATE) (borrowed from [Ghost](https://github.com/TryGhost/Ghost/)). The template uses [GitHub flavored markdown](https://help.github.com/articles/github-flavored-markdown/) for formatting.
+In order to make the process easier, we've included a [sample bug report template](https://github.com/sendgrid/sendgrid-go/.github/ISSUE_TEMPLATE) (borrowed from [Ghost](https://github.com/TryGhost/Ghost/)). The template uses [GitHub flavored markdown](https://help.github.com/articles/github-flavored-markdown/) for formatting.
 
 <a name="improvements_to_the_codebase"></a>
 ## Improvements to the Codebase
 
-We welcome direct contributions to the smtpapi-go code base. Thank you!
+We welcome direct contributions to the sendgrid-go code base. Thank you!
 
 ### Development Environment ###
 
@@ -65,22 +65,35 @@ We welcome direct contributions to the smtpapi-go code base. Thank you!
 ##### Prerequisites #####
 
 - Go 1.3 through 1.5
+- [rest](https://github.com/sendgrid/rest)
 
 ##### Initial setup: #####
 
 ```bash
-git clone https://github.com/sendgrid/smtpapi-go.git
-cd smtpapi-go
+git clone https://github.com/sendgrid/sendgrid-go.git
+cd sendgrid-go
+```
+
+## Environment Variables
+
+First, get your free SendGrid account [here](https://sendgrid.com/free?source=sendgrid-go).
+
+Next, update your environment with your [SENDGRID_API_KEY](https://app.sendgrid.com/settings/api_keys).
+
+```bash
+echo "export SENDGRID_API_KEY='YOUR_API_KEY'" > sendgrid.env
+echo "sendgrid.env" >> .gitignore
+source ./sendgrid.env
 ```
 
 ##### Execute: #####
 
-See the [examples folder](https://github.com/sendgrid/smtpapi-go/tree/master/examples) to get started quickly.
-
-To run the example:
+* Check out the documentation for [Web API v3 endpoints](https://sendgrid.com/docs/API_Reference/Web_API_v3/index.html).
+* Review the corresponding [example](https://github.com/sendgrid/sendgrid-go/blob/master/examples).
+* Update the file
 
 ```bash
-go run examples/example.go
+go run <Desired File>
 ```
 
 <a name="understanding_the_codebase"></a>
@@ -90,19 +103,18 @@ go run examples/example.go
 
 Working examples that demonstrate usage.
 
-**/**
+**sendgrid.go**
 
-*_test are the tests
-smtpapi.go is the source code
+The main function that does the heavy lifting (and external entry point) is `API`.
 
 <a name="testing"></a>
 ## Testing
 
 All PRs require passing tests before the PR will be reviewed.
 
-All test files are in the [`/`](https://github.com/sendgrid/smtpapi-go/tree/master/) directory.
+All test files are in [`sendgrid_test.go`](https://github.com/sendgrid/sendgrid-go/tree/master/sendgrid_test.go).
 
-For the purposes of contributing to this repo, please update the [`smtpapi_test.go`](https://github.com/sendgrid/smtpapi-go/blob/master/test/smtpapi_test.go) and [`smtpapi_test_strings.go`](https://github.com/sendgrid/smtpapi-go/blob/master/test/smtpapi_test_strings.go) files with unit tests as you modify the code.
+For the purposes of contributing to this repo, please update the [`sendgrid_test.go`](https://github.com/sendgrid/sendgrid-go/tree/master/sendgrid_test.go) file with unit tests as you modify the code.
 
 To run the tests:
 
@@ -115,11 +127,14 @@ go test -v
 
 Generally, we follow the style guidelines as suggested by the official language. However, we ask that you conform to the styles that already exist in the library. If you wish to deviate, please explain your reasoning.
 
+Generally, we follow the style guidelines as suggested by the official language. However, we ask that you conform to the styles that already exist in the library. If you wish to deviate, please explain your reasoning.
+
 - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
 
 Please run your code through:
 
 - [fmt](https://blog.golang.org/go-fmt-your-code)
+
 
 ## Creating a Pull Request<a name="creating_a_pull_request"></a>
 
@@ -128,11 +143,11 @@ Please run your code through:
 
    ```bash
    # Clone your fork of the repo into the current directory
-   git clone https://github.com/sendgrid/smtpapi-go
+   git clone https://github.com/sendgrid/sendgrid-go
    # Navigate to the newly cloned directory
    cd sendgrid-python
    # Assign the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/sendgrid/smtpapi-go
+   git remote add upstream https://github.com/sendgrid/sendgrid-go
    ```
 
 2. If you cloned a while ago, get the latest changes from upstream:

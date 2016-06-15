@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/RichardKnop/recall",
 	"GoVersion": "go1.6",
-	"GodepVersion": "v73",
+	"GodepVersion": "v74",
 	"Packages": [
 		"./..."
 	],
@@ -12,7 +12,7 @@
 		},
 		{
 			"ImportPath": "github.com/RichardKnop/jsonhal",
-			"Rev": "cf728e57520cb453ddaa5367cc443c16bd230273"
+			"Rev": "6e175ad2af7280916664edadded65e00dd47515c"
 		},
 		{
 			"ImportPath": "github.com/RichardKnop/logging",
@@ -107,14 +107,19 @@
 			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
 		},
 		{
-			"ImportPath": "github.com/sendgrid/sendgrid-go",
-			"Comment": "v2.0.0-22-g6ea8b2b",
-			"Rev": "6ea8b2b2d54b2e54efcf8668867289a1838d96fd"
+			"ImportPath": "github.com/sendgrid/rest",
+			"Comment": "v2.1.0",
+			"Rev": "eb041d6ffaf12912af57a9c3e5f28db49d6495ae"
 		},
 		{
-			"ImportPath": "github.com/sendgrid/smtpapi-go",
-			"Comment": "v0.4.0-7-gb88787c",
-			"Rev": "b88787cc8801ef961d7daef0bcb79ae3f50bfd52"
+			"ImportPath": "github.com/sendgrid/sendgrid-go",
+			"Comment": "v3.0.0",
+			"Rev": "21f08698ba61551befffd8755f508631a4d1e8ae"
+		},
+		{
+			"ImportPath": "github.com/sendgrid/sendgrid-go/helpers/mail",
+			"Comment": "v3.0.0",
+			"Rev": "21f08698ba61551befffd8755f508631a4d1e8ae"
 		},
 		{
 			"ImportPath": "github.com/stretchr/objx",
@@ -150,8 +155,8 @@
 		},
 		{
 			"ImportPath": "github.com/urfave/cli",
-			"Comment": "v1.17.0-57-gedb24d0",
-			"Rev": "edb24d02aa3cea2319c33f2836d4a5133907fe4c"
+			"Comment": "v1.17.0-67-ge5bef42",
+			"Rev": "e5bef42c62aa7d25aba4880dc02b7624f01e9e19"
 		},
 		{
 			"ImportPath": "github.com/urfave/negroni",

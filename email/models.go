@@ -6,10 +6,16 @@ type Recipient struct {
 	Name  string
 }
 
+// Sender represents an email sender
+type Sender struct {
+	Email string
+	Name  string
+}
+
 // Email represents an email message
 type Email struct {
 	Subject    string
 	Recipients []*Recipient
-	From       string
+	From       *Sender
 	Text       string
 }
