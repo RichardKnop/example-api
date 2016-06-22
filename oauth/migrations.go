@@ -25,11 +25,11 @@ func migrate0001(db *gorm.DB) error {
 	found := !db.Where("name = ?", migrationName).First(migration).RecordNotFound()
 
 	if found {
-		log.Printf("Skipping %s migration", migrationName)
+		logger.Infof("Skipping %s migration", migrationName)
 		return nil
 	}
 
-	log.Printf("Running %s migration", migrationName)
+	logger.Infof("Running %s migration", migrationName)
 
 	var err error
 
