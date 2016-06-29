@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/RichardKnop/recall/migrations"
 	"github.com/jinzhu/gorm"
