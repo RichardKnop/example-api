@@ -27,54 +27,18 @@ func (m *AccountAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// First, try to get the bearer token
-	token, err := util.ParseBearerToken(r)
-	if err == nil {
-		// Authenticate
-		oauthAccessToken, err := m.service.GetOauthService().Authenticate(string(token))
-		if err != nil {
-			// For security reasons, return a general error message
-			response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
-			return
-		}
+	account, _, err := getCredentialsFromRequest(r, m.service)
 
-		// Fetch the account
-		account, err := m.service.FindAccountByOauthClientID(oauthAccessToken.Client.ID)
-		if err != nil {
-			// For security reasons, return a general error message
-			response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
-			return
-		}
+	if err != nil {
+		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
+		return
+	}
 
-		context.Set(r, authenticatedAccountKey, account)
+	if account != nil {
+		context.Set(r, AuthenticatedAccountKey, account)
 		next(w, r)
-		return
-	}
-
-	// Second, try to get client credentials from basic auth
-	clientID, secret, ok := r.BasicAuth()
-	if !ok {
-		// For security reasons, return a general error message
+	} else {
 		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
 		return
 	}
-
-	// Authenticate the client
-	oauthClient, err := m.service.GetOauthService().AuthClient(clientID, secret)
-	if err != nil {
-		// For security reasons, return a general error message
-		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
-		return
-	}
-
-	// Fetch the account
-	account, err := m.service.FindAccountByOauthClientID(oauthClient.ID)
-	if err != nil {
-		// For security reasons, return a general error message
-		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
-		return
-	}
-
-	context.Set(r, authenticatedAccountKey, account)
-	next(w, r)
 }

@@ -37,6 +37,8 @@ type ServiceInterface interface {
 	ConfirmInvitation(invitation *Invitation, password string) error
 
 	// Needed for the newRoutes to be able to register handlers
+	getUserCredentials(token string) (*Account, *User, error)
+	getClientCredentials(r *http.Request) (*Account, *User, error)
 	createUserHandler(w http.ResponseWriter, r *http.Request)
 	getMyUserHandler(w http.ResponseWriter, r *http.Request)
 	getUserHandler(w http.ResponseWriter, r *http.Request)

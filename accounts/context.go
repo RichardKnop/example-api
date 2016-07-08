@@ -10,8 +10,10 @@ import (
 type contextKey int
 
 const (
-	authenticatedAccountKey contextKey = 0
-	authenticatedUserKey    contextKey = 1
+	// AuthenticatedAccountKey ...
+	AuthenticatedAccountKey contextKey = 0
+	// AuthenticatedUserKey ...
+	AuthenticatedUserKey contextKey = 1
 )
 
 var (
@@ -23,7 +25,7 @@ var (
 
 // GetAuthenticatedAccount returns *Account from the request context
 func GetAuthenticatedAccount(r *http.Request) (*Account, error) {
-	val, ok := context.GetOk(r, authenticatedAccountKey)
+	val, ok := context.GetOk(r, AuthenticatedAccountKey)
 	if !ok {
 		return nil, ErrAccountAuthenticationRequired
 	}
@@ -38,7 +40,7 @@ func GetAuthenticatedAccount(r *http.Request) (*Account, error) {
 
 // GetAuthenticatedUser returns *User from the request context
 func GetAuthenticatedUser(r *http.Request) (*User, error) {
-	val, ok := context.GetOk(r, authenticatedUserKey)
+	val, ok := context.GetOk(r, AuthenticatedUserKey)
 	if !ok {
 		return nil, ErrUserAuthenticationRequired
 	}

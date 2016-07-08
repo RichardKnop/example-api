@@ -30,7 +30,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 	}
 
 	// Set a context value of an invalid type
-	context.Set(r, authenticatedAccountKey, "bogus")
+	context.Set(r, AuthenticatedAccountKey, "bogus")
 
 	account, err = GetAuthenticatedAccount(r)
 
@@ -43,7 +43,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 	}
 
 	// Set a valid context value
-	context.Set(r, authenticatedAccountKey, &Account{Name: "Test Account"})
+	context.Set(r, AuthenticatedAccountKey, &Account{Name: "Test Account"})
 
 	account, err = GetAuthenticatedAccount(r)
 
@@ -77,7 +77,7 @@ func TestGetAuthenticatedUser(t *testing.T) {
 	}
 
 	// Set a context value of an invalid type
-	context.Set(r, authenticatedUserKey, "bogus")
+	context.Set(r, AuthenticatedUserKey, "bogus")
 
 	user, err = GetAuthenticatedUser(r)
 
@@ -90,7 +90,7 @@ func TestGetAuthenticatedUser(t *testing.T) {
 	}
 
 	// Set a valid context value
-	context.Set(r, authenticatedUserKey, &User{FirstName: util.StringOrNull("John Reese")})
+	context.Set(r, AuthenticatedUserKey, &User{FirstName: util.StringOrNull("John Reese")})
 
 	user, err = GetAuthenticatedUser(r)
 
