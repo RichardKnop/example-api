@@ -30,10 +30,9 @@ func (u *User) GetName() string {
 func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*User, error) {
 	// Fetch the user from the database
 	user := new(User)
-	notFound := s.db.Where(User{
+	notFound := UserPreload(s.db).Where(User{
 		OauthUserID: util.PositiveIntOrNull(int64(oauthUserID)),
-	}).Preload("Account.OauthClient").Preload("OauthUser").Preload("Role").
-		First(user).RecordNotFound()
+	}).First(user).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -47,9 +46,9 @@ func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*User, error) {
 func (s *Service) FindUserByEmail(email string) (*User, error) {
 	// Fetch the user from the database
 	user := new(User)
-	notFound := s.db.Joins("inner join oauth_users on oauth_users.id = account_users.oauth_user_id").
-		Where("oauth_users.username = ?", email).Preload("Account.OauthClient").
-		Preload("OauthUser").Preload("Role").First(user).RecordNotFound()
+	notFound := UserPreload(s.db).
+		Joins("inner join oauth_users on oauth_users.id = account_users.oauth_user_id").
+		Where("oauth_users.username = ?", email).First(user).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -63,8 +62,7 @@ func (s *Service) FindUserByEmail(email string) (*User, error) {
 func (s *Service) FindUserByID(userID uint) (*User, error) {
 	// Fetch the user from the database
 	user := new(User)
-	notFound := s.db.Preload("Account.OauthClient").Preload("OauthUser").
-		Preload("Role").First(user, userID).RecordNotFound()
+	notFound := UserPreload(s.db).First(user, userID).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -78,8 +76,7 @@ func (s *Service) FindUserByID(userID uint) (*User, error) {
 func (s *Service) FindUserByFacebookID(facebookID string) (*User, error) {
 	// Fetch the user from the database
 	user := new(User)
-	notFound := s.db.Where("facebook_id = ?", facebookID).
-		Preload("Account.OauthClient").Preload("OauthUser").Preload("Role").
+	notFound := UserPreload(s.db).Where("facebook_id = ?", facebookID).
 		First(user).RecordNotFound()
 
 	// Not found
@@ -233,11 +230,12 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 			}
 		}
 
-		// Set the facebook ID, first name, last name
+		// Set the facebook ID, first name, last name, picture
 		err = tx.Model(user).UpdateColumns(User{
 			FacebookID: util.StringOrNull(facebookID),
 			FirstName:  util.StringOrNull(userRequest.FirstName),
 			LastName:   util.StringOrNull(userRequest.LastName),
+			Picture:    util.StringOrNull(userRequest.Picture),
 			Confirmed:  true,
 			Model:      gorm.Model{UpdatedAt: time.Now()},
 		}).Error
@@ -346,6 +344,7 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 		facebookID,
 		userRequest.FirstName,
 		userRequest.LastName,
+		userRequest.Picture,
 		confirmed,
 	)
 
@@ -366,4 +365,17 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 	}
 
 	return user, nil
+}
+
+// UserPreload sets up Gorm preloads for a user object
+func UserPreload(db *gorm.DB) *gorm.DB {
+	return UserPreloadWithPrefix(db, "")
+}
+
+// UserPreloadWithPrefix sets up Gorm preloads for a user object,
+// and prefixes with prefix for nested objects
+func UserPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.
+		Preload(prefix + "Account.OauthClient").Preload(prefix + "OauthUser").
+		Preload(prefix + "Role")
 }

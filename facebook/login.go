@@ -3,7 +3,6 @@ package facebook
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/RichardKnop/recall/accounts"
@@ -45,34 +44,38 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Initialise variables with from facebook
+	// Initialise variables
 	var (
-		facebookID = fmt.Sprintf("%s", resp["id"])
-		email      = fmt.Sprintf("%s", resp["email"])
-		firstName  = fmt.Sprintf("%s", resp["first_name"])
-		lastName   = fmt.Sprintf("%s", resp["last_name"])
-		user       *accounts.User
+		profile UserProfile
+		user    *accounts.User
 	)
 
-	log.Print("Fetched Facebook user's data")
-	log.Printf("%v", resp)
+	// Decode the response to struct
+	if err := resp.Decode(&profile); err != nil {
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if profile.Email == nil {
+		// There is an edge case where Facebook does not return a valid email
+		// User could have registered with a phone number or have an unconfirmed
+		// email address. In such rare case, default to {facebook_id}@facebook.com
+		edgeCaseEmail := fmt.Sprintf("%s@facebook.com", profile.ID)
+		profile.Email = &edgeCaseEmail
+	}
 
-	// There is an edge case where Facebook does not return a valid email
-	// User could have registered with a phone number or have an unconfirmed
-	// email address. In such rare case, default to {facebook_id}@facebook.com
-	if resp["email"] == nil || email == "%!s(<nil>)" {
-		email = fmt.Sprintf("%s@facebook.com", facebookID)
+	// Build user request object
+	userRequest := &accounts.UserRequest{
+		Email:     *profile.Email,
+		FirstName: profile.FirstName,
+		LastName:  profile.LastName,
+		Picture:   profile.GetPictureURL(),
 	}
 
 	// Get or create a new user based on facebook ID and other details
 	user, err = s.GetAccountsService().GetOrCreateFacebookUser(
 		authenticatedAccount,
-		facebookID,
-		&accounts.UserRequest{
-			Email:     email,
-			FirstName: firstName,
-			LastName:  lastName,
-		},
+		profile.ID,
+		userRequest,
 	)
 	if err != nil {
 		response.Error(w, err.Error(), http.StatusInternalServerError)

@@ -90,6 +90,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 		"", // facebook ID
 		"Harold",
 		"Finch",
+		"",    // picture
 		false, // confirmed
 	)
 	err = suite.db.Create(testUser).Error
@@ -134,8 +135,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 
 	// Fetch the updated user
 	user := new(User)
-	notFound := suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role.Permissions").First(user, testUser.ID).RecordNotFound()
+	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Password reset should have been soft deleted

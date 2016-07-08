@@ -14,6 +14,7 @@ type UserResponse struct {
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
+	Picture   string `json:"picture"`
 	Role      string `json:"role"`
 	Confirmed bool   `json:"confirmed"`
 	CreatedAt string `json:"created_at"`
@@ -58,6 +59,7 @@ func NewUserResponse(user *User) (*UserResponse, error) {
 		Email:     user.OauthUser.Username,
 		FirstName: user.FirstName.String,
 		LastName:  user.LastName.String,
+		Picture:   user.Picture.String,
 		Role:      user.RoleID.String,
 		Confirmed: user.Confirmed,
 		CreatedAt: util.FormatTime(user.CreatedAt),

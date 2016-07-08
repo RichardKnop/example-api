@@ -78,8 +78,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 
 	// Fetch the created user
 	user := new(User)
-	notFound := suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role").Last(user).RecordNotFound()
+	notFound := UserPreload(suite.db).Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Fetch the created confirmation

@@ -7,6 +7,7 @@ type UserRequest struct {
 	NewPassword string `json:"new_password"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
+	Picture     string `json:"picture"`
 	Role        string `json:"role"`
 }
 

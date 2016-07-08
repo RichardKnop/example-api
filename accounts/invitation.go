@@ -129,6 +129,7 @@ func (s *Service) inviteUserCommon(db *gorm.DB, invitedByUser *User, invitationR
 		"", // facebook ID
 		invitationRequest.FirstName,
 		invitationRequest.LastName,
+		"",    // picture
 		false, // confirmed
 	)
 

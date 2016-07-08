@@ -9,6 +9,40 @@ import (
 	"golang.org/x/oauth2/facebook"
 )
 
+// UserProfile ...
+type UserProfile struct {
+	ID        string          `json:"id"`
+	Name      string          `json:"name"`
+	FirstName string          `json:"first_name"`
+	LastName  string          `json:"last_name"`
+	Email     *string         `json:"email"`
+	Picture   *ProfilePicture `json:"picture"`
+}
+
+// ProfilePictureData ...
+type ProfilePictureData struct {
+	Width        int    `json:"width"`
+	Height       int    `json:"height"`
+	IsSilhouette bool   `json:"is_silhouette"`
+	URL          string `json:"url"`
+}
+
+// ProfilePicture ...
+type ProfilePicture struct {
+	Data *ProfilePictureData `json:"data"`
+}
+
+// GetPictureURL ...
+func (u *UserProfile) GetPictureURL() string {
+	if u.Picture == nil {
+		return ""
+	}
+	if u.Picture.Data == nil {
+		return ""
+	}
+	return u.Picture.Data.URL
+}
+
 // Adapter ...
 type Adapter struct {
 	oauth2Cnf *oauth2.Config

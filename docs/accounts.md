@@ -38,6 +38,7 @@ Example response:
     "email": "test@user",
     "first_name": "",
     "last_name": "",
+    "picture": "",
     "role": "user",
     "confirmed": false,
     "created_at": "2015-12-17T06:17:54Z",
@@ -80,6 +81,7 @@ Example response:
     "email": "test@user",
     "first_name": "",
     "last_name": "",
+    "picture": "",
     "role": "user",
     "confirmed": true,
     "created_at": "2015-12-17T06:17:54Z",
@@ -109,6 +111,7 @@ Example response:
     "email": "test@user",
     "first_name": "",
     "last_name": "",
+    "picture": "",
     "role": "user",
     "confirmed": true,
     "created_at": "2015-12-17T06:17:54Z",
@@ -127,6 +130,7 @@ curl -XPUT --compressed -v localhost:8080/v1/accounts/users/1 \
 	-d '{
 		"first_name": "test_first_name_updated",
 		"last_name": "test_last_name_updated",
+		"picture": "test_picture_updated"
 	}'
 ```
 
@@ -143,6 +147,7 @@ Example response:
     "email": "test@user",
     "first_name": "test_first_name_updated",
     "last_name": "test_last_name_updated",
+    "picture": "test_picture_updated",
     "role": "user",
     "confirmed": true,
     "created_at": "2015-12-17T06:17:54Z",
@@ -177,6 +182,7 @@ Example response:
     "email": "test@user",
     "first_name": "test_first_name",
     "last_name": "test_last_name",
+		"picture": "test_picture",
     "role": "user",
     "confirmed": true,
     "created_at": "2015-12-17T06:17:54Z",

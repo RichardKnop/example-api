@@ -97,6 +97,7 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 		"some_facebook_id", // facebook ID
 		"Harold",
 		"Finch",
+		"",   // picture
 		true, // confirmed
 	)
 	err = suite.db.Create(testUser).Error
@@ -158,8 +159,8 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 
 	// Fetch the updated user
 	user := new(User)
-	assert.False(suite.T(), suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role").First(user, testUser.ID).RecordNotFound())
+	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	assert.False(suite.T(), notFound)
 
 	// Check that the password has changed
 	assert.NoError(suite.T(), password.VerifyPassword(
@@ -223,6 +224,7 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 		"", // facebook ID
 		"Harold",
 		"Finch",
+		"",    // picture
 		false, // confirmed
 	)
 	err = suite.db.Create(testUser).Error
@@ -282,8 +284,8 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 
 	// Fetch the updated user
 	user := new(User)
-	assert.False(suite.T(), suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role").First(user, testUser.ID).RecordNotFound())
+	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	assert.False(suite.T(), notFound)
 
 	// Check that the password has changed
 	assert.Error(suite.T(), password.VerifyPassword(
@@ -351,6 +353,7 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 		"",    // facebook ID
 		"",    // first name
 		"",    // last name
+		"",    // picture
 		false, // confirmed
 	)
 	err = suite.db.Create(testUser).Error
@@ -410,8 +413,8 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 
 	// Fetch the updated user
 	user := new(User)
-	assert.False(suite.T(), suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role").First(user, testUser.ID).RecordNotFound())
+	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	assert.False(suite.T(), notFound)
 
 	// Check that the password has NOT changed
 	assert.NoError(suite.T(), password.VerifyPassword(

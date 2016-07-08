@@ -53,8 +53,8 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 
 	// Fetch the user
 	user := new(User)
-	assert.False(suite.T(), suite.db.Preload("Account").Preload("OauthUser").
-		Preload("Role").First(user, suite.users[1].ID).RecordNotFound())
+	notFound := UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
+	assert.False(suite.T(), notFound)
 
 	// Check the response body
 	expected := &UserResponse{

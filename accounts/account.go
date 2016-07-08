@@ -5,6 +5,7 @@ import (
 
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/util"
+	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -18,9 +19,9 @@ var (
 func (s *Service) FindAccountByOauthClientID(oauthClientID uint) (*Account, error) {
 	// Fetch the client from the database
 	account := new(Account)
-	notFound := s.db.Where(Account{
+	notFound := AccountPreload(s.db).Where(Account{
 		OauthClientID: util.PositiveIntOrNull(int64(oauthClientID)),
-	}).Preload("OauthClient").First(account).RecordNotFound()
+	}).First(account).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -34,8 +35,7 @@ func (s *Service) FindAccountByOauthClientID(oauthClientID uint) (*Account, erro
 func (s *Service) FindAccountByID(accountID uint) (*Account, error) {
 	// Fetch the client from the database
 	account := new(Account)
-	notFound := s.db.Preload("OauthClient").
-		First(account, accountID).RecordNotFound()
+	notFound := AccountPreload(s.db).First(account, accountID).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -49,7 +49,7 @@ func (s *Service) FindAccountByID(accountID uint) (*Account, error) {
 func (s *Service) FindAccountByName(name string) (*Account, error) {
 	// Fetch the client from the database
 	account := new(Account)
-	notFound := s.db.Where("name = ?", name).Preload("OauthClient").
+	notFound := AccountPreload(s.db).Where("name = ?", name).
 		First(account).RecordNotFound()
 
 	// Not found
@@ -107,4 +107,15 @@ func (s *Service) CreateAccount(name, description, key, secret, redirectURI stri
 	}
 
 	return account, nil
+}
+
+// AccountPreload sets up Gorm preloads for an account object
+func AccountPreload(db *gorm.DB) *gorm.DB {
+	return AccountPreloadWithPrefix(db, "")
+}
+
+// AccountPreloadWithPrefix sets up Gorm preloads for an account object, and prefixes with prefix for nested objects
+func AccountPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.
+		Preload(prefix + "OauthClient")
 }
