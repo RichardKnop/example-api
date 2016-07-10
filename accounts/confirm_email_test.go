@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	b64 "encoding/base64"
@@ -9,24 +9,31 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestConfirmEmailFailsWithoutAccountAuthentication() {
-	r, err := http.NewRequest("", "", nil)
+	// Prepare a request
+	bogusUUID := uuid.New()
+	r, err := http.NewRequest(
+		"GET",
+		fmt.Sprintf("http://1.2.3.4/v1/accounts/confirmations/%s", bogusUUID),
+		nil,
+	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
 	// And serve the request
 	w := httptest.NewRecorder()
-
-	suite.service.confirmEmailHandler(w, r)
+	suite.router.ServeHTTP(w, r)
 
 	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated account")
 }
 
 func (suite *AccountsTestSuite) TestConfirmEmailReferenceNotFound() {
+	// Prepare a request
 	bogusUUID := uuid.New()
 	r, err := http.NewRequest(
 		"GET",
@@ -53,7 +60,7 @@ func (suite *AccountsTestSuite) TestConfirmEmailReferenceNotFound() {
 
 	// Check the response body
 	expectedJSON, err := json.Marshal(
-		map[string]string{"error": ErrConfirmationNotFound.Error()})
+		map[string]string{"error": accounts.ErrConfirmationNotFound.Error()})
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
 		assert.Equal(
 			suite.T(),
@@ -67,18 +74,18 @@ func (suite *AccountsTestSuite) TestConfirmEmailReferenceNotFound() {
 func (suite *AccountsTestSuite) TestConfirmEmail() {
 	var (
 		testOauthUser    *oauth.User
-		testUser         *User
-		testConfirmation *Confirmation
+		testUser         *accounts.User
+		testConfirmation *accounts.Confirmation
 		err              error
 	)
 
 	// Insert a test user
-	testOauthUser, err = suite.service.oauthService.CreateUser(
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(
 		"harold@finch",
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = NewUser(
+	testUser = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
@@ -95,7 +102,7 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 	testUser.Role = suite.userRole
 
 	// Insert a test confirmation
-	testConfirmation = NewConfirmation(testUser)
+	testConfirmation = accounts.NewConfirmation(testUser)
 	err = suite.db.Create(testConfirmation).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test confirmation")
 	testConfirmation.User = testUser
@@ -125,12 +132,12 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 	}
 
 	// Fetch the updated user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Fetch the confirmation
-	confirmation := new(Confirmation)
+	confirmation := new(accounts.Confirmation)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
 		Last(confirmation).RecordNotFound())
 

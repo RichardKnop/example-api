@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/RichardKnop/jsonhal"
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/util"
 	"github.com/gorilla/mux"
@@ -16,18 +17,19 @@ import (
 )
 
 func (suite *AccountsTestSuite) TestGetUserRequiresUserAuthentication() {
-	r, err := http.NewRequest("", "", nil)
+	// Prepare a request
+	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/users/12345", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
 	// And serve the request
 	w := httptest.NewRecorder()
-
-	suite.service.getUserHandler(w, r)
+	suite.router.ServeHTTP(w, r)
 
 	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated user")
 }
 
 func (suite *AccountsTestSuite) TestGetUserFailsWithoutPermission() {
+	// Prepare a request
 	r, err := http.NewRequest(
 		"GET",
 		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", suite.users[2].ID),
@@ -57,7 +59,7 @@ func (suite *AccountsTestSuite) TestGetUserFailsWithoutPermission() {
 
 	// Check the response body
 	expectedJSON, err := json.Marshal(
-		map[string]string{"error": ErrGetUserPermission.Error()})
+		map[string]string{"error": accounts.ErrGetUserPermission.Error()})
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
 		assert.Equal(
 			suite.T(),
@@ -98,12 +100,12 @@ func (suite *AccountsTestSuite) TestGetUser() {
 	}
 
 	// Fetch the user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check the response body
-	expected := &UserResponse{
+	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{

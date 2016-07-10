@@ -1,9 +1,10 @@
-package accounts
+package accounts_test
 
 import (
 	"log"
 	"testing"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/config"
 	"github.com/RichardKnop/recall/database"
@@ -32,7 +33,7 @@ var testFixtures = []string{
 // db migrations needed for tests
 var testMigrations = []func(*gorm.DB) error{
 	oauth.MigrateAll,
-	MigrateAll,
+	accounts.MigrateAll,
 }
 
 // AccountsTestSuite needs to be exported so the tests run
@@ -41,12 +42,12 @@ type AccountsTestSuite struct {
 	cnf              *config.Config
 	db               *gorm.DB
 	emailServiceMock *email.ServiceMock
-	emailFactoryMock *EmailFactoryMock
-	service          *Service
-	accounts         []*Account
-	users            []*User
-	superuserRole    *Role
-	userRole         *Role
+	emailFactoryMock *accounts.EmailFactoryMock
+	service          *accounts.Service
+	accounts         []*accounts.Account
+	users            []*accounts.User
+	superuserRole    *accounts.Role
+	userRole         *accounts.Role
 	router           *mux.Router
 }
 
@@ -70,26 +71,26 @@ func (suite *AccountsTestSuite) SetupSuite() {
 	suite.db = db
 
 	// Fetch test accounts
-	suite.accounts = make([]*Account, 0)
-	err = AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
+	suite.accounts = make([]*accounts.Account, 0)
+	err = accounts.AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Fetch test users
-	suite.users = make([]*User, 0)
-	err = UserPreload(suite.db).Order("id").Find(&suite.users).Error
+	suite.users = make([]*accounts.User, 0)
+	err = accounts.UserPreload(suite.db).Order("id").Find(&suite.users).Error
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Fetch test roles
-	suite.superuserRole = new(Role)
+	suite.superuserRole = new(accounts.Role)
 	err = suite.db.Where("id = ?", roles.Superuser).First(&suite.superuserRole).Error
 	if err != nil {
 		log.Fatal(err)
 	}
-	suite.userRole = new(Role)
+	suite.userRole = new(accounts.Role)
 	err = suite.db.Where("id = ?", roles.User).First(&suite.userRole).Error
 	if err != nil {
 		log.Fatal(err)
@@ -97,10 +98,10 @@ func (suite *AccountsTestSuite) SetupSuite() {
 
 	// Initialise mocks
 	suite.emailServiceMock = new(email.ServiceMock)
-	suite.emailFactoryMock = new(EmailFactoryMock)
+	suite.emailFactoryMock = new(accounts.EmailFactoryMock)
 
 	// Initialise the service
-	suite.service = NewService(
+	suite.service = accounts.NewService(
 		suite.cnf,
 		suite.db,
 		oauth.NewService(suite.cnf, suite.db),
@@ -110,7 +111,7 @@ func (suite *AccountsTestSuite) SetupSuite() {
 
 	// Register routes
 	suite.router = mux.NewRouter()
-	RegisterRoutes(suite.router, suite.service)
+	accounts.RegisterRoutes(suite.router, suite.service)
 }
 
 // The TearDownSuite method will be run by testify once, at the very
@@ -121,14 +122,14 @@ func (suite *AccountsTestSuite) TearDownSuite() {
 
 // The SetupTest method will be run before every test in the suite.
 func (suite *AccountsTestSuite) SetupTest() {
-	suite.db.Unscoped().Delete(new(Confirmation))
-	suite.db.Unscoped().Delete(new(Invitation))
-	suite.db.Unscoped().Delete(new(PasswordReset))
+	suite.db.Unscoped().Delete(new(accounts.Confirmation))
+	suite.db.Unscoped().Delete(new(accounts.Invitation))
+	suite.db.Unscoped().Delete(new(accounts.PasswordReset))
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(oauth.AccessToken))
 	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
 
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(User))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(Account))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(accounts.User))
+	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(accounts.Account))
 
 	// Service.CreateUser also creates a new oauth.User instance
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.User))

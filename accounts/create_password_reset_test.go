@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"bytes"
@@ -11,13 +11,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 	// Prepare a request
-	payload, err := json.Marshal(&PasswordResetRequest{"test@user"})
+	payload, err := json.Marshal(&accounts.PasswordResetRequest{"test@user"})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"POST",
@@ -45,7 +46,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(PasswordReset)).Count(&countBefore)
+	suite.db.Model(new(accounts.PasswordReset)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -64,11 +65,11 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(PasswordReset)).Count(&countAfter)
+	suite.db.Model(new(accounts.PasswordReset)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Fetch the created password reset
-	passwordReset := new(PasswordReset)
+	passwordReset := new(accounts.PasswordReset)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
 		Last(passwordReset).RecordNotFound())
 
@@ -87,13 +88,13 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 
 func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	// Insert a test password reset
-	testPasswordReset := NewPasswordReset(suite.users[1])
+	testPasswordReset := accounts.NewPasswordReset(suite.users[1])
 	err := suite.db.Create(testPasswordReset).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test password reset")
 	testPasswordReset.User = suite.users[1]
 
 	// Prepare a request
-	payload, err := json.Marshal(&PasswordResetRequest{suite.users[1].OauthUser.Username})
+	payload, err := json.Marshal(&accounts.PasswordResetRequest{suite.users[1].OauthUser.Username})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"POST",
@@ -121,7 +122,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(PasswordReset)).Count(&countBefore)
+	suite.db.Model(new(accounts.PasswordReset)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -134,11 +135,11 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(PasswordReset)).Count(&countAfter)
+	suite.db.Model(new(accounts.PasswordReset)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the last password reset
-	passwordReset := new(PasswordReset)
+	passwordReset := new(accounts.PasswordReset)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
 		Last(passwordReset).RecordNotFound())
 
@@ -164,7 +165,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	suite.assertMockExpectations()
 
 	// Refresh the password reset
-	passwordReset = new(PasswordReset)
+	passwordReset = new(accounts.PasswordReset)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
 		Last(passwordReset).RecordNotFound())
 

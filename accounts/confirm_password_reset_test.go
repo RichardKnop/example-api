@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/oauth"
 	pass "github.com/RichardKnop/recall/password"
 	"github.com/RichardKnop/uuid"
@@ -17,21 +18,27 @@ import (
 )
 
 func (suite *AccountsTestSuite) TestConfirmPasswordResetFailsWithoutAccountAuthentication() {
-	r, err := http.NewRequest("", "", nil)
+	// Prepare a request
+	bogusUUID := uuid.New()
+	r, err := http.NewRequest(
+		"POST",
+		fmt.Sprintf("http://1.2.3.4/v1/accounts/password-resets/%s", bogusUUID),
+		nil,
+	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
 	// And serve the request
 	w := httptest.NewRecorder()
-
-	suite.service.confirmPasswordResetHandler(w, r)
+	suite.router.ServeHTTP(w, r)
 
 	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated account")
 }
 
 func (suite *AccountsTestSuite) TestConfirmPasswordResetReferenceNotFound() {
+	// Prepare a request
 	bogusUUID := uuid.New()
-	payload, err := json.Marshal(&ConfirmPasswordResetRequest{
-		PasswordRequest: PasswordRequest{Password: "test_password"},
+	payload, err := json.Marshal(&accounts.ConfirmPasswordResetRequest{
+		PasswordRequest: accounts.PasswordRequest{Password: "test_password"},
 	})
 	r, err := http.NewRequest(
 		"POST",
@@ -58,7 +65,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordResetReferenceNotFound() {
 
 	// Check the response body
 	expectedJSON, err := json.Marshal(
-		map[string]string{"error": ErrPasswordResetNotFound.Error()})
+		map[string]string{"error": accounts.ErrPasswordResetNotFound.Error()})
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
 		assert.Equal(
 			suite.T(),
@@ -72,18 +79,18 @@ func (suite *AccountsTestSuite) TestConfirmPasswordResetReferenceNotFound() {
 func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 	var (
 		testOauthUser     *oauth.User
-		testUser          *User
-		testPasswordReset *PasswordReset
+		testUser          *accounts.User
+		testPasswordReset *accounts.PasswordReset
 		err               error
 	)
 
 	// Insert a test user
-	testOauthUser, err = suite.service.oauthService.CreateUser(
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(
 		"harold@finch",
 		"", // blank password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = NewUser(
+	testUser = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
@@ -100,14 +107,14 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 	testUser.Role = suite.userRole
 
 	// Insert a test password reset
-	testPasswordReset = NewPasswordReset(testUser)
+	testPasswordReset = accounts.NewPasswordReset(testUser)
 	err = suite.db.Create(testPasswordReset).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test password reset")
 	testPasswordReset.User = testUser
 
 	// Prepare a request
-	payload, err := json.Marshal(&ConfirmPasswordResetRequest{
-		PasswordRequest: PasswordRequest{Password: "test_password"},
+	payload, err := json.Marshal(&accounts.ConfirmPasswordResetRequest{
+		PasswordRequest: accounts.PasswordRequest{Password: "test_password"},
 	})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
@@ -134,12 +141,12 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 	}
 
 	// Fetch the updated user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Password reset should have been soft deleted
-	assert.True(suite.T(), suite.db.First(new(PasswordReset), testPasswordReset.ID).RecordNotFound())
+	assert.True(suite.T(), suite.db.First(new(accounts.PasswordReset), testPasswordReset.ID).RecordNotFound())
 
 	// And correct data was saved
 	assert.Nil(suite.T(), pass.VerifyPassword(user.OauthUser.Password.String, "test_password"))

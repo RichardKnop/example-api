@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,11 +15,11 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 		r                    *http.Request
 		w                    *httptest.ResponseRecorder
 		next                 http.HandlerFunc
-		authenticatedAccount *Account
+		authenticatedAccount *accounts.Account
 		err                  error
 	)
 
-	middleware := NewAccountAuthMiddleware(suite.service)
+	middleware := accounts.NewAccountAuthMiddleware(suite.service)
 
 	// Send a request without basic auth through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
@@ -35,16 +36,16 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			ErrAccountAuthenticationRequired,
+			accounts.ErrAccountAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
 
 	// Check the context variable has not been set
-	authenticatedAccount, err = GetAuthenticatedAccount(r)
+	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
 	assert.Nil(suite.T(), authenticatedAccount)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrAccountAuthenticationRequired, err)
+		assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
 	}
 
 	// Send a request with incorrect basic auth through the middleware
@@ -63,16 +64,16 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 		suite.T(),
 		fmt.Sprintf(
 			"{\"error\":\"%s\"}",
-			ErrAccountAuthenticationRequired,
+			accounts.ErrAccountAuthenticationRequired,
 		),
 		strings.TrimSpace(w.Body.String()),
 	)
 
 	// Check the context variable has not been set
-	authenticatedAccount, err = GetAuthenticatedAccount(r)
+	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
 	assert.Nil(suite.T(), authenticatedAccount)
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrAccountAuthenticationRequired, err)
+		assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
 	}
 
 	// Send a request with correct basic auth through the middleware
@@ -87,7 +88,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 	assert.Equal(suite.T(), 200, w.Code)
 
 	// Check the context variable has been set
-	authenticatedAccount, err = GetAuthenticatedAccount(r)
+	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
 	assert.Nil(suite.T(), err)
 	if assert.NotNil(suite.T(), authenticatedAccount) {
 		assert.Equal(suite.T(), "Test Account 1", authenticatedAccount.Name)

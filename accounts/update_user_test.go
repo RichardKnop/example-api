@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/RichardKnop/jsonhal"
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/password"
@@ -19,18 +20,20 @@ import (
 )
 
 func (suite *AccountsTestSuite) TestUpdateUserRequiresUserAuthentication() {
-	r, err := http.NewRequest("", "", nil)
+	// Prepare a request
+	r, err := http.NewRequest("PUT", "http://1.2.3.4/v1/accounts/users/12345", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
+	// And serve the request
 	w := httptest.NewRecorder()
-
-	suite.service.updateUserHandler(w, r)
+	suite.router.ServeHTTP(w, r)
 
 	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated user")
 }
 
 func (suite *AccountsTestSuite) TestUpdateUserFailsWithoutPermission() {
-	payload, err := json.Marshal(&UserRequest{
+	// Prepare a request
+	payload, err := json.Marshal(&accounts.UserRequest{
 		Email:     "test@user",
 		FirstName: "John",
 		LastName:  "Reese",
@@ -65,7 +68,7 @@ func (suite *AccountsTestSuite) TestUpdateUserFailsWithoutPermission() {
 
 	// Check the response body
 	expectedJSON, err := json.Marshal(
-		map[string]string{"error": ErrUpdateUserPermission.Error()})
+		map[string]string{"error": accounts.ErrUpdateUserPermission.Error()})
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
 		assert.Equal(
 			suite.T(),
@@ -79,18 +82,18 @@ func (suite *AccountsTestSuite) TestUpdateUserFailsWithoutPermission() {
 func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() {
 	var (
 		testOauthUser   *oauth.User
-		testUser        *User
+		testUser        *accounts.User
 		testAccessToken *oauth.AccessToken
 		err             error
 	)
 
 	// Insert a test user
-	testOauthUser, err = suite.service.oauthService.CreateUser(
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(
 		"harold@finch",
 		"", // empty password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = NewUser(
+	testUser = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
@@ -109,14 +112,14 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 	testUser.Role = suite.userRole
 
 	// Login the test user
-	testAccessToken, _, err = suite.service.oauthService.Login(
+	testAccessToken, _, err = suite.service.GetOauthService().Login(
 		suite.accounts[0].OauthClient,
 		testUser.OauthUser,
 		"read_write", // scope
 	)
 	assert.NoError(suite.T(), err, "Failed to login the test user")
 
-	payload, err := json.Marshal(&UserRequest{
+	payload, err := json.Marshal(&accounts.UserRequest{
 		Password:    "",
 		NewPassword: "some_new_password",
 	})
@@ -138,7 +141,7 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(User)).Count(&countBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -154,12 +157,12 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(User)).Count(&countAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the updated user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check that the password has changed
@@ -176,7 +179,7 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 	assert.True(suite.T(), user.Confirmed)
 
 	// Check the response body
-	expected := &UserResponse{
+	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
@@ -206,18 +209,18 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePasswordWhenPasswordEmpty() 
 func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 	var (
 		testOauthUser   *oauth.User
-		testUser        *User
+		testUser        *accounts.User
 		testAccessToken *oauth.AccessToken
 		err             error
 	)
 
 	// Insert a test user
-	testOauthUser, err = suite.service.oauthService.CreateUser(
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(
 		"harold@finch",
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = NewUser(
+	testUser = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
@@ -234,14 +237,14 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 	testUser.Role = suite.userRole
 
 	// Login the test user
-	testAccessToken, _, err = suite.service.oauthService.Login(
+	testAccessToken, _, err = suite.service.GetOauthService().Login(
 		suite.accounts[0].OauthClient,
 		testUser.OauthUser,
 		"read_write", // scope
 	)
 	assert.NoError(suite.T(), err, "Failed to login the test user")
 
-	payload, err := json.Marshal(&UserRequest{
+	payload, err := json.Marshal(&accounts.UserRequest{
 		Password:    "test_password",
 		NewPassword: "some_new_password",
 	})
@@ -263,7 +266,7 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(User)).Count(&countBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -279,12 +282,12 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(User)).Count(&countAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the updated user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check that the password has changed
@@ -305,7 +308,7 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 	assert.False(suite.T(), user.Confirmed)
 
 	// Check the response body
-	expected := &UserResponse{
+	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
@@ -335,18 +338,18 @@ func (suite *AccountsTestSuite) TestUpdateUserChangePassword() {
 func (suite *AccountsTestSuite) TestUpdateUser() {
 	var (
 		testOauthUser   *oauth.User
-		testUser        *User
+		testUser        *accounts.User
 		testAccessToken *oauth.AccessToken
 		err             error
 	)
 
 	// Insert a test user
-	testOauthUser, err = suite.service.oauthService.CreateUser(
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(
 		"harold@finch",
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = NewUser(
+	testUser = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
@@ -363,14 +366,14 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 	testUser.Role = suite.userRole
 
 	// Login the test user
-	testAccessToken, _, err = suite.service.oauthService.Login(
+	testAccessToken, _, err = suite.service.GetOauthService().Login(
 		suite.accounts[0].OauthClient,
 		testUser.OauthUser,
 		"read_write", // scope
 	)
 	assert.NoError(suite.T(), err, "Failed to login the test user")
 
-	payload, err := json.Marshal(&UserRequest{
+	payload, err := json.Marshal(&accounts.UserRequest{
 		FirstName: "Harold",
 		LastName:  "Finch",
 	})
@@ -392,7 +395,7 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(User)).Count(&countBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -408,12 +411,12 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(User)).Count(&countAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the updated user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check that the password has NOT changed
@@ -430,7 +433,7 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 	assert.False(suite.T(), user.Confirmed)
 
 	// Check the response body
-	expected := &UserResponse{
+	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{

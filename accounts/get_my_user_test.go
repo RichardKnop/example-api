@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/RichardKnop/jsonhal"
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/util"
 	"github.com/gorilla/mux"
@@ -16,12 +17,13 @@ import (
 )
 
 func (suite *AccountsTestSuite) TestGetMyUserRequiresUserAuthentication() {
-	r, err := http.NewRequest("", "", nil)
+	// Prepare a request
+	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/me", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
+	// And serve the request
 	w := httptest.NewRecorder()
-
-	suite.service.getMyUserHandler(w, r)
+	suite.router.ServeHTTP(w, r)
 
 	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated user")
 }
@@ -52,12 +54,12 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 	}
 
 	// Fetch the user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check the response body
-	expected := &UserResponse{
+	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{

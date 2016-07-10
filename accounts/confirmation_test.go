@@ -1,16 +1,17 @@
-package accounts
+package accounts_test
 
 import (
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindConfirmationByReference() {
 	var (
-		confirmation *Confirmation
+		confirmation *accounts.Confirmation
 		err          error
 	)
 
-	testConfirmation := NewConfirmation(suite.users[1])
+	testConfirmation := accounts.NewConfirmation(suite.users[1])
 	err = suite.db.Create(testConfirmation).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 
@@ -22,7 +23,7 @@ func (suite *AccountsTestSuite) TestFindConfirmationByReference() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrConfirmationNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrConfirmationNotFound, err)
 	}
 
 	// Now let's pass a valid reference

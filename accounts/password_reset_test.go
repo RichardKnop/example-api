@@ -1,20 +1,21 @@
-package accounts
+package accounts_test
 
 import (
 	"time"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	var (
-		passwordReset *PasswordReset
-		validFor      = time.Duration(suite.service.cnf.Recall.PasswordResetLifetime) * time.Second
+		passwordReset *accounts.PasswordReset
+		validFor      = time.Duration(suite.service.GetConfig().Recall.PasswordResetLifetime) * time.Second
 		err           error
 	)
 
 	// Insert a test password reset
-	testPasswordReset := NewPasswordReset(suite.users[1])
+	testPasswordReset := accounts.NewPasswordReset(suite.users[1])
 	err = suite.db.Create(testPasswordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test password reset failed")
 	testPasswordReset.User = suite.users[1]
@@ -25,7 +26,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	assert.NoError(suite.T(), err, "Updating test password reset failed")
 
 	// Insert a test expired password reset
-	testExpiredPasswordReset := NewPasswordReset(suite.users[1])
+	testExpiredPasswordReset := accounts.NewPasswordReset(suite.users[1])
 	err = suite.db.Create(testExpiredPasswordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test expired password reset failed")
 	testExpiredPasswordReset.User = suite.users[1]
@@ -43,7 +44,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrPasswordResetNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrPasswordResetNotFound, err)
 	}
 
 	// Now let's pass a valid reference of an expired password reset
@@ -54,7 +55,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrPasswordResetNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrPasswordResetNotFound, err)
 	}
 
 	// Now let's pass a valid reference
@@ -73,7 +74,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 
 func (suite *AccountsTestSuite) TestResetPassword() {
 	// Insert a test password reset
-	passwordReset := NewPasswordReset(suite.users[1])
+	passwordReset := accounts.NewPasswordReset(suite.users[1])
 	err := suite.db.Create(passwordReset).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 	passwordReset.User = suite.users[1]
@@ -87,6 +88,6 @@ func (suite *AccountsTestSuite) TestResetPassword() {
 	// The password reset object should have been deleted
 	assert.True(
 		suite.T(),
-		suite.db.Find(new(PasswordReset), passwordReset.ID).RecordNotFound(),
+		suite.db.Find(new(accounts.PasswordReset), passwordReset.ID).RecordNotFound(),
 	)
 }

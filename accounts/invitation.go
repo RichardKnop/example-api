@@ -106,7 +106,7 @@ func (s *Service) inviteUserCommon(db *gorm.DB, invitedByUser *User, invitationR
 	}
 
 	// Fetch the user from the database
-	role, err := s.findRoleByID(roles.User)
+	role, err := s.FindRoleByID(roles.User)
 	if err != nil {
 		return nil, err
 	}

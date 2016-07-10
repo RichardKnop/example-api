@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"bytes"
@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/RichardKnop/jsonhal"
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/util"
 	"github.com/gorilla/mux"
@@ -20,7 +21,7 @@ import (
 
 func (suite *AccountsTestSuite) TestCreateUser() {
 	// Prepare a request
-	payload, err := json.Marshal(&UserRequest{
+	payload, err := json.Marshal(&accounts.UserRequest{
 		Email:    "test@newuser",
 		Password: "test_password",
 	})
@@ -54,8 +55,8 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		countBefore              int
 		confirmationsCountBefore int
 	)
-	suite.db.Model(new(User)).Count(&countBefore)
-	suite.db.Model(new(Confirmation)).Count(&confirmationsCountBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(accounts.Confirmation)).Count(&confirmationsCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -71,18 +72,18 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		countAfter              int
 		confirmationsCountAfter int
 	)
-	suite.db.Model(new(User)).Count(&countAfter)
-	suite.db.Model(new(Confirmation)).Count(&confirmationsCountAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(accounts.Confirmation)).Count(&confirmationsCountAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 	assert.Equal(suite.T(), confirmationsCountBefore+1, confirmationsCountAfter)
 
 	// Fetch the created user
-	user := new(User)
-	notFound := UserPreload(suite.db).Last(user).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Fetch the created confirmation
-	confirmation := new(Confirmation)
+	confirmation := new(accounts.Confirmation)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
 		Last(confirmation).RecordNotFound())
 
@@ -107,7 +108,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	)
 
 	// Check the response body
-	expected := &UserResponse{
+	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
@@ -138,7 +139,7 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	suite.assertMockExpectations()
 
 	// Refresh the confirmation
-	confirmation = new(Confirmation)
+	confirmation = new(accounts.Confirmation)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
 		Last(confirmation).RecordNotFound())
 

@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/oauth"
 	pass "github.com/RichardKnop/recall/password"
 	"github.com/RichardKnop/uuid"
@@ -17,21 +18,27 @@ import (
 )
 
 func (suite *AccountsTestSuite) TestConfirmInvitationFailsWithoutAccountAuthentication() {
-	r, err := http.NewRequest("", "", nil)
+	// Prepare a request
+	bogusUUID := uuid.New()
+	r, err := http.NewRequest(
+		"POST",
+		fmt.Sprintf("http://1.2.3.4/v1/accounts/invitations/%s", bogusUUID),
+		nil,
+	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
 	// And serve the request
 	w := httptest.NewRecorder()
-
-	suite.service.confirmInvitationHandler(w, r)
+	suite.router.ServeHTTP(w, r)
 
 	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated account")
 }
 
 func (suite *AccountsTestSuite) TestConfirmInvitationReferenceNotFound() {
+	// Prepare a request
 	bogusUUID := uuid.New()
-	payload, err := json.Marshal(&ConfirmInvitationRequest{
-		PasswordRequest: PasswordRequest{Password: "test_password"},
+	payload, err := json.Marshal(&accounts.ConfirmInvitationRequest{
+		PasswordRequest: accounts.PasswordRequest{Password: "test_password"},
 	})
 	r, err := http.NewRequest(
 		"POST",
@@ -58,7 +65,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitationReferenceNotFound() {
 
 	// Check the response body
 	expectedJSON, err := json.Marshal(
-		map[string]string{"error": ErrInvitationNotFound.Error()})
+		map[string]string{"error": accounts.ErrInvitationNotFound.Error()})
 	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
 		assert.Equal(
 			suite.T(),
@@ -72,18 +79,18 @@ func (suite *AccountsTestSuite) TestConfirmInvitationReferenceNotFound() {
 func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	var (
 		testOauthUser  *oauth.User
-		testUser       *User
-		testInvitation *Invitation
+		testUser       *accounts.User
+		testInvitation *accounts.Invitation
 		err            error
 	)
 
 	// Insert a test user
-	testOauthUser, err = suite.service.oauthService.CreateUser(
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(
 		"harold@finch",
 		"", // blank password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = NewUser(
+	testUser = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
@@ -100,15 +107,15 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	testUser.Role = suite.userRole
 
 	// Insert a test invitation
-	testInvitation = NewInvitation(testUser, suite.users[0])
+	testInvitation = accounts.NewInvitation(testUser, suite.users[0])
 	err = suite.db.Create(testInvitation).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test invitation")
 	testInvitation.InvitedUser = testUser
 	testInvitation.InvitedByUser = suite.users[0]
 
 	// Prepare a request
-	payload, err := json.Marshal(&ConfirmInvitationRequest{
-		PasswordRequest: PasswordRequest{Password: "test_password"},
+	payload, err := json.Marshal(&accounts.ConfirmInvitationRequest{
+		PasswordRequest: accounts.PasswordRequest{Password: "test_password"},
 	})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
@@ -135,12 +142,12 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	}
 
 	// Fetch the updated user
-	user := new(User)
-	notFound := UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(accounts.User)
+	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Invitation should have been soft deleted
-	assert.True(suite.T(), suite.db.First(new(Invitation), testInvitation.ID).RecordNotFound())
+	assert.True(suite.T(), suite.db.First(new(accounts.Invitation), testInvitation.ID).RecordNotFound())
 
 	// And correct data was saved
 	assert.Nil(suite.T(), pass.VerifyPassword(user.OauthUser.Password.String, "test_password"))

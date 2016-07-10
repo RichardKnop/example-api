@@ -1,8 +1,9 @@
-package accounts
+package accounts_test
 
 import (
 	"testing"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/util"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestUserGetName(t *testing.T) {
-	user := &User{}
+	user := new(accounts.User)
 	assert.Equal(t, "", user.GetName())
 
 	user.FirstName = util.StringOrNull("John")
@@ -20,7 +21,7 @@ func TestUserGetName(t *testing.T) {
 
 func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 	var (
-		user *User
+		user *accounts.User
 		err  error
 	)
 
@@ -32,7 +33,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrUserNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrUserNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -51,7 +52,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 
 func (suite *AccountsTestSuite) TestFindUserByEmail() {
 	var (
-		user *User
+		user *accounts.User
 		err  error
 	)
 
@@ -63,7 +64,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrUserNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrUserNotFound, err)
 	}
 
 	// Now let's pass a valid email
@@ -82,7 +83,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 
 func (suite *AccountsTestSuite) TestFindUserByID() {
 	var (
-		user *User
+		user *accounts.User
 		err  error
 	)
 
@@ -94,7 +95,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrUserNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrUserNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -113,7 +114,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 
 func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 	var (
-		user *User
+		user *accounts.User
 		err  error
 	)
 
@@ -125,7 +126,7 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrUserNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrUserNotFound, err)
 	}
 
 	// Let's try to find a user by a bogus ID
@@ -136,7 +137,7 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrUserNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrUserNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -156,18 +157,18 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	var (
 		countBefore, countAfter int
-		user                    *User
+		user                    *accounts.User
 		err                     error
 	)
 
 	// Count before
-	suite.db.Model(new(User)).Count(&countBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
 
 	// Let's try passing an existing facebook ID
 	user, err = suite.service.GetOrCreateFacebookUser(
 		suite.accounts[0], // account
 		"facebook_id_2",   // facebook ID
-		&UserRequest{
+		&accounts.UserRequest{
 			Email:     "test@user",
 			FirstName: "John",
 			LastName:  "Reese",
@@ -175,7 +176,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	)
 
 	// Count after
-	suite.db.Model(new(User)).Count(&countAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Error should be nil
@@ -191,13 +192,13 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	}
 
 	// Count before
-	suite.db.Model(new(User)).Count(&countBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
 
 	// Let's try passing an existing email
 	user, err = suite.service.GetOrCreateFacebookUser(
 		suite.accounts[0],   // account
 		"finch_facebook_id", // facebook ID
-		&UserRequest{
+		&accounts.UserRequest{
 			Email:     "test@user",
 			FirstName: "Harold",
 			LastName:  "Finch",
@@ -205,7 +206,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	)
 
 	// Count after
-	suite.db.Model(new(User)).Count(&countAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Error should be nil
@@ -221,13 +222,13 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	}
 
 	// Count before
-	suite.db.Model(new(User)).Count(&countBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
 
 	// We pass new facebook ID and new email
 	user, err = suite.service.GetOrCreateFacebookUser(
 		suite.accounts[0],   // account
 		"reese_facebook_id", // facebook ID
-		&UserRequest{
+		&accounts.UserRequest{
 			Email:     "john@reese",
 			FirstName: "John",
 			LastName:  "Reese",
@@ -235,7 +236,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	)
 
 	// Count after
-	suite.db.Model(new(User)).Count(&countAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Error should be nil
@@ -254,7 +255,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 func (suite *AccountsTestSuite) TestCreateSuperuser() {
 	var (
-		user *User
+		user *accounts.User
 		err  error
 	)
 

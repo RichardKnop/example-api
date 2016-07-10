@@ -1,13 +1,14 @@
-package accounts
+package accounts_test
 
 import (
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindAccountByOauthClientID() {
 	var (
-		account *Account
+		account *accounts.Account
 		err     error
 	)
 
@@ -19,7 +20,7 @@ func (suite *AccountsTestSuite) TestFindAccountByOauthClientID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrAccountNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrAccountNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -37,7 +38,7 @@ func (suite *AccountsTestSuite) TestFindAccountByOauthClientID() {
 
 func (suite *AccountsTestSuite) TestFindAccountByID() {
 	var (
-		account *Account
+		account *accounts.Account
 		err     error
 	)
 
@@ -49,7 +50,7 @@ func (suite *AccountsTestSuite) TestFindAccountByID() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrAccountNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrAccountNotFound, err)
 	}
 
 	// Now let's pass a valid ID
@@ -67,7 +68,7 @@ func (suite *AccountsTestSuite) TestFindAccountByID() {
 
 func (suite *AccountsTestSuite) TestFindAccountByName() {
 	var (
-		account *Account
+		account *accounts.Account
 		err     error
 	)
 
@@ -79,7 +80,7 @@ func (suite *AccountsTestSuite) TestFindAccountByName() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrAccountNotFound, err)
+		assert.Equal(suite.T(), accounts.ErrAccountNotFound, err)
 	}
 
 	// Now let's pass a valid name
@@ -97,7 +98,7 @@ func (suite *AccountsTestSuite) TestFindAccountByName() {
 
 func (suite *AccountsTestSuite) TestCreateAccount() {
 	var (
-		account *Account
+		account *accounts.Account
 		err     error
 	)
 
@@ -132,7 +133,7 @@ func (suite *AccountsTestSuite) TestCreateAccount() {
 
 	// Correct error should be returned
 	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), ErrAccountNameTaken, err)
+		assert.Equal(suite.T(), accounts.ErrAccountNameTaken, err)
 	}
 
 	// We try to insert a unique account

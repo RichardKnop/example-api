@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/RichardKnop/jsonhal"
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/accounts/roles"
 	"github.com/RichardKnop/recall/util"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +19,7 @@ import (
 
 func (suite *AccountsTestSuite) TestInviteUser() {
 	// Prepare a request
-	payload, err := json.Marshal(&InvitationRequest{
+	payload, err := json.Marshal(&accounts.InvitationRequest{
 		Email: "john@reese",
 	})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
@@ -38,8 +39,8 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 		countBefore            int
 		invitationsCountBefore int
 	)
-	suite.db.Model(new(User)).Count(&countBefore)
-	suite.db.Model(new(Invitation)).Count(&invitationsCountBefore)
+	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(accounts.Invitation)).Count(&invitationsCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -55,13 +56,13 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 		countAfter            int
 		invitationsCountAfter int
 	)
-	suite.db.Model(new(User)).Count(&countAfter)
-	suite.db.Model(new(Invitation)).Count(&invitationsCountAfter)
+	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(accounts.Invitation)).Count(&invitationsCountAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 	assert.Equal(suite.T(), invitationsCountBefore+1, invitationsCountAfter)
 
 	// Fetch the created invitation
-	invitation := new(Invitation)
+	invitation := new(accounts.Invitation)
 	assert.False(suite.T(), suite.db.
 		Preload("InvitedUser.OauthUser").Preload("InvitedUser.Role").
 		Preload("InvitedByUser.OauthUser").Preload("InvitedByUser.Role").
@@ -79,7 +80,7 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 	assert.False(suite.T(), invitation.EmailSentAt.Valid)
 
 	// Check the response body
-	expected := &InvitationResponse{
+	expected := &accounts.InvitationResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
@@ -110,7 +111,7 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 	suite.assertMockExpectations()
 
 	// Refresh the invitation
-	invitation = new(Invitation)
+	invitation = new(accounts.Invitation)
 	assert.False(suite.T(), suite.db.
 		Preload("InvitedUser.OauthUser").Preload("InvitedUser.Role").
 		Preload("InvitedByUser.OauthUser").Preload("InvitedByUser.Role").
