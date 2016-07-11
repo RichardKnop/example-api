@@ -46,7 +46,7 @@ You might want to create a `Postgres` database:
 
 ```
 createuser --createdb recall
-createdb -U area recall
+createdb -U recall recall
 ```
 
 Load a development configuration into `etcd`:

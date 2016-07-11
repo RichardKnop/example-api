@@ -64,9 +64,9 @@ function git-tag() {
   local -r new_version="${1}"
   echo "Tagging ${new_version} at $(current-git-commit)."
   if $DRY_RUN; then
-    echo "Dry run: would have done git tag -a -m \"Area API release ${new_version}\" ${new_version}"
+    echo "Dry run: would have done git tag -a -m \"API release ${new_version}\" ${new_version}"
   else
-    git tag -a -m "Area API release ${new_version}" "${new_version}"
+    git tag -a -m "API release ${new_version}" "${new_version}"
   fi
 }
 
