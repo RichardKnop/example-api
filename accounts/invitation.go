@@ -161,7 +161,11 @@ func (s *Service) inviteUserCommon(db *gorm.DB, invitedByUser *User, invitationR
 
 	// Send invitation email
 	go func() {
-		invitationEmail := s.emailFactory.NewInvitationEmail(invitation)
+		invitationEmail, err := s.emailFactory.NewInvitationEmail(invitation)
+		if err != nil {
+			logger.Errorf("New invitation email error: %s", err)
+			return
+		}
 
 		// Try to send the invitation email
 		if err := s.emailService.Send(invitationEmail); err != nil {

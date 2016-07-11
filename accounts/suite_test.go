@@ -2,6 +2,7 @@ package accounts_test
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/RichardKnop/recall/accounts"
@@ -22,18 +23,24 @@ var (
 )
 
 var testFixtures = []string{
-	"../oauth/fixtures/test_clients.yml",
-	"../oauth/fixtures/test_users.yml",
-	"../oauth/fixtures/test_access_tokens.yml",
-	"fixtures/roles.yml",
-	"fixtures/test_accounts.yml",
-	"fixtures/test_users.yml",
+	"./oauth/fixtures/test_clients.yml",
+	"./oauth/fixtures/test_users.yml",
+	"./oauth/fixtures/test_access_tokens.yml",
+	"./accounts/fixtures/roles.yml",
+	"./accounts/fixtures/test_accounts.yml",
+	"./accounts/fixtures/test_users.yml",
 }
 
 // db migrations needed for tests
 var testMigrations = []func(*gorm.DB) error{
 	oauth.MigrateAll,
 	accounts.MigrateAll,
+}
+
+func init() {
+	if err := os.Chdir("../"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // AccountsTestSuite needs to be exported so the tests run

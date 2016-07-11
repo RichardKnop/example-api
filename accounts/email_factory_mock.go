@@ -11,7 +11,7 @@ type EmailFactoryMock struct {
 }
 
 // NewConfirmationEmail ...
-func (_m *EmailFactoryMock) NewConfirmationEmail(confirmation *Confirmation) *email.Email {
+func (_m *EmailFactoryMock) NewConfirmationEmail(confirmation *Confirmation) (*email.Email, error) {
 	ret := _m.Called(confirmation)
 
 	var r0 *email.Email
@@ -23,11 +23,11 @@ func (_m *EmailFactoryMock) NewConfirmationEmail(confirmation *Confirmation) *em
 		}
 	}
 
-	return r0
+	return r0, nil
 }
 
 // NewInvitationEmail just records the activity, and returns what the Mock object tells it to
-func (_m *EmailFactoryMock) NewInvitationEmail(invitation *Invitation) *email.Email {
+func (_m *EmailFactoryMock) NewInvitationEmail(invitation *Invitation) (*email.Email, error) {
 	ret := _m.Called(invitation)
 
 	var r0 *email.Email
@@ -39,11 +39,11 @@ func (_m *EmailFactoryMock) NewInvitationEmail(invitation *Invitation) *email.Em
 		}
 	}
 
-	return r0
+	return r0, nil
 }
 
 // NewPasswordResetEmail ...
-func (_m *EmailFactoryMock) NewPasswordResetEmail(passwordReset *PasswordReset) *email.Email {
+func (_m *EmailFactoryMock) NewPasswordResetEmail(passwordReset *PasswordReset) (*email.Email, error) {
 	ret := _m.Called(passwordReset)
 
 	var r0 *email.Email
@@ -55,5 +55,5 @@ func (_m *EmailFactoryMock) NewPasswordResetEmail(passwordReset *PasswordReset) 
 		}
 	}
 
-	return r0
+	return r0, nil
 }

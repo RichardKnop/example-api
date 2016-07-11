@@ -1,0 +1,11 @@
+Hi {{.name}},
+
+Thanks for creating an account with {{.company}}.
+
+We'll need to communicate with you (sometimes via email) so we'd like to confirm that you have access to this email address.
+
+Please confirm your email using this link: {{.confirmURL}}
+
+Best,
+
+The {{.company}} Team

@@ -1,8 +1,10 @@
-package accounts
+package accounts_test
 
 import (
+	"io/ioutil"
 	"testing"
 
+	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/config"
 	"github.com/RichardKnop/recall/oauth"
 	"github.com/RichardKnop/recall/util"
@@ -10,17 +12,19 @@ import (
 )
 
 func TestNewConfirmationEmail(t *testing.T) {
-	emailFactory := NewEmailFactory(&config.Config{
+	emailFactory := accounts.NewEmailFactory(&config.Config{
 		Web: config.WebConfig{
-			Scheme:    "https",
-			Host:      "api.recall",
 			AppScheme: "https",
-			AppHost:   "recall",
+			AppHost:   "example.com",
+		},
+		AppSpecific: config.AppSpecificConfig{
+			CompanyName:  "Your Company Name",
+			CompanyEmail: "contact@example.com",
 		},
 	})
-	confirmation := &Confirmation{
+	confirmation := &accounts.Confirmation{
 		Reference: "some-reference",
-		User: &User{
+		User: &accounts.User{
 			OauthUser: &oauth.User{
 				Username: "john@reese",
 			},
@@ -28,48 +32,84 @@ func TestNewConfirmationEmail(t *testing.T) {
 			LastName:  util.StringOrNull("Reese"),
 		},
 	}
-	email := emailFactory.NewConfirmationEmail(confirmation)
-
-	assert.Equal(t, "Thank you for joining recall", email.Subject)
+	email, err := emailFactory.NewConfirmationEmail(confirmation)
+	assert.NoError(t, err)
+	assert.Equal(t, "Please confirm your email address", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
 	assert.Equal(t, "john@reese", email.Recipients[0].Email)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "noreply@recall", email.From.Email)
-	assert.Equal(t, "NOREPLY recall", email.From.Name)
+	assert.Equal(t, "contact@example.com", email.From.Email)
+	assert.Equal(t, "Your Company Name", email.From.Name)
 
-	expectedText := `
-Hello John Reese,
+	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/confirm_email.txt")
+	assert.NoError(t, err)
+	assert.Equal(t, string(expectedPlain), email.Text)
 
-Thank you for joining https://recall.
-
-Please confirm your email: https://api.recall/web/confirm-email/some-reference.
-
-Kind Regards,
-
-https://recall Team
-`
-	assert.Equal(t, expectedText, email.Text)
+	expectedHTML, err := ioutil.ReadFile("./accounts/test_templates/confirm_email.html")
+	assert.NoError(t, err)
+	assert.Equal(t, string(expectedHTML), email.HTML)
 }
 
-func TestNewInvitationEmail(t *testing.T) {
-	emailFactory := NewEmailFactory(&config.Config{
+func TestNewPasswordResetEmail(t *testing.T) {
+	emailFactory := accounts.NewEmailFactory(&config.Config{
 		Web: config.WebConfig{
-			Scheme:    "https",
-			Host:      "api.recall",
 			AppScheme: "https",
-			AppHost:   "recall",
+			AppHost:   "example.com",
+		},
+		AppSpecific: config.AppSpecificConfig{
+			CompanyName:  "Your Company Name",
+			CompanyEmail: "contact@example.com",
 		},
 	})
-	invitation := &Invitation{
+	passwordReset := &accounts.PasswordReset{
 		Reference: "some-reference",
-		InvitedUser: &User{
+		User: &accounts.User{
 			OauthUser: &oauth.User{
 				Username: "john@reese",
 			},
 			FirstName: util.StringOrNull("John"),
 			LastName:  util.StringOrNull("Reese"),
 		},
-		InvitedByUser: &User{
+	}
+	email, err := emailFactory.NewPasswordResetEmail(passwordReset)
+	assert.NoError(t, err)
+	assert.Equal(t, "Reset password for example.com", email.Subject)
+	assert.Equal(t, 1, len(email.Recipients))
+	assert.Equal(t, "john@reese", email.Recipients[0].Email)
+	assert.Equal(t, "John Reese", email.Recipients[0].Name)
+	assert.Equal(t, "contact@example.com", email.From.Email)
+	assert.Equal(t, "Your Company Name", email.From.Name)
+
+	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/password_reset_email.txt")
+	assert.NoError(t, err)
+	assert.Equal(t, string(expectedPlain), email.Text)
+
+	expectedHTML, err := ioutil.ReadFile("./accounts/test_templates/password_reset_email.html")
+	assert.NoError(t, err)
+	assert.Equal(t, string(expectedHTML), email.HTML)
+}
+
+func TestNewInvitationEmail(t *testing.T) {
+	emailFactory := accounts.NewEmailFactory(&config.Config{
+		Web: config.WebConfig{
+			AppScheme: "https",
+			AppHost:   "example.com",
+		},
+		AppSpecific: config.AppSpecificConfig{
+			CompanyName:  "Your Company Name",
+			CompanyEmail: "contact@example.com",
+		},
+	})
+	invitation := &accounts.Invitation{
+		Reference: "some-reference",
+		InvitedUser: &accounts.User{
+			OauthUser: &oauth.User{
+				Username: "john@reese",
+			},
+			FirstName: util.StringOrNull("John"),
+			LastName:  util.StringOrNull("Reese"),
+		},
+		InvitedByUser: &accounts.User{
 			OauthUser: &oauth.User{
 				Username: "harold@finch",
 			},
@@ -77,67 +117,20 @@ func TestNewInvitationEmail(t *testing.T) {
 			LastName:  util.StringOrNull("Finch"),
 		},
 	}
-	email := emailFactory.NewInvitationEmail(invitation)
-
-	assert.Equal(t, "You have been invited to join recall", email.Subject)
+	email, err := emailFactory.NewInvitationEmail(invitation)
+	assert.NoError(t, err)
+	assert.Equal(t, "You have been invited to join example.com", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
 	assert.Equal(t, "john@reese", email.Recipients[0].Email)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
 	assert.Equal(t, "harold@finch", email.From.Email)
 	assert.Equal(t, "Harold Finch", email.From.Name)
 
-	expectedText := `
-Hello John Reese,
+	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/invitation_email.txt")
+	assert.NoError(t, err)
+	assert.Equal(t, string(expectedPlain), email.Text)
 
-You have been invited to join https://recall by Harold Finch.
-
-Follow this link to set your password please: https://api.recall/web/confirm-invitation/some-reference.
-
-Kind Regards,
-
-https://recall Team
-`
-	assert.Equal(t, expectedText, email.Text)
-}
-
-func TestNewPasswordResetEmail(t *testing.T) {
-	emailFactory := NewEmailFactory(&config.Config{
-		Web: config.WebConfig{
-			Scheme:    "https",
-			Host:      "api.recall",
-			AppScheme: "https",
-			AppHost:   "recall",
-		},
-	})
-	passwordReset := &PasswordReset{
-		Reference: "some-reference",
-		User: &User{
-			OauthUser: &oauth.User{
-				Username: "john@reese",
-			},
-			FirstName: util.StringOrNull("John"),
-			LastName:  util.StringOrNull("Reese"),
-		},
-	}
-	email := emailFactory.NewPasswordResetEmail(passwordReset)
-
-	assert.Equal(t, "Reset password for recall", email.Subject)
-	assert.Equal(t, 1, len(email.Recipients))
-	assert.Equal(t, "john@reese", email.Recipients[0].Email)
-	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "noreply@recall", email.From.Email)
-	assert.Equal(t, "NOREPLY recall", email.From.Name)
-
-	expectedText := `
-Hello John Reese,
-
-It seems you have forgotten your password.
-
-You can set a new password here: https://api.recall/web/password-reset/some-reference.
-
-Kind Regards,
-
-https://recall Team
-`
-	assert.Equal(t, expectedText, email.Text)
+	expectedHTML, err := ioutil.ReadFile("./accounts/test_templates/invitation_email.html")
+	assert.NoError(t, err)
+	assert.Equal(t, string(expectedHTML), email.HTML)
 }

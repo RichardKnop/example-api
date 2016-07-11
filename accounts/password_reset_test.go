@@ -10,7 +10,7 @@ import (
 func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	var (
 		passwordReset *accounts.PasswordReset
-		validFor      = time.Duration(suite.service.GetConfig().Recall.PasswordResetLifetime) * time.Second
+		validFor      = time.Duration(suite.service.GetConfig().AppSpecific.PasswordResetLifetime) * time.Second
 		err           error
 	)
 

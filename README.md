@@ -87,8 +87,10 @@ curl -L http://localhost:2379/v2/keys/config/recall.json -XPUT -d value='{
         "AppScheme": "http",
         "AppHost": "localhost:8000"
     },
-    "Recall": {
-        "PasswordResetLifetime": 604800
+    "AppSpecific": {
+        "PasswordResetLifetime": 604800,
+        "CompanyName": "Your Company Name",
+    		"CompanyEmail": "contact@example.com"
     },
     "IsDevelopment": true
 }'

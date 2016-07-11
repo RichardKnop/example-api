@@ -1,0 +1,18 @@
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td valign="top">
+			<div>
+				<h1 class="h1">Confirm Invitation</h1>
+				Hi {{.name}},<br /><br />
+				You have been invited to join {{.company}} by {{.invitedBy}}. Follow the link bellow to setup your account.<br /><br />
+				Best,<br />
+				The {{.company}} Team<br /><br />
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<table id="buttonContainer">
+			<tr><td align="center"><a href="{{.invitationURL}}" target="_blank">Setup account</a></td></tr>
+		</table>
+	</tr>
+</table>

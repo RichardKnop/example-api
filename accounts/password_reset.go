@@ -17,7 +17,7 @@ var (
 func (s *Service) FindPasswordResetByReference(reference string) (*PasswordReset, error) {
 	// Fetch the password reset from the database
 	passwordReset := new(PasswordReset)
-	validFor := time.Duration(s.cnf.Recall.PasswordResetLifetime) * time.Second
+	validFor := time.Duration(s.cnf.AppSpecific.PasswordResetLifetime) * time.Second
 	notFound := s.db.Where(
 		"reference = ? AND created_at > ?",
 		reference,
@@ -105,7 +105,11 @@ func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
 
 	// Send password reset email
 	go func() {
-		passwordResetEmail := s.emailFactory.NewPasswordResetEmail(passwordReset)
+		passwordResetEmail, err := s.emailFactory.NewPasswordResetEmail(passwordReset)
+		if err != nil {
+			logger.Errorf("New password reset email error: %s", err)
+			return
+		}
 
 		// Try to send the password reset email
 		if err := s.emailService.Send(passwordResetEmail); err != nil {

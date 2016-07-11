@@ -18,4 +18,5 @@ type Email struct {
 	Recipients []*Recipient
 	From       *Sender
 	Text       string
+	HTML       string
 }

@@ -1,0 +1,9 @@
+Hi John,
+
+You have been invited to Your Company Name by Harold Finch.
+
+Please setup your account using this link: https://example.com/web/confirm-invitation/some-reference
+
+Best,
+
+The Your Company Name Team

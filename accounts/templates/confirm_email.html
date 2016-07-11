@@ -1,0 +1,21 @@
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div>
+                <h1 class="h1">Confirm your email</h1>
+                Hi {{.name}},<br/><br/>
+                Thanks for creating an account with {{.company}}. We'll need to communicate with you (sometimes via
+                email) so we'd like to confirm that you have access to this email address.<br/><br/>
+                Best,<br/>
+                The {{.company}} Team<br/><br/>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <table id="buttonContainer">
+            <tr>
+                <td align="center"><a href="{{.confirmURL}}" target="_blank">Confirm email</a></td>
+            </tr>
+        </table>
+    </tr>
+</table>

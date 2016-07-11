@@ -1,0 +1,11 @@
+Hi John,
+
+Thanks for creating an account with Your Company Name.
+
+We'll need to communicate with you (sometimes via email) so we'd like to confirm that you have access to this email address.
+
+Please confirm your email using this link: https://example.com/web/confirm-email/some-reference
+
+Best,
+
+The Your Company Name Team

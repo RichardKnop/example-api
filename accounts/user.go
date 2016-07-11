@@ -127,7 +127,11 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 
 	// Send confirmation email
 	go func() {
-		confirmationEmail := s.emailFactory.NewConfirmationEmail(confirmation)
+		confirmationEmail, err := s.emailFactory.NewConfirmationEmail(confirmation)
+		if err != nil {
+			logger.Errorf("New confirmation email error: %s", err)
+			return
+		}
 
 		// Try to send the confirmation email
 		if err := s.emailService.Send(confirmationEmail); err != nil {
