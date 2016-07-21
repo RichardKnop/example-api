@@ -1,17 +1,14 @@
 package commands
 
 import (
-	"net/http"
-
 	"github.com/RichardKnop/recall/accounts"
 	"github.com/RichardKnop/recall/email"
 	"github.com/RichardKnop/recall/facebook"
 	"github.com/RichardKnop/recall/health"
 	"github.com/RichardKnop/recall/oauth"
-	"github.com/RichardKnop/recall/web"
-	"github.com/urfave/negroni"
 	"github.com/gorilla/mux"
 	"github.com/phyber/negroni-gzip/gzip"
+	"github.com/urfave/negroni"
 )
 
 // RunServer runs the app
@@ -48,15 +45,11 @@ func RunServer() error {
 		nil, // facebook.Adapter
 	)
 
-	// Initialise the web service
-	webService := web.NewService(cnf, accountsService)
-
 	// Start a negroni app
 	app := negroni.New()
 	app.Use(negroni.NewRecovery())
 	app.Use(negroni.NewLogger())
 	app.Use(gzip.Gzip(gzip.DefaultCompression))
-	app.Use(negroni.NewStatic(http.Dir("public")))
 
 	// Create a router instance
 	router := mux.NewRouter()
@@ -72,9 +65,6 @@ func RunServer() error {
 
 	// Register routes for the facebook service
 	facebook.RegisterRoutes(router, facebookService)
-
-	// Register routes for the web service
-	web.RegisterRoutes(router, webService)
 
 	// Set the router
 	app.UseHandler(router)
