@@ -90,7 +90,7 @@ curl -L http://localhost:2379/v2/keys/config/example_api.json -XPUT -d value='{
     "AppSpecific": {
         "PasswordResetLifetime": 604800,
         "CompanyName": "Your Company Name",
-    	"CompanyEmail": "contact@example.com"
+        "CompanyEmail": "contact@example.com"
     },
     "IsDevelopment": true
 }'
