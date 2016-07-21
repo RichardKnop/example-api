@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/database"
+	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/database"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -1,7 +1,7 @@
 package accounts
 
 import (
-	"github.com/RichardKnop/recall/email"
+	"github.com/RichardKnop/example-api/email"
 	"github.com/stretchr/testify/mock"
 )
 

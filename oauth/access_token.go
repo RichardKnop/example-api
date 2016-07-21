@@ -3,7 +3,7 @@ package oauth
 import (
 	"time"
 
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/util"
 )
 
 // TokenType is default type of generated tokens.

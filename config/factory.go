@@ -13,7 +13,7 @@ import (
 var (
 	etcdHost     = "localhost"
 	etcdPort     = "2379"
-	configPath   = "/config/recall.json"
+	configPath   = "/config/example_api.json"
 	configLoaded bool
 )
 
@@ -24,9 +24,9 @@ var Cnf = &Config{
 		Type:         "postgres",
 		Host:         "localhost",
 		Port:         5432,
-		User:         "recall",
+		User:         "example_api",
 		Password:     "",
-		DatabaseName: "recall",
+		DatabaseName: "example_api",
 		MaxIdleConns: 5,
 		MaxOpenConns: 5,
 	},

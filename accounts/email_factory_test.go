@@ -4,10 +4,10 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/oauth"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/stretchr/testify/assert"
 )
 

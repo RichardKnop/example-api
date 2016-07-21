@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/RichardKnop/recall",
+	"ImportPath": "github.com/RichardKnop/example-api",
 	"GoVersion": "go1.6",
 	"GodepVersion": "v74",
 	"Packages": [

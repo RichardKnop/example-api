@@ -12,7 +12,7 @@ branches:
     - master
 
 before_script:
-  - createuser --createdb recall
+  - createuser --createdb example_api
 
 script:
   - make test

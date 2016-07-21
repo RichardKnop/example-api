@@ -3,9 +3,9 @@ package oauth_test
 import (
 	"github.com/stretchr/testify/assert"
 
-	"github.com/RichardKnop/recall/oauth"
-	pass "github.com/RichardKnop/recall/password"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/oauth"
+	pass "github.com/RichardKnop/example-api/password"
+	"github.com/RichardKnop/example-api/util"
 )
 
 func (suite *OauthTestSuite) TestFindUserByUsername() {

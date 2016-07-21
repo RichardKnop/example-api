@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/RichardKnop/recall/accounts"
+	"github.com/RichardKnop/example-api/accounts"
 	"github.com/stretchr/testify/assert"
 )
 

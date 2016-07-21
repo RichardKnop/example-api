@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RichardKnop/recall/accounts"
+	"github.com/RichardKnop/example-api/accounts"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )

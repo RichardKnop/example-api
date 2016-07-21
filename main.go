@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/RichardKnop/recall/commands"
+	"github.com/RichardKnop/example-api/commands"
 	"github.com/urfave/cli"
 )
 
@@ -15,8 +15,8 @@ var (
 func init() {
 	// Initialise a CLI app
 	cliApp = cli.NewApp()
-	cliApp.Name = "recall"
-	cliApp.Usage = "Recall"
+	cliApp.Name = "example-api"
+	cliApp.Usage = "example-api"
 	cliApp.Author = "Richard Knop"
 	cliApp.Email = "risoknop@gmail.com"
 	cliApp.Version = "0.0.0"

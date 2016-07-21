@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/RichardKnop/uuid"
 	"github.com/jinzhu/gorm"
 )

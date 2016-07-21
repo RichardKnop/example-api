@@ -1,8 +1,8 @@
 package facebook
 
 import (
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/routes"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/routes"
 	"github.com/urfave/negroni"
 	"github.com/gorilla/mux"
 )

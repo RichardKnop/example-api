@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/RichardKnop/jsonhal"
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/accounts/roles"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )

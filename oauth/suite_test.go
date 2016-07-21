@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/database"
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/database"
+	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/suite"

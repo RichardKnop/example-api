@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RichardKnop/recall/oauth"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/stretchr/testify/assert"
 )
 

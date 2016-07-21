@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/email"
-	"github.com/RichardKnop/recall/facebook"
-	"github.com/RichardKnop/recall/health"
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/email"
+	"github.com/RichardKnop/example-api/facebook"
+	"github.com/RichardKnop/example-api/health"
+	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	"github.com/phyber/negroni-gzip/gzip"
 	"github.com/urfave/negroni"

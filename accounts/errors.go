@@ -3,7 +3,7 @@ package accounts
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/oauth"
 )
 
 var (

@@ -17,13 +17,13 @@ fmt:
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go fmt'
 
 test-oauth:
-	bash -c 'go test -timeout=30s github.com/RichardKnop/recall/oauth'
+	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/oauth'
 
 test-accounts:
-	bash -c 'go test -timeout=30s github.com/RichardKnop/recall/accounts'
+	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/accounts'
 
 test-facebook:
-	bash -c 'go test -timeout=60s github.com/RichardKnop/recall/facebook'
+	bash -c 'go test -timeout=60s github.com/RichardKnop/example-api/facebook'
 
 test:
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=60s'

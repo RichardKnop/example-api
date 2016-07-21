@@ -1,8 +1,8 @@
 package accounts_test
 
 import (
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/accounts/roles"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/accounts/roles"
 	"github.com/stretchr/testify/assert"
 )
 

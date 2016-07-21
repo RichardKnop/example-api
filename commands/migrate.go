@@ -1,9 +1,9 @@
 package commands
 
 import (
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/migrations"
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/migrations"
+	"github.com/RichardKnop/example-api/oauth"
 )
 
 // Migrate runs database migrations

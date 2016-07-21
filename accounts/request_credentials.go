@@ -3,8 +3,8 @@ package accounts
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/oauth"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/util"
 )
 
 // getCredentialsFromRequest is the common code used to parse credentials in the request object.

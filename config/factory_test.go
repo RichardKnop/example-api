@@ -3,7 +3,7 @@ package config_test
 import (
 	"testing"
 
-	"github.com/RichardKnop/recall/config"
+	"github.com/RichardKnop/example-api/config"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -3,8 +3,8 @@ package accounts
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/oauth"
 	"github.com/jinzhu/gorm"
 )
 

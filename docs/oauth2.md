@@ -1,6 +1,6 @@
-[1]: ../../../../assets/blob/master/recall/login_screenshot.png
-[2]: ../../../../assets/blob/master/recall/authorization_code_screenshot.png
-[3]: ../../../../assets/blob/master/recall/implicit_screenshot.png
+[1]: ../../../../assets/blob/master/example-api/login_screenshot.png
+[2]: ../../../../assets/blob/master/example-api/authorization_code_screenshot.png
+[3]: ../../../../assets/blob/master/example-api/implicit_screenshot.png
 
 # OAuth 2.0
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/util"
 )
 
 var (

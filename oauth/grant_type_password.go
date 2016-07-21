@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/RichardKnop/recall/response"
+	"github.com/RichardKnop/example-api/response"
 )
 
 var (

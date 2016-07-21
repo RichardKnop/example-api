@@ -1,7 +1,7 @@
 package email
 
 import (
-	"github.com/RichardKnop/recall/config"
+	"github.com/RichardKnop/example-api/config"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )

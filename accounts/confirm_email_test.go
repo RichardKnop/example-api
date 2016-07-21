@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/uuid"
 	"github.com/stretchr/testify/assert"
 )

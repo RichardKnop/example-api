@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/RichardKnop/jsonhal"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/util"
 )
 
 // UserResponse ...

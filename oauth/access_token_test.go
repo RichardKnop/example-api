@@ -3,7 +3,7 @@ package oauth_test
 import (
 	"time"
 
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/oauth"
 	"github.com/stretchr/testify/assert"
 )
 

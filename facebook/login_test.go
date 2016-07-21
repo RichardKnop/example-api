@@ -10,9 +10,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/accounts/roles"
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"
 	"github.com/stretchr/testify/assert"

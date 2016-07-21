@@ -1,16 +1,16 @@
-[![Codeship Status for RichardKnop/recall](https://codeship.com/projects/eb1ee0d0-ac8c-0133-aaf6-0af8633f2b2a/status?branch=master)](https://codeship.com/projects/131678)
+[![Codeship Status for RichardKnop/example-api](https://codeship.com/projects/eb1ee0d0-ac8c-0133-aaf6-0af8633f2b2a/status?branch=master)](https://codeship.com/projects/131678)
 
-[![Travis Status for RichardKnop/recall](https://travis-ci.org/RichardKnop/recall.svg?branch=master)](https://travis-ci.org/RichardKnop/recall)
+[![Travis Status for RichardKnop/example-api](https://travis-ci.org/RichardKnop/example-api.svg?branch=master)](https://travis-ci.org/RichardKnop/example-api)
 
-# Recall
+# Example API
 
-Recall is a base project to bootstrap and prototype quickly. It is useful as a starting point for REST APIs and includes full OAuth 2.0 implementation as well as basic endpoints to create and update a user.
+This is a base project to bootstrap and prototype quickly. It is useful as a starting point for REST APIs and includes full OAuth 2.0 implementation as well as basic endpoints to create and update a user, health check endpoint, Facebook integration, migrations and a ready to rumble Dockerfile.
 
 # Index
 
-* [Recall](#recall)
+* [Example API](#example-api)
 * [Index](#index)
-* [Docs](../../../recall/blob/master/docs/)
+* [Docs](../../../example-api/blob/master/docs/)
 * [Dependencies](#dependencies)
 * [Setup](#setup)
 * [Test Data](#test-data)
@@ -45,21 +45,21 @@ brew install postgres
 You might want to create a `Postgres` database:
 
 ```
-createuser --createdb recall
-createdb -U recall recall
+createuser --createdb example_api
+createdb -U example_api example_api
 ```
 
 Load a development configuration into `etcd`:
 
 ```
-curl -L http://localhost:2379/v2/keys/config/recall.json -XPUT -d value='{
+curl -L http://localhost:2379/v2/keys/config/example_api.json -XPUT -d value='{
     "Database": {
         "Type": "postgres",
         "Host": "localhost",
         "Port": 5432,
-        "User": "recall",
+        "User": "example_api",
         "Password": "",
-        "DatabaseName": "recall",
+        "DatabaseName": "example_api",
         "MaxIdleConns": 5,
         "MaxOpenConns": 5
     },
@@ -139,14 +139,14 @@ make test
 Build a Docker image and run the app in a container:
 
 ```
-docker build -t recall .
-docker run -e ETCD_HOST=localhost -e ETCD_PORT=2379 -p 6060:8080 recall
+docker build -t example_api .
+docker run -e ETCD_HOST=localhost -e ETCD_PORT=2379 -p 6060:8080 example_api
 ```
 
 You can load fixtures with `docker exec` command:
 
 ```
-docker exec <container_id> /go/bin/recall loaddata \
+docker exec <container_id> /go/bin/example-api loaddata \
 	oauth/fixtures/scopes.yml \
 	oauth/fixtures/test_clients.yml
 ```
@@ -154,6 +154,6 @@ docker exec <container_id> /go/bin/recall loaddata \
 You can also execute interactive commands by passing `-i` flag:
 
 ```
-docker exec -i <container_id> /go/bin/recall createaccount
-docker exec -i <container_id> /go/bin/recall createsuperuser
+docker exec -i <container_id> /go/bin/example-api createaccount
+docker exec -i <container_id> /go/bin/example-api createsuperuser
 ```

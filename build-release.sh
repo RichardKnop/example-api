@@ -34,11 +34,11 @@ function main() {
     exit 1
   fi
 
-  read -p "Container name (default: recall): " container_name
-  [ -z "$container_name" ] && container_name="recall"
+  read -p "Container name (default: example_api): " container_name
+  [ -z "$container_name" ] && container_name="example_api"
 
-  read -p "S3 bucket (default: recall.releases): " s3_bucket
-  [ -z "$s3_bucket" ] && s3_bucket="recall.releases"
+  read -p "S3 bucket (default: example_api.releases): " s3_bucket
+  [ -z "$s3_bucket" ] && s3_bucket="example_api.releases"
 
   local -r github=`git config --get remote.origin.url`
   declare -r temp_dir=$(mktemp -d "/tmp/${container_name}-${new_version}.XXXX")

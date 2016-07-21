@@ -3,7 +3,7 @@ package accounts
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/response"
+	"github.com/RichardKnop/example-api/response"
 )
 
 // Handles requests to get own user data (GET /v1/accounts/me)

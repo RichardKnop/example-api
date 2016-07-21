@@ -7,7 +7,7 @@ import (
 	"os/exec"
 
 	"github.com/RichardKnop/go-fixtures"
-	"github.com/RichardKnop/recall/migrations"
+	"github.com/RichardKnop/example-api/migrations"
 	"github.com/jinzhu/gorm"
 	// sqlite driver
 	_ "github.com/mattn/go-sqlite3"

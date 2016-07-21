@@ -3,9 +3,9 @@ package accounts
 import (
 	"database/sql"
 
-	"github.com/RichardKnop/recall/database"
-	"github.com/RichardKnop/recall/oauth"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/database"
+	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/RichardKnop/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"

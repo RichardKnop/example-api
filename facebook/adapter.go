@@ -3,7 +3,7 @@ package facebook
 import (
 	"fmt"
 
-	"github.com/RichardKnop/recall/config"
+	"github.com/RichardKnop/example-api/config"
 	fb "github.com/huandu/facebook"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"

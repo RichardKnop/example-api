@@ -1,7 +1,7 @@
 package health
 
 import (
-	"github.com/RichardKnop/recall/routes"
+	"github.com/RichardKnop/example-api/routes"
 	"github.com/gorilla/mux"
 )
 

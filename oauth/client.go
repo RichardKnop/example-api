@@ -3,8 +3,8 @@ package oauth
 import (
 	"errors"
 
-	"github.com/RichardKnop/recall/password"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/password"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/jinzhu/gorm"
 )
 

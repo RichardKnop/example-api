@@ -3,7 +3,7 @@ package oauth
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/response"
+	"github.com/RichardKnop/example-api/response"
 )
 
 func (s *Service) clientCredentialsGrant(w http.ResponseWriter, r *http.Request, client *Client) {

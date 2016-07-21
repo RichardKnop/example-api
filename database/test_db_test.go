@@ -3,13 +3,13 @@ package database_test
 import (
 	"testing"
 
-	"github.com/RichardKnop/recall/database"
+	"github.com/RichardKnop/example-api/database"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testDBName = "recall_database_test"
-	testDBUser = "recall"
+	testDBName = "example_api_database_test"
+	testDBUser = "example_api"
 )
 
 func TestCreateTestDatabaseFailsWithBadValues(t *testing.T) {

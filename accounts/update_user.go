@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/RichardKnop/recall/accounts/roles"
-	"github.com/RichardKnop/recall/response"
+	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/response"
 	"github.com/gorilla/mux"
 )
 

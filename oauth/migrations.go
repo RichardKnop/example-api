@@ -3,7 +3,7 @@ package oauth
 import (
 	"fmt"
 
-	"github.com/RichardKnop/recall/migrations"
+	"github.com/RichardKnop/example-api/migrations"
 	"github.com/jinzhu/gorm"
 )
 

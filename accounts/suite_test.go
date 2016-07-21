@@ -5,12 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/accounts/roles"
-	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/database"
-	"github.com/RichardKnop/recall/email"
-	"github.com/RichardKnop/recall/oauth"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/database"
+	"github.com/RichardKnop/example-api/email"
+	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/mock"
@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	testDbUser = "recall"
-	testDbName = "recall_accounts_test"
+	testDbUser = "example_api"
+	testDbName = "example_api_accounts_test"
 )
 
 var testFixtures = []string{

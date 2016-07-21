@@ -3,7 +3,7 @@ package accounts_test
 import (
 	"time"
 
-	"github.com/RichardKnop/recall/accounts"
+	"github.com/RichardKnop/example-api/accounts"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -8,8 +8,8 @@ import (
 	"strings"
 	textTemplate "text/template"
 
-	"github.com/RichardKnop/recall/config"
-	"github.com/RichardKnop/recall/email"
+	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/email"
 )
 
 var (

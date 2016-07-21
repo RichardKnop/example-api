@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	pass "github.com/RichardKnop/recall/password"
-	"github.com/RichardKnop/recall/util"
+	pass "github.com/RichardKnop/example-api/password"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/jinzhu/gorm"
 )
 

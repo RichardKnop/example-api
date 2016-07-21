@@ -3,8 +3,8 @@ package accounts
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/response"
-	"github.com/RichardKnop/recall/util"
+	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util"
 	"github.com/gorilla/context"
 )
 

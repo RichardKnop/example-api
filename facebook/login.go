@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/oauth"
-	"github.com/RichardKnop/recall/response"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/response"
 )
 
 var (

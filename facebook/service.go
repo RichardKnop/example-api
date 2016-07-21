@@ -1,8 +1,8 @@
 package facebook
 
 import (
-	"github.com/RichardKnop/recall/accounts"
-	"github.com/RichardKnop/recall/config"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/config"
 	"github.com/jinzhu/gorm"
 )
 

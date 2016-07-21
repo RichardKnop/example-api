@@ -3,7 +3,7 @@ package facebook
 import (
 	"net/http"
 
-	"github.com/RichardKnop/recall/accounts"
+	"github.com/RichardKnop/example-api/accounts"
 )
 
 // ServiceInterface defines exported methods

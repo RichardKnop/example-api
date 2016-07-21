@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/RichardKnop/recall/response"
+	"github.com/RichardKnop/example-api/response"
 )
 
 // Handles requests to create a new user (POST /v1/accounts/users)
