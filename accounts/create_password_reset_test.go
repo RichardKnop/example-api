@@ -5,20 +5,37 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"time"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/response"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
+func (suite *AccountsTestSuite) TestCreatePasswordResetRequiresAccountAuthentication() {
+	// Prepare a request
+	r, err := http.NewRequest(
+		"POST",
+		"http://1.2.3.4/v1/accounts/password-reset",
+		nil,
+	)
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
+
+	// And serve the request
+	w := httptest.NewRecorder()
+	suite.router.ServeHTTP(w, r)
+
+	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated account")
+}
+
 func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 	// Prepare a request
-	payload, err := json.Marshal(&accounts.PasswordResetRequest{"test@user"})
+	payload, err := json.Marshal(&accounts.PasswordResetRequest{
+		Email: "test@user",
+	})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"POST",
@@ -34,7 +51,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 		),
 	)
 
-	// Mock confirmation email
+	// Mock password reset email
 	suite.mockPasswordResetEmail()
 
 	// Check the routing
@@ -52,38 +69,19 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
-	// Sleep for the email goroutine to finish
-	time.Sleep(15 * time.Millisecond)
-
-	// Check that the mock object expectations were met
-	suite.assertMockExpectations()
-
-	// Check the status code
-	if !assert.Equal(suite.T(), 204, w.Code) {
-		log.Print(w.Body.String())
-	}
+	// Check empty response
+	response.TestEmptyResponse(suite.T(), w)
 
 	// Count after
 	var countAfter int
 	suite.db.Model(new(accounts.PasswordReset)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
-	// Fetch the created password reset
-	passwordReset := new(accounts.PasswordReset)
-	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
-		Last(passwordReset).RecordNotFound())
+	// Wait for the email goroutine to finish
+	<-time.After(5 * time.Millisecond)
 
-	// And correct data was saved
-	assert.Equal(suite.T(), "test@user", passwordReset.User.OauthUser.Username)
-	assert.True(suite.T(), passwordReset.EmailSent)
-	assert.True(suite.T(), passwordReset.EmailSentAt.Valid)
-
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		"", // empty string
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-	)
+	// Check that the mock object expectations were met
+	suite.assertMockExpectations()
 }
 
 func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
@@ -94,7 +92,9 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	testPasswordReset.User = suite.users[1]
 
 	// Prepare a request
-	payload, err := json.Marshal(&accounts.PasswordResetRequest{suite.users[1].OauthUser.Username})
+	payload, err := json.Marshal(&accounts.PasswordResetRequest{
+		Email: suite.users[1].OauthUser.Username},
+	)
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"POST",
@@ -110,7 +110,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 		),
 	)
 
-	// Mock confirmation email
+	// Mock password reset email
 	suite.mockPasswordResetEmail()
 
 	// Check the routing
@@ -128,10 +128,8 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
-	// Check the status code
-	if !assert.Equal(suite.T(), 204, w.Code) {
-		log.Print(w.Body.String())
-	}
+	// Check empty response
+	response.TestEmptyResponse(suite.T(), w)
 
 	// Count after
 	var countAfter int
@@ -147,29 +145,9 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	assert.NotEqual(suite.T(), testPasswordReset.ID, passwordReset.ID)
 	assert.Equal(suite.T(), testPasswordReset.User.ID, passwordReset.User.ID)
 
-	// Email should not have been sent yet
-	assert.False(suite.T(), passwordReset.EmailSent)
-	assert.False(suite.T(), passwordReset.EmailSentAt.Valid)
-
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		"", // empty string
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-	)
-
-	// Sleep for the email goroutine to finish
-	time.Sleep(15 * time.Millisecond)
+	// Wait for the email goroutine to finish
+	<-time.After(5 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
-
-	// Refresh the password reset
-	passwordReset = new(accounts.PasswordReset)
-	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
-		Last(passwordReset).RecordNotFound())
-
-	// Email should have been sent
-	assert.True(suite.T(), passwordReset.EmailSent)
-	assert.True(suite.T(), passwordReset.EmailSentAt.Valid)
 }

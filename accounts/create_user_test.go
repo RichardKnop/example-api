@@ -8,16 +8,32 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"time"
 
-	"github.com/RichardKnop/jsonhal"
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/response"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
+
+func (suite *AccountsTestSuite) TestCreateUserRequiresAccountAuthentication() {
+	// Prepare a request
+	r, err := http.NewRequest(
+		"POST",
+		"http://1.2.3.4/v1/accounts/users",
+		nil,
+	)
+	assert.NoError(suite.T(), err, "Request setup should not get an error")
+
+	// And serve the request
+	w := httptest.NewRecorder()
+	suite.router.ServeHTTP(w, r)
+
+	assert.Equal(suite.T(), http.StatusUnauthorized, w.Code, "This requires an authenticated account")
+}
 
 func (suite *AccountsTestSuite) TestCreateUser() {
 	// Prepare a request
@@ -96,10 +112,6 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 	assert.False(suite.T(), user.Confirmed)
 	assert.Equal(suite.T(), "test@newuser", confirmation.User.OauthUser.Username)
 
-	// Email should not have been sent yet
-	assert.False(suite.T(), confirmation.EmailSent)
-	assert.False(suite.T(), confirmation.EmailSentAt.Valid)
-
 	// Check the Location header
 	assert.Equal(
 		suite.T(),
@@ -124,26 +136,13 @@ func (suite *AccountsTestSuite) TestCreateUser() {
 		UpdatedAt: util.FormatTime(user.UpdatedAt),
 	}
 	expectedJSON, err := json.Marshal(expected)
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-		)
+	if assert.NoError(suite.T(), err) {
+		response.TestResponseBody(suite.T(), w, string(expectedJSON))
 	}
 
-	// Sleep for the email goroutine to finish
-	time.Sleep(15 * time.Millisecond)
+	// Wait for the email goroutine to finish
+	<-time.After(5 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
-
-	// Refresh the confirmation
-	confirmation = new(accounts.Confirmation)
-	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
-		Last(confirmation).RecordNotFound())
-
-	// Email should have been sent
-	assert.True(suite.T(), confirmation.EmailSent)
-	assert.True(suite.T(), confirmation.EmailSentAt.Valid)
 }

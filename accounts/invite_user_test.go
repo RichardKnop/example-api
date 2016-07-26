@@ -7,13 +7,13 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"time"
 
-	"github.com/RichardKnop/jsonhal"
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/response"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/jsonhal"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -75,10 +75,6 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 	assert.Equal(suite.T(), roles.User, invitation.InvitedUser.RoleID.String)
 	assert.Equal(suite.T(), "test@user", invitation.InvitedByUser.OauthUser.Username)
 
-	// Email should not have been sent yet
-	assert.False(suite.T(), invitation.EmailSent)
-	assert.False(suite.T(), invitation.EmailSentAt.Valid)
-
 	// Check the response body
 	expected := &accounts.InvitationResponse{
 		Hal: jsonhal.Hal{
@@ -96,28 +92,13 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 		UpdatedAt:       util.FormatTime(invitation.UpdatedAt),
 	}
 	expectedJSON, err := json.Marshal(expected)
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-		)
+	if assert.NoError(suite.T(), err) {
+		response.TestResponseBody(suite.T(), w, string(expectedJSON))
 	}
 
-	// Sleep for the email goroutine to finish
-	time.Sleep(15 * time.Millisecond)
+	// Wait for the email goroutine to finish
+	<-time.After(5 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
-
-	// Refresh the invitation
-	invitation = new(accounts.Invitation)
-	assert.False(suite.T(), suite.db.
-		Preload("InvitedUser.OauthUser").Preload("InvitedUser.Role").
-		Preload("InvitedByUser.OauthUser").Preload("InvitedByUser.Role").
-		Last(invitation).RecordNotFound())
-
-	// Email should have been sent
-	assert.True(suite.T(), invitation.EmailSent)
-	assert.True(suite.T(), invitation.EmailSentAt.Valid)
 }

@@ -7,12 +7,14 @@ import (
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/database"
-	"github.com/RichardKnop/example-api/email"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/suite"
+
+	accountsMocks "github.com/RichardKnop/example-api/accounts/mocks"
+	emailMocks "github.com/RichardKnop/example-api/email/mocks"
 )
 
 var testDbPath = "/tmp/facebook_testdb.sqlite"
@@ -83,8 +85,8 @@ func (suite *FacebookTestSuite) SetupSuite() {
 			suite.cnf,
 			suite.db,
 			oauth.NewService(suite.cnf, suite.db),
-			new(email.ServiceMock),
-			new(accounts.EmailFactoryMock),
+			new(emailMocks.ServiceInterface),
+			new(accountsMocks.EmailFactoryInterface),
 		),
 		suite.adapterMock,
 	)

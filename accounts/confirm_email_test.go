@@ -2,15 +2,14 @@ package accounts_test
 
 import (
 	b64 "encoding/base64"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/response"
 	"github.com/RichardKnop/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -33,7 +32,6 @@ func (suite *AccountsTestSuite) TestConfirmEmailFailsWithoutAccountAuthenticatio
 }
 
 func (suite *AccountsTestSuite) TestConfirmEmailReferenceNotFound() {
-	// Prepare a request
 	bogusUUID := uuid.New()
 	r, err := http.NewRequest(
 		"GET",
@@ -58,17 +56,9 @@ func (suite *AccountsTestSuite) TestConfirmEmailReferenceNotFound() {
 		log.Print(w.Body.String())
 	}
 
-	// Check the response body
-	expectedJSON, err := json.Marshal(
-		map[string]string{"error": accounts.ErrConfirmationNotFound.Error()})
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"),
-			"Body should contain JSON detailing the error",
-		)
-	}
+	expectedCode := http.StatusNotFound
+	expectedMessage := accounts.ErrConfirmationNotFound.Error()
+	response.TestResponseForError(suite.T(), w, expectedMessage, expectedCode)
 }
 
 func (suite *AccountsTestSuite) TestConfirmEmail() {
@@ -126,10 +116,8 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
-	// Check the status code
-	if !assert.Equal(suite.T(), 204, w.Code) {
-		log.Print(w.Body.String())
-	}
+	// Check empty response
+	response.TestEmptyResponse(suite.T(), w)
 
 	// Fetch the updated user
 	user := new(accounts.User)
@@ -143,11 +131,4 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 
 	// And correct data was saved
 	assert.True(suite.T(), user.Confirmed)
-
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		"", // empty string
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-	)
 }

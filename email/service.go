@@ -17,17 +17,17 @@ func NewService(cnf *config.Config) *Service {
 }
 
 // Send sends email using sendgrid
-func (s *Service) Send(email *Email) error {
+func (s *Service) Send(e *Email) error {
 	// Construct the mail
 	m := new(mail.SGMailV3)
-	m.SetFrom(&mail.Email{Address: email.From.Email, Name: email.From.Name})
-	m.Subject = email.Subject
+	m.SetFrom(&mail.Email{Address: e.From.Email, Name: e.From.Name})
+	m.Subject = e.Subject
 	p := mail.NewPersonalization()
-	for _, recipient := range email.Recipients {
+	for _, recipient := range e.Recipients {
 		p.AddTos(&mail.Email{Address: recipient.Email, Name: recipient.Name})
 	}
 	m.AddPersonalizations(p)
-	content := mail.NewContent("text/plain", email.Text)
+	content := mail.NewContent("text/plain", e.Text)
 	m.AddContent(content)
 
 	// And send the mail

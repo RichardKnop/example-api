@@ -15,6 +15,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+
+	accountsMocks "github.com/RichardKnop/example-api/accounts/mocks"
+	emailMocks "github.com/RichardKnop/example-api/email/mocks"
 )
 
 var (
@@ -46,16 +49,16 @@ func init() {
 // AccountsTestSuite needs to be exported so the tests run
 type AccountsTestSuite struct {
 	suite.Suite
-	cnf              *config.Config
-	db               *gorm.DB
-	emailServiceMock *email.ServiceMock
-	emailFactoryMock *accounts.EmailFactoryMock
-	service          *accounts.Service
-	accounts         []*accounts.Account
-	users            []*accounts.User
-	superuserRole    *accounts.Role
-	userRole         *accounts.Role
-	router           *mux.Router
+	cnf           *config.Config
+	db            *gorm.DB
+	emailService  *emailMocks.ServiceInterface
+	emailFactory  *accountsMocks.EmailFactoryInterface
+	service       *accounts.Service
+	accounts      []*accounts.Account
+	users         []*accounts.User
+	superuserRole *accounts.Role
+	userRole      *accounts.Role
+	router        *mux.Router
 }
 
 // The SetupSuite method will be run by testify once, at the very
@@ -104,16 +107,16 @@ func (suite *AccountsTestSuite) SetupSuite() {
 	}
 
 	// Initialise mocks
-	suite.emailServiceMock = new(email.ServiceMock)
-	suite.emailFactoryMock = new(accounts.EmailFactoryMock)
+	suite.emailService = new(emailMocks.ServiceInterface)
+	suite.emailFactory = new(accountsMocks.EmailFactoryInterface)
 
 	// Initialise the service
 	suite.service = accounts.NewService(
 		suite.cnf,
 		suite.db,
 		oauth.NewService(suite.cnf, suite.db),
-		suite.emailServiceMock,
-		suite.emailFactoryMock,
+		suite.emailService,
+		suite.emailFactory,
 	)
 
 	// Register routes
@@ -162,45 +165,45 @@ func TestAccountsTestSuite(t *testing.T) {
 
 // Reset mocks
 func (suite *AccountsTestSuite) resetMocks() {
-	suite.emailServiceMock.ExpectedCalls = suite.emailServiceMock.ExpectedCalls[:0]
-	suite.emailServiceMock.Calls = suite.emailServiceMock.Calls[:0]
-	suite.emailFactoryMock.ExpectedCalls = suite.emailFactoryMock.ExpectedCalls[:0]
-	suite.emailFactoryMock.Calls = suite.emailFactoryMock.Calls[:0]
+	suite.emailService.ExpectedCalls = suite.emailService.ExpectedCalls[:0]
+	suite.emailService.Calls = suite.emailService.Calls[:0]
+	suite.emailFactory.ExpectedCalls = suite.emailFactory.ExpectedCalls[:0]
+	suite.emailFactory.Calls = suite.emailFactory.Calls[:0]
 }
 
 // Checks that the mock object expectations were met
 func (suite *AccountsTestSuite) assertMockExpectations() {
-	suite.emailServiceMock.AssertExpectations(suite.T())
-	suite.emailFactoryMock.AssertExpectations(suite.T())
+	suite.emailService.AssertExpectations(suite.T())
+	suite.emailFactory.AssertExpectations(suite.T())
 	suite.resetMocks()
 }
 
 // Mock sending confirmation email
 func (suite *AccountsTestSuite) mockConfirmationEmail() {
 	emailMock := new(email.Email)
-	suite.emailFactoryMock.On(
+	suite.emailFactory.On(
 		"NewConfirmationEmail",
 		mock.AnythingOfType("*accounts.Confirmation"),
-	).Return(emailMock)
-	suite.emailServiceMock.On("Send", emailMock).Return(nil)
+	).Return(emailMock, nil)
+	suite.emailService.On("Send", emailMock).Return(nil)
 }
 
 // Mock sending invitation email
 func (suite *AccountsTestSuite) mockInvitationEmail() {
 	emailMock := new(email.Email)
-	suite.emailFactoryMock.On(
+	suite.emailFactory.On(
 		"NewInvitationEmail",
 		mock.AnythingOfType("*accounts.Invitation"),
-	).Return(emailMock)
-	suite.emailServiceMock.On("Send", emailMock).Return(nil)
+	).Return(emailMock, nil)
+	suite.emailService.On("Send", emailMock).Return(nil)
 }
 
 // Mock sending password reset email
 func (suite *AccountsTestSuite) mockPasswordResetEmail() {
 	emailMock := new(email.Email)
-	suite.emailFactoryMock.On(
+	suite.emailFactory.On(
 		"NewPasswordResetEmail",
 		mock.AnythingOfType("*accounts.PasswordReset"),
-	).Return(emailMock)
-	suite.emailServiceMock.On("Send", emailMock).Return(nil)
+	).Return(emailMock, nil)
+	suite.emailService.On("Send", emailMock).Return(nil)
 }

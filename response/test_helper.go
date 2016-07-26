@@ -32,17 +32,8 @@ func TestHandlerFailsWithoutAuthenticatedUser(t *testing.T, handler func(w http.
 // TestListBadRequests tests a list response for common bad request failures
 func TestListBadRequests(t *testing.T, entity string, router *mux.Router) {
 	code := http.StatusBadRequest
-	TestListFailsBadUpdatedAfter(t, entity, router, code)
 	TestListFailsBadPage(t, entity, router, code)
 	TestListFailsPageTooBig(t, entity, router, code)
-}
-
-// TestListFailsBadUpdatedAfter tests a list endpoint for a bad updated after response
-func TestListFailsBadUpdatedAfter(t *testing.T, entity string, router *mux.Router, code int) {
-	url := fmt.Sprintf("http://1.2.3.4/v1/%s?updated_after=dsdsdnasnd", entity)
-	msg := "parsing time \\\"dsdsdnasnd\\\" as \\\"2006-01-02T15:04:05Z07:00\\\": cannot parse \\\"dsdsdnasnd\\\" as \\\"2006\\\""
-
-	TestGetErrorExpectedResponse(t, router, url, msg, code)
 }
 
 // TestListFailsBadPage tests a list endpoint for a bad page response
@@ -59,38 +50,6 @@ func TestListFailsPageTooBig(t *testing.T, entity string, router *mux.Router, co
 	msg := "Page too big"
 
 	TestGetErrorExpectedResponse(t, router, url, msg, code)
-}
-
-// TestGetFailsPermission ...
-func TestGetFailsPermission(t *testing.T, entity, id string, router *mux.Router, err error) {
-	code := http.StatusForbidden
-	url := fmt.Sprintf("http://1.2.3.4/v1/%s/%s", entity, id)
-
-	TestGetErrorExpectedResponse(t, router, url, err.Error(), code)
-}
-
-// TestListFailsPermission ...
-func TestListFailsPermission(t *testing.T, entity string, router *mux.Router, err error) {
-	code := http.StatusForbidden
-	url := fmt.Sprintf("http://1.2.3.4/v1/%s", entity)
-
-	TestGetErrorExpectedResponse(t, router, url, err.Error(), code)
-}
-
-// TestCreateFailsPermission ...
-func TestCreateFailsPermission(t *testing.T, entity string, router *mux.Router, err error) {
-	code := http.StatusForbidden
-	url := fmt.Sprintf("http://1.2.3.4/v1/%s", entity)
-
-	TestPostErrorExpectedResponse(t, router, url, err.Error(), code, nil)
-}
-
-// TestPutFailsPermission ...
-func TestPutFailsPermission(t *testing.T, entity, id string, router *mux.Router, err error) {
-	code := http.StatusForbidden
-	url := fmt.Sprintf("http://1.2.3.4/v1/%s/%s", entity, id)
-
-	TestPutErrorExpectedResponse(t, router, url, err.Error(), code, nil)
 }
 
 // TestGetErrorExpectedResponse ...
@@ -135,18 +94,24 @@ func TestResponseForError(t *testing.T, w *httptest.ResponseRecorder, msg string
 	TestResponseBody(t, w, getErrorJSON(msg))
 }
 
+// TestEmptyResponse tests an empty 204 response
+func TestEmptyResponse(t *testing.T, w *httptest.ResponseRecorder) {
+	assert.Equal(t, 204, w.Code)
+	assert.Equal(
+		t,
+		"", // empty string
+		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
+	)
+}
+
 // TestResponseBody ...
 func TestResponseBody(t *testing.T, w *httptest.ResponseRecorder, expected string) {
 	assert.Equal(
 		t,
 		expected,
 		strings.TrimRight(w.Body.String(), "\n"),
-		"Should have returned correct body text")
-
-}
-
-func getErrorJSON(msg string) string {
-	return fmt.Sprintf("{\"error\":\"%s\"}", msg)
+		"Should have returned correct body text",
+	)
 }
 
 // TestListValidResponse ...
@@ -156,7 +121,6 @@ func TestListValidResponse(t *testing.T, router *mux.Router, entity string, item
 
 // TestListValidResponseWithParams tests a list endpoint for a valid response with default settings
 func TestListValidResponseWithParams(t *testing.T, router *mux.Router, entity string, items []interface{}, assertExpectations func(), params map[string]string) {
-
 	u, err := url.Parse(fmt.Sprintf("http://1.2.3.4/v1/%s", entity))
 
 	// add any params
@@ -225,4 +189,8 @@ func TestListValidResponseWithParams(t *testing.T, router *mux.Router, entity st
 	if assert.NoError(t, err, "JSON marshalling failed") {
 		TestResponseBody(t, w, string(expectedJSON))
 	}
+}
+
+func getErrorJSON(msg string) string {
+	return fmt.Sprintf("{\"error\":\"%s\"}", msg)
 }
