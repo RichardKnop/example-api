@@ -77,8 +77,8 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
-			"Comment": "v1.1.0-69-g38ee283",
-			"Rev": "38ee283dabf11c9cbdb968eebd79b1fa7acbabe6"
+			"Comment": "v1.1.0-71-ge118d44",
+			"Rev": "e118d4451349065b8e7ce0f0af32e033995363f8"
 		},
 		{
 			"ImportPath": "github.com/phyber/negroni-gzip/gzip",
@@ -90,18 +90,18 @@
 		},
 		{
 			"ImportPath": "github.com/sendgrid/rest",
-			"Comment": "v2.1.0-1-g20d695f",
-			"Rev": "20d695fcdc599fb748259219b16f2f1100294c87"
+			"Comment": "v2.1.0-4-g2eefcc3",
+			"Rev": "2eefcc3c15fec755eadc793ec2de0214fe858ee9"
 		},
 		{
 			"ImportPath": "github.com/sendgrid/sendgrid-go",
-			"Comment": "v3.0.0-1-gc453d8c",
-			"Rev": "c453d8c5f6cebfc40ec5b963a71e8a6cbb96d776"
+			"Comment": "v3.0.6-2-g1a97aeb",
+			"Rev": "1a97aeb37efdc10cd9602463989e18dbde23404e"
 		},
 		{
 			"ImportPath": "github.com/sendgrid/sendgrid-go/helpers/mail",
-			"Comment": "v3.0.0-1-gc453d8c",
-			"Rev": "c453d8c5f6cebfc40ec5b963a71e8a6cbb96d776"
+			"Comment": "v3.0.6-2-g1a97aeb",
+			"Rev": "1a97aeb37efdc10cd9602463989e18dbde23404e"
 		},
 		{
 			"ImportPath": "github.com/stretchr/objx",

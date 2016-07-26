@@ -64,7 +64,7 @@ We welcome direct contributions to the sendgrid-go code base. Thank you!
 
 ##### Prerequisites #####
 
-- Go 1.3 through 1.5
+- Go 1.6
 - [rest](https://github.com/sendgrid/rest)
 
 ##### Initial setup: #####
@@ -119,13 +119,11 @@ For the purposes of contributing to this repo, please update the [`sendgrid_test
 To run the tests:
 
 ```bash
-go test -v
+go test -v ./...
 ```
 
 <a name="style_guidelines_and_naming_conventions"></a>
 ## Style Guidelines & Naming Conventions
-
-Generally, we follow the style guidelines as suggested by the official language. However, we ask that you conform to the styles that already exist in the library. If you wish to deviate, please explain your reasoning.
 
 Generally, we follow the style guidelines as suggested by the official language. However, we ask that you conform to the styles that already exist in the library. If you wish to deviate, please explain your reasoning.
 
