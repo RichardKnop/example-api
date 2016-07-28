@@ -35,12 +35,6 @@ var Cnf = &Config{
 		RefreshTokenLifetime: 1209600, // 14 days
 		AuthCodeLifetime:     3600,    // 1 hour
 	},
-	Session: SessionConfig{
-		Secret:   "test_secret",
-		Path:     "/",
-		MaxAge:   86400 * 7, // 7 days
-		HTTPOnly: true,
-	},
 	Facebook: FacebookConfig{
 		AppID:     "facebook_app_id",
 		AppSecret: "facebook_app_secret",

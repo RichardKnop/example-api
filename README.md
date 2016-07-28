@@ -68,12 +68,6 @@ curl -L http://localhost:2379/v2/keys/config/example_api.json -XPUT -d value='{
         "RefreshTokenLifetime": 1209600,
         "AuthCodeLifetime": 3600
     },
-    "Session": {
-        "Secret": "test_secret",
-        "Path": "/",
-        "MaxAge": 604800,
-        "HTTPOnly": true
-    },
     "Facebook": {
         "AppID": "facebook_app_id",
         "AppSecret": "facebook_app_secret"
