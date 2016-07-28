@@ -19,8 +19,6 @@ function main() {
     echo "This is a dry run."
   fi
 
-  check-prereqs
-
   # Get and verify version info
   local -r version_regex="^v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
   if [[ "${new_version}" =~ $version_regex ]]; then
@@ -37,22 +35,17 @@ function main() {
   read -p "Container name (default: example_api): " container_name
   [ -z "$container_name" ] && container_name="example_api"
 
-  read -p "S3 bucket (default: example_api.releases): " s3_bucket
-  [ -z "$s3_bucket" ] && s3_bucket="example_api.releases"
-
   local -r github=`git config --get remote.origin.url`
   declare -r temp_dir=$(mktemp -d "/tmp/${container_name}-${new_version}.XXXX")
   local -r tag="${container_name}:${new_version}"
-  local -r tarball="/tmp/${tag}.tar.gz"
-  local -r s3_path="s3://${s3_bucket}/${container_name}/${new_version}.tar.gz"
+  local -r registry_tag="registry.local/${container_name}"
 
   git-clone "${github}" "${temp_dir}"
   git-checkout "${new_version}" "${temp_dir}"
   docker-build "${tag}" "${temp_dir}"
-  docker-save "${tag}" "${tarball}"
-  s3-copy "${tarball}" "${s3_path}"
+  docker-tag "${tag}" "${registry_tag}"
+  docker-push "${tag}"
   docker-cleanup "${tag}"
-  delete-tarball "${tarball}"
   rm -Rf "${temp_dir}"
 }
 
@@ -61,13 +54,6 @@ function usage() {
   echo
   echo "<release_version> is the version you want to release,"
   echo "Please see docs/releasing.md for more info."
-}
-
-function check-prereqs() {
-  if ! (aws --version 2>&1 | grep -q aws-cli); then
-    echo "!!! AWS SDK is required. Use 'go get github.com/aws/aws-sdk-go'."
-    exit 1
-  fi
 }
 
 function git-clone() {
@@ -103,14 +89,24 @@ function docker-build() {
   fi
 }
 
-function docker-save() {
-  local -r image="${1}"
-  local -r dest="${2}"
-  echo "Saving '${image}' to '${dest}'..."
+function docker-tag() {
+  local -r tag="${1}"
+  local -r registry_tag="${2}"
+  echo "Tagging as '${tag}' as '${registry_tag}'..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker save ${image} | gzip > ${dest}"
+    echo "Dry run: would have done docker tag ${tag} ${registry_tag}"
   else
-    docker save "${image}" | gzip > "${dest}"
+    docker tag "${tag}" "${registry_tag}"
+  fi
+}
+
+function docker-push() {
+  local -r tag="${1}"
+  echo "Pushing '${tag}' to registry..."
+  if $DRY_RUN; then
+    echo "Dry run: would have done docker push ${tag}"
+  else
+    docker push "${tag}"
   fi
 }
 
@@ -122,27 +118,6 @@ function docker-cleanup() {
   else
     docker rmi "${tag}"
     docker rmi $(docker images -q -f "dangling=true") || true
-  fi
-}
-
-function delete-tarball() {
-  local -r tarball="${1}"
-  echo "Deleting tarball '${tarball}'..."
-  if $DRY_RUN; then
-    echo "Dry run: would have done rm ${tarball}"
-  else
-    rm  "${tarball}"
-  fi
-}
-
-function s3-copy() {
-  local -r src="${1}"
-  local -r dest="${2}"
-  echo "Pushing '${src}' to '${dest}'..."
-  if $DRY_RUN; then
-    echo "Dry run: would have done aws s3 cp ${src} ${dest} --acl=private --content-encoding=gzip"
-  else
-    aws s3 cp "${src}" "${dest}" --acl=private --content-encoding=gzip
   fi
 }
 
