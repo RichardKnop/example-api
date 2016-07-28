@@ -48,7 +48,7 @@ func (s *Service) FindUserByEmail(email string) (*User, error) {
 	user := new(User)
 	notFound := UserPreload(s.db).
 		Joins("inner join oauth_users on oauth_users.id = account_users.oauth_user_id").
-		Where("LOWER(oauth_users.username) = LOWER(?)", email).First(user).RecordNotFound()
+		Where("oauth_users.username = LOWER(?)", email).First(user).RecordNotFound()
 
 	// Not found
 	if notFound {

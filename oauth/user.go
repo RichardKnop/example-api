@@ -3,6 +3,7 @@ package oauth
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	pass "github.com/RichardKnop/example-api/password"
@@ -39,7 +40,7 @@ func (s *Service) UserExists(username string) bool {
 func (s *Service) FindUserByUsername(username string) (*User, error) {
 	// Usernames are case insensitive
 	user := new(User)
-	notFound := s.db.Where("LOWER(username) = LOWER(?)", username).
+	notFound := s.db.Where("username = LOWER(?)", username).
 		First(user).RecordNotFound()
 
 	// Not found
@@ -94,7 +95,7 @@ func (s *Service) AuthUser(username, password string) (*User, error) {
 func (s *Service) createUserCommon(db *gorm.DB, username, password string) (*User, error) {
 	// Start with a user without a password
 	user := &User{
-		Username: username,
+		Username: strings.ToLower(username),
 		Password: util.StringOrNull(""),
 	}
 

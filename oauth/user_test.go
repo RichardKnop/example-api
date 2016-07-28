@@ -35,6 +35,17 @@ func (suite *OauthTestSuite) TestFindUserByUsername() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test@user", user.Username)
 	}
+
+	// Test username case insensitivity
+	user, err = suite.service.FindUserByUsername("TeSt@UsEr")
+
+	// Error should be nil
+	assert.Nil(suite.T(), err)
+
+	// Correct user object should be returned
+	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), "test@user", user.Username)
+	}
 }
 
 func (suite *OauthTestSuite) TestCreateUser() {
@@ -69,6 +80,20 @@ func (suite *OauthTestSuite) TestCreateUser() {
 	// Correct user object should be returned
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test@newuser", user.Username)
+	}
+
+	// Test username case insensitivity
+	user, err = suite.service.CreateUser(
+		"TeSt@NeWuSeR2", // username
+		"test_password", // password
+	)
+
+	// Error should be nil
+	assert.Nil(suite.T(), err)
+
+	// Correct user object should be returned
+	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), "test@newuser2", user.Username)
 	}
 }
 
@@ -153,6 +178,17 @@ func (suite *OauthTestSuite) TestAuthUser() {
 
 	// When we try to authenticate with valid username and password
 	user, err = suite.service.AuthUser("test@user", "test_password")
+
+	// Error should be nil
+	assert.Nil(suite.T(), err)
+
+	// Correct user object should be returned
+	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), "test@user", user.Username)
+	}
+
+	// Test username case insensitivity
+	user, err = suite.service.AuthUser("TeSt@UsEr", "test_password")
 
 	// Error should be nil
 	assert.Nil(suite.T(), err)

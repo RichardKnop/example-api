@@ -70,6 +70,16 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 	// Now let's pass a valid email
 	user, err = suite.service.FindUserByEmail("test@user")
 
+	// Error should be nil
+	assert.Nil(suite.T(), err)
+
+	// Correct user should be returned
+	if assert.NotNil(suite.T(), user) {
+		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
+		assert.Equal(suite.T(), roles.User, user.Role.ID)
+	}
+
 	// Test case insensitiviness
 	user, err = suite.service.FindUserByEmail("TeSt@UsEr")
 
