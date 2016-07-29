@@ -39,19 +39,13 @@ func (s *Service) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a new invited user account
-	invitation, err := s.InviteUser(authenticatedUser, invitationRequest)
+	_, err = s.InviteUser(authenticatedUser, invitationRequest)
 	if err != nil {
 		logger.Errorf("Invite user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))
 		return
 	}
 
-	// Create response
-	invitationResponse, err := NewInvitationResponse(invitation)
-	if err != nil {
-		response.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// Write JSON response
-	response.WriteJSON(w, invitationResponse, http.StatusCreated)
+	// 204 no content response
+	response.NoContent(w)
 }

@@ -121,6 +121,8 @@ Example response:
 
 ## Update User
 
+Send the full user object as partial updates are not supported (if required, partial updates could be implemented via `PATCH` method).
+
 Example request:
 
 ```
@@ -168,6 +170,12 @@ Example response:
 
 ## Change Password
 
+To change a password use the same endpoint you use to update a user. Only `password` and `new_password` fields will be read from the request. No need to send the full user object.
+
+If a user has a password already, the `password` will be compared to the current user's password and error returned if they do not match.
+
+User's password is set to the value of `new_password`.
+
 Example request:
 
 ```
@@ -203,6 +211,8 @@ Example response:
 
 ## Create Invitation
 
+The invited user should receive an email with a link to a web page where he/she can set a password and therefor activate the account.
+
 Example request:
 
 ```
@@ -215,25 +225,7 @@ curl --compressed -v localhost:8080/v1/accounts/invitations \
 	}'
 ```
 
-Example response:
-
-```json
-{
-  "_links": {
-    "self": {
-      "href": "/v1/accounts/users/invitations/1"
-    }
-  },
-  "id": 1,
-  "reference": "57040678-e910-4de0-a3e6-e30c3851289b",
-  "invited_user_id": 2,
-  "invited_by_user_id": 1,
-  "created_at": "2015-12-11T04:42:19Z",
-  "updated_at": "2015-12-11T04:42:19Z"
-}
-```
-
-The invited user should receive an email with a link to a web page where he/she can set a password and therefor activate the account:
+Returns `204` empty response on success.
 
 ## Confirm Invitation
 
