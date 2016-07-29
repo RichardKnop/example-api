@@ -29,20 +29,20 @@ Example response:
 
 ```json
 {
-    "_links": {
-        "self": {
-            "href": "/v1/accounts/users/1"
-        }
-    },
-    "id": 1,
-    "email": "test@user",
-    "first_name": "",
-    "last_name": "",
-    "picture": "",
-    "role": "user",
-    "confirmed": false,
-    "created_at": "2015-12-17T06:17:54Z",
-    "updated_at": "2015-12-17T06:17:54Z"
+  "_links": {
+    "self": {
+      "href": "/v1/accounts/users/1"
+    }
+  },
+  "id": 1,
+  "email": "test@user",
+  "first_name": "",
+  "last_name": "",
+  "picture": "",
+  "role": "user",
+  "confirmed": false,
+  "created_at": "2015-12-17T06:17:54Z",
+  "updated_at": "2015-12-17T06:17:54Z"
 }
 ```
 
@@ -72,20 +72,20 @@ Example response:
 
 ```json
 {
-    "_links": {
-        "self": {
-            "href": "/v1/accounts/users/1"
-        }
-    },
-    "id": 1,
-    "email": "test@user",
-    "first_name": "",
-    "last_name": "",
-    "picture": "",
-    "role": "user",
-    "confirmed": true,
-    "created_at": "2015-12-17T06:17:54Z",
-    "updated_at": "2015-12-17T06:17:54Z"
+  "_links": {
+    "self": {
+      "href": "/v1/accounts/users/1"
+    }
+  },
+  "id": 1,
+  "email": "test@user",
+  "first_name": "",
+  "last_name": "",
+  "picture": "",
+  "role": "user",
+  "confirmed": true,
+  "created_at": "2015-12-17T06:17:54Z",
+  "updated_at": "2015-12-17T06:17:54Z"
 }
 ```
 
@@ -102,20 +102,20 @@ Example response:
 
 ```json
 {
-    "_links": {
-        "self": {
-            "href": "/v1/accounts/users/1"
-        }
-    },
-    "id": 1,
-    "email": "test@user",
-    "first_name": "",
-    "last_name": "",
-    "picture": "",
-    "role": "user",
-    "confirmed": true,
-    "created_at": "2015-12-17T06:17:54Z",
-    "updated_at": "2015-12-17T06:17:54Z"
+  "_links": {
+    "self": {
+      "href": "/v1/accounts/users/1"
+    }
+  },
+  "id": 1,
+  "email": "test@user",
+  "first_name": "",
+  "last_name": "",
+  "picture": "",
+  "role": "user",
+  "confirmed": true,
+  "created_at": "2015-12-17T06:17:54Z",
+  "updated_at": "2015-12-17T06:17:54Z"
 }
 ```
 
@@ -128,9 +128,20 @@ curl -XPUT --compressed -v localhost:8080/v1/accounts/users/1 \
 	-H "Content-Type: application/json" \
 	-H "Authorization: Bearer 00ccd40e-72ca-4e79-a4b6-67c95e2e3f1c" \
 	-d '{
-		"first_name": "test_first_name_updated",
-		"last_name": "test_last_name_updated",
-		"picture": "test_picture_updated"
+	  "_links": {
+	    "self": {
+	      "href": "/v1/accounts/users/1"
+	  	}
+	  },
+	  "id": 1,
+	  "email": "test@user",
+	  "first_name": "test_first_name_updated",
+	  "last_name": "test_last_name_updated",
+	  "picture": "test_picture_updated",
+	  "role": "user",
+	  "confirmed": true,
+	  "created_at": "2015-12-17T06:17:54Z",
+	  "updated_at": "2015-12-18T07:09:15Z"
 	}'
 ```
 
@@ -138,20 +149,20 @@ Example response:
 
 ```json
 {
-    "_links": {
-        "self": {
-            "href": "/v1/accounts/users/1"
-        }
-    },
-    "id": 1,
-    "email": "test@user",
-    "first_name": "test_first_name_updated",
-    "last_name": "test_last_name_updated",
-    "picture": "test_picture_updated",
-    "role": "user",
-    "confirmed": true,
-    "created_at": "2015-12-17T06:17:54Z",
-    "updated_at": "2015-12-18T07:09:15Z"
+  "_links": {
+    "self": {
+      "href": "/v1/accounts/users/1"
+    }
+  },
+  "id": 1,
+  "email": "test@user",
+  "first_name": "test_first_name_updated",
+  "last_name": "test_last_name_updated",
+  "picture": "test_picture_updated",
+  "role": "user",
+  "confirmed": true,
+  "created_at": "2015-12-17T06:17:54Z",
+  "updated_at": "2015-12-18T07:09:15Z"
 }
 ```
 
@@ -173,20 +184,20 @@ Example response:
 
 ```json
 {
-    "_links": {
-        "self": {
-            "href": "/v1/accounts/users/1"
-        }
-    },
-    "id": 1,
-    "email": "test@user",
-    "first_name": "test_first_name",
-    "last_name": "test_last_name",
-		"picture": "test_picture",
-    "role": "user",
-    "confirmed": true,
-    "created_at": "2015-12-17T06:17:54Z",
-    "updated_at": "2015-12-18T07:09:15Z"
+  "_links": {
+    "self": {
+      "href": "/v1/accounts/users/1"
+    }
+  },
+  "id": 1,
+  "email": "test@user",
+  "first_name": "test_first_name",
+  "last_name": "test_last_name",
+	"picture": "test_picture",
+  "role": "user",
+  "confirmed": true,
+  "created_at": "2015-12-17T06:17:54Z",
+  "updated_at": "2015-12-18T07:09:15Z"
 }
 ```
 
@@ -208,23 +219,21 @@ Example response:
 
 ```json
 {
-    "_links": {
-        "self": {
-            "href": "/v1/accounts/users/invitations/1"
-        }
-    },
-    "id": 1,
-    "reference": "57040678-e910-4de0-a3e6-e30c3851289b",
-    "invited_user_id": 2,
-    "invited_by_user_id": 1,
-    "created_at": "2015-12-11T04:42:19Z",
-    "updated_at": "2015-12-11T04:42:19Z"
+  "_links": {
+    "self": {
+      "href": "/v1/accounts/users/invitations/1"
+    }
+  },
+  "id": 1,
+  "reference": "57040678-e910-4de0-a3e6-e30c3851289b",
+  "invited_user_id": 2,
+  "invited_by_user_id": 1,
+  "created_at": "2015-12-11T04:42:19Z",
+  "updated_at": "2015-12-11T04:42:19Z"
 }
 ```
 
 The invited user should receive an email with a link to a web page where he/she can set a password and therefor activate the account:
-
-![Set Password Screenshot][1]
 
 ## Confirm Invitation
 
