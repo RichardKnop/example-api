@@ -165,16 +165,13 @@ func (s *Service) CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserR
 func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
 	// Is this a request to change user password?
 	if userRequest.NewPassword != "" {
-		// Verify the old password, if the user doesn't have a password yet
-		// (user logged in with Facebook), skip this check
-		if user.OauthUser.Password.Valid {
-			_, err := s.oauthService.AuthUser(
-				user.OauthUser.Username,
-				userRequest.Password,
-			)
-			if err != nil {
-				return err
-			}
+		// Verify the user submitted current password
+		_, err := s.oauthService.AuthUser(
+			user.OauthUser.Username,
+			userRequest.Password,
+		)
+		if err != nil {
+			return err
 		}
 
 		// Set the new password

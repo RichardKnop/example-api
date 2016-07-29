@@ -172,7 +172,7 @@ Example response:
 
 To change a password use the same endpoint you use to update a user. Only `password` and `new_password` fields will be read from the request. No need to send the full user object.
 
-If a user has a password already, the `password` will be compared to the current user's password and error returned if they do not match.
+The `password` will be compared to the current user's password and error returned if they do not match - hence why users without password (registered via Facebook, for example) have to reset their passwords for the first time.
 
 User's password is set to the value of `new_password`.
 
