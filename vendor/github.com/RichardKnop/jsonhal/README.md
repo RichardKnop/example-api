@@ -1,4 +1,4 @@
-[![Codeship Status for AreaHQ/jsonhal](https://codeship.com/projects/b2f1dac0-9da7-0133-7683-1a74f7994c2d/status?branch=master)](https://codeship.com/projects/127557)
+[![Codeship Status for RichardKnop/jsonhal](https://codeship.com/projects/8537a230-37b2-0134-07fa-02b643534a44/status?branch=master)](https://codeship.com/projects/165842)
 
 # jsonhal
 
@@ -15,7 +15,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/AreaHQ/jsonhal"
+	"github.com/RichardKnop/jsonhal"
 )
 
 // HelloWorld ...
