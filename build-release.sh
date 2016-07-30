@@ -117,7 +117,7 @@ function docker-cleanup() {
     echo "Dry run: would have done docker rmi ${registry_tag}"
   else
     docker rmi "${registry_tag}"
-    docker rmi $(docker images -q -f "dangling=true") || true
+    docker rmi -f $(docker images -q -f "dangling=true") || true
   fi
 }
 
