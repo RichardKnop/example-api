@@ -45,7 +45,7 @@ function main() {
   docker-build "${tag}" "${temp_dir}"
   docker-tag "${tag}" "${registry_tag}"
   docker-push "${registry_tag}"
-  docker-cleanup "${registry_tag}"
+  docker-cleanup "${tag}" "${registry_tag}"
   rm -Rf "${temp_dir}"
 }
 
@@ -111,11 +111,15 @@ function docker-push() {
 }
 
 function docker-cleanup() {
-  local -r registry_tag="${1}"
+  local -r tag="${1}"
+  local -r registry_tag="${2}"
   echo "Docker cleanup..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker rmi ${registry_tag}"
+    echo "Dry run: would have done "
+    echo "docker rmi ${tag}"
+    echo "docker rmi ${registry_tag}"
   else
+    docker rmi "${tag}"
     docker rmi "${registry_tag}"
     docker rmi -f $(docker images -q -f "dangling=true") || true
   fi
