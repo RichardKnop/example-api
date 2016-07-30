@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"time"
 
@@ -11,8 +10,7 @@ import (
 )
 
 var (
-	etcdHost     = "localhost"
-	etcdPort     = "2379"
+	etcdEndpoint = "localhost:2379"
 	configPath   = "/config/example_api.json"
 	configLoaded bool
 )
@@ -58,11 +56,8 @@ var Cnf = &Config{
 
 func init() {
 	// Overwrite default values with environment variables if they are set
-	if os.Getenv("ETCD_HOST") != "" {
-		etcdHost = os.Getenv("ETCD_HOST")
-	}
-	if os.Getenv("ETCD_PORT") != "" {
-		etcdPort = os.Getenv("ETCD_PORT")
+	if os.Getenv("ETCD_ENDPOINT") != "" {
+		etcdEndpoint = os.Getenv("ETCD_ENDPOINT")
 	}
 	if os.Getenv("ETCD_CONFIG_PATH") != "" {
 		configPath = os.Getenv("ETCD_CONFIG_PATH")
@@ -76,8 +71,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 		return Cnf
 	}
 
-	// Construct the ETCD endpoint
-	etcdEndpoint := fmt.Sprintf("http://%s:%s", etcdHost, etcdPort)
+	// Log the etcd endpoint for debugging purposes
 	logger.Infof("ETCD Endpoint: %s", etcdEndpoint)
 
 	// ETCD config

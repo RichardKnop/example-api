@@ -134,7 +134,7 @@ Build a Docker image and run the app in a container:
 
 ```
 docker build -t example_api .
-docker run -e ETCD_HOST=localhost -e ETCD_PORT=2379 -p 6060:8080 example_api
+docker run -e ETCD_ENDPOINT=localhost:2379 -p 6060:8080 example_api
 ```
 
 You can load fixtures with `docker exec` command:
