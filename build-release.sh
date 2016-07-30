@@ -52,10 +52,9 @@ function main() {
 
   git-clone "${github}" "${temp_dir}"
   git-checkout "${new_version}" "${temp_dir}"
-  docker-build "${version_tag}" "${temp_dir}"
-  docker-tag "${version_tag}" "${latest_tag}"
+  docker-build "${version_tag}" "${latest_tag}" "${temp_dir}"
   docker-push "${version_tag}"
-  docker-cleanup "${version_tag}" "${registry_tag}"
+  docker-cleanup "${version_tag}" "${latest_tag}"
   rm -Rf "${temp_dir}"
 }
 
@@ -81,35 +80,25 @@ function git-clone() {
 }
 
 function git-checkout() {
-  local -r tag="${1}"
+  local -r version_tag="${1}"
   local -r dir="${2}"
-  echo "Checking out tag '${tag}'..."
+  echo "Checking out tag '${version_tag}'..."
   if $DRY_RUN; then
-    echo "Dry run: would have done cd ${dir} ; git checkout -b ${tag} ${tag}"
+    echo "Dry run: would have done cd ${dir} ; git checkout -b ${version_tag} ${version_tag}"
   else
-    (cd ${dir} ; git checkout -b "${tag}" "${tag}")
+    (cd ${dir} ; git checkout -b "${version_tag}" "${version_tag}")
   fi
 }
 
 function docker-build() {
   local -r version_tag="${1}"
-  local -r dir="${2}"
+  local -r latest_tag="${2}"
+  local -r dir="${3}"
   echo "Building docker container '${version_tag}'..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker build -t ${version_tag} ${dir}"
+    echo "Dry run: would have done docker build -t ${version_tag} -t ${latest_tag} ${dir}"
   else
-    docker build -t "${version_tag}" "${dir}"
-  fi
-}
-
-function docker-tag() {
-  local -r version_tag="${1}"
-  local -r registry_tag="${2}"
-  echo "Tagging as '${version_tag}' as '${registry_tag}'..."
-  if $DRY_RUN; then
-    echo "Dry run: would have done docker tag ${version_tag} ${registry_tag}"
-  else
-    docker tag "${version_tag}" "${registry_tag}"
+    docker build -t "${version_tag}" -t "${latest_tag}" "${dir}"
   fi
 }
 
@@ -125,15 +114,15 @@ function docker-push() {
 
 function docker-cleanup() {
   local -r version_tag="${1}"
-  local -r registry_tag="${2}"
+  local -r latest_tag="${2}"
   echo "Docker cleanup..."
   if $DRY_RUN; then
     echo "Dry run: would have done "
     echo "docker rmi ${version_tag}"
-    echo "docker rmi ${registry_tag}"
+    echo "docker rmi ${latest_tag}"
   else
     docker rmi "${version_tag}"
-    docker rmi "${registry_tag}"
+    docker rmi "${latest_tag}"
     docker rmi -f $(docker images -q -f "dangling=true") || true
   fi
 }
