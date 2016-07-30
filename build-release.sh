@@ -18,7 +18,6 @@ function main() {
   else
     echo "This is a dry run."
   fi
-  cd $(dirname $(which $0) )
 
   # Get and verify version info
   local -r version_regex="^v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
