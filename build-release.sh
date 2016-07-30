@@ -47,15 +47,15 @@ function main() {
 
   local -r github=`git config --get remote.origin.url`
   declare -r temp_dir=$(mktemp -d "/tmp/${container_name}-${new_version}.XXXX")
-  local -r tag="${container_name}:${new_version}"
-  local -r registry_tag="registry.local/${container_name}:${new_version}"
+  local -r version_tag="registry.local/${container_name}:${new_version}"
+  local -r latest_tag="registry.local/${container_name}:latest"
 
   git-clone "${github}" "${temp_dir}"
   git-checkout "${new_version}" "${temp_dir}"
-  docker-build "${tag}" "${temp_dir}"
-  docker-tag "${tag}" "${registry_tag}"
-  docker-push "${registry_tag}"
-  docker-cleanup "${tag}" "${registry_tag}"
+  docker-build "${version_tag}" "${temp_dir}"
+  docker-tag "${version_tag}" "${latest_tag}"
+  docker-push "${version_tag}"
+  docker-cleanup "${version_tag}" "${registry_tag}"
   rm -Rf "${temp_dir}"
 }
 
@@ -92,47 +92,47 @@ function git-checkout() {
 }
 
 function docker-build() {
-  local -r tag="${1}"
+  local -r version_tag="${1}"
   local -r dir="${2}"
-  echo "Building docker container '${tag}'..."
+  echo "Building docker container '${version_tag}'..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker build -t ${tag} ${dir}"
+    echo "Dry run: would have done docker build -t ${version_tag} ${dir}"
   else
-    docker build -t "${tag}" "${dir}"
+    docker build -t "${version_tag}" "${dir}"
   fi
 }
 
 function docker-tag() {
-  local -r tag="${1}"
+  local -r version_tag="${1}"
   local -r registry_tag="${2}"
-  echo "Tagging as '${tag}' as '${registry_tag}'..."
+  echo "Tagging as '${version_tag}' as '${registry_tag}'..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker tag ${tag} ${registry_tag}"
+    echo "Dry run: would have done docker tag ${version_tag} ${registry_tag}"
   else
-    docker tag "${tag}" "${registry_tag}"
+    docker tag "${version_tag}" "${registry_tag}"
   fi
 }
 
 function docker-push() {
-  local -r registry_tag="${1}"
-  echo "Pushing '${registry_tag}' to registry..."
+  local -r version_tag="${1}"
+  echo "Pushing '${version_tag}' to registry..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker push ${registry_tag}"
+    echo "Dry run: would have done docker push ${version_tag}"
   else
-    docker push "${registry_tag}"
+    docker push "${version_tag}"
   fi
 }
 
 function docker-cleanup() {
-  local -r tag="${1}"
+  local -r version_tag="${1}"
   local -r registry_tag="${2}"
   echo "Docker cleanup..."
   if $DRY_RUN; then
     echo "Dry run: would have done "
-    echo "docker rmi ${tag}"
+    echo "docker rmi ${version_tag}"
     echo "docker rmi ${registry_tag}"
   else
-    docker rmi "${tag}"
+    docker rmi "${version_tag}"
     docker rmi "${registry_tag}"
     docker rmi -f $(docker images -q -f "dangling=true") || true
   fi
