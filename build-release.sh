@@ -53,7 +53,7 @@ function main() {
   git-clone "${github}" "${temp_dir}"
   git-checkout "${new_version}" "${temp_dir}"
   docker-build "${version_tag}" "${latest_tag}" "${temp_dir}"
-  docker-push "${version_tag}"
+  docker-push "${version_tag}" "${latest_tag}"
   docker-cleanup "${version_tag}" "${latest_tag}"
   rm -Rf "${temp_dir}"
 }
@@ -80,13 +80,13 @@ function git-clone() {
 }
 
 function git-checkout() {
-  local -r version_tag="${1}"
+  local -r tag="${1}"
   local -r dir="${2}"
-  echo "Checking out tag '${version_tag}'..."
+  echo "Checking out tag '${tag}'..."
   if $DRY_RUN; then
-    echo "Dry run: would have done cd ${dir} ; git checkout -b ${version_tag} ${version_tag}"
+    echo "Dry run: would have done cd ${dir} ; git checkout -b ${tag} ${tag}"
   else
-    (cd ${dir} ; git checkout -b "${version_tag}" "${version_tag}")
+    (cd ${dir} ; git checkout -b "${tag}" "${tag}")
   fi
 }
 
@@ -104,11 +104,15 @@ function docker-build() {
 
 function docker-push() {
   local -r version_tag="${1}"
-  echo "Pushing '${version_tag}' to registry..."
+  local -r latest_tag="${2}"
+  echo "Pushing '${version_tag}', '${version_tag}' tags to registry..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker push ${version_tag}"
+    echo "Dry run: would have done "
+    echo "docker push ${version_tag}"
+    echo "docker push ${latest_tag}"
   else
     docker push "${version_tag}"
+    docker push "${latest_tag}"
   fi
 }
 
