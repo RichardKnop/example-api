@@ -32,20 +32,20 @@ function main() {
     exit 1
   fi
 
-  read -p "Container name (default: example_api): " container_name
-  [ -z "$container_name" ] && container_name="example_api"
+  read -p "Container name (default: example-api): " container_name
+  [ -z "$container_name" ] && container_name="example-api"
 
   local -r github=`git config --get remote.origin.url`
   declare -r temp_dir=$(mktemp -d "/tmp/${container_name}-${new_version}.XXXX")
   local -r tag="${container_name}:${new_version}"
-  local -r registry_tag="registry.local/${container_name}"
+  local -r registry_tag="registry.local/${container_name}:${new_version}"
 
   git-clone "${github}" "${temp_dir}"
   git-checkout "${new_version}" "${temp_dir}"
   docker-build "${tag}" "${temp_dir}"
   docker-tag "${tag}" "${registry_tag}"
-  docker-push "${tag}"
-  docker-cleanup "${tag}"
+  docker-push "${registry_tag}"
+  docker-cleanup "${registry_tag}"
   rm -Rf "${temp_dir}"
 }
 
@@ -101,22 +101,22 @@ function docker-tag() {
 }
 
 function docker-push() {
-  local -r tag="${1}"
-  echo "Pushing '${tag}' to registry..."
+  local -r registry_tag="${1}"
+  echo "Pushing '${registry_tag}' to registry..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker push ${tag}"
+    echo "Dry run: would have done docker push ${registry_tag}"
   else
-    docker push "${tag}"
+    docker push "${registry_tag}"
   fi
 }
 
 function docker-cleanup() {
-  local -r tag="${1}"
+  local -r registry_tag="${1}"
   echo "Docker cleanup..."
   if $DRY_RUN; then
-    echo "Dry run: would have done docker rmi ${tag}"
+    echo "Dry run: would have done docker rmi ${registry_tag}"
   else
-    docker rmi "${tag}"
+    docker rmi "${registry_tag}"
     docker rmi $(docker images -q -f "dangling=true") || true
   fi
 }
