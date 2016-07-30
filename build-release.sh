@@ -18,6 +18,7 @@ function main() {
   else
     echo "This is a dry run."
   fi
+  DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
   # Get and verify version info
   local -r version_regex="^v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
@@ -35,7 +36,7 @@ function main() {
   read -p "Container name (default: example-api): " container_name
   [ -z "$container_name" ] && container_name="example-api"
 
-  local -r github=`git config --get remote.origin.url`
+  local -r github=`$(cd ${DIR} && git config --get remote.origin.url)`
   declare -r temp_dir=$(mktemp -d "/tmp/${container_name}-${new_version}.XXXX")
   local -r tag="${container_name}:${new_version}"
   local -r registry_tag="registry.local/${container_name}:${new_version}"
