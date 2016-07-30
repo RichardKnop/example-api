@@ -6,17 +6,23 @@ set -o pipefail
 
 function main() {
   # Parse arguments
-  if [[ "$#" -ne 1 && "$#" -ne 2 ]]; then
+  if [[ "$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3 ]]; then
     usage
     exit 1
   fi
   local -r new_version=${1-}
+
   DRY_RUN=true
   if [[ "${2-}" == "--no-dry-run" ]]; then
     echo "!!! This NOT is a dry run."
     DRY_RUN=false
   else
     echo "This is a dry run."
+  fi
+
+  INTERACTIVE=true
+  if [[ "${3-}" == "-y" ]]; then
+    INTERACTIVE=false
   fi
 
   # Get and verify version info
@@ -32,8 +38,12 @@ function main() {
     exit 1
   fi
 
-  read -p "Container name (default: example-api): " container_name
-  [ -z "$container_name" ] && container_name="example-api"
+  # Interactive questions
+  local container_name="example-api"
+  if [ $INTERACTIVE == true ]; then
+    read -p "Container name (default: example-api): " container_name
+    [ -z "$container_name" ] && container_name="example-api"
+  fi
 
   local -r github=`git config --get remote.origin.url`
   declare -r temp_dir=$(mktemp -d "/tmp/${container_name}-${new_version}.XXXX")
@@ -50,9 +60,12 @@ function main() {
 }
 
 function usage() {
-  echo "Usage: ${0} <release_version> [--no-dry-run]"
+  echo "Usage: ${0} <release_version> [--no-dry-run] [-y]"
   echo
   echo "<release_version> is the version you want to release,"
+  echo "--no-dry-run flag turns own the dry run mode and executes real commands"
+  echo "-y flag turns own interactive mode (no questions asked, uses default values)"
+  echo
   echo "Please see docs/releasing.md for more info."
 }
 
