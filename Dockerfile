@@ -13,6 +13,9 @@ WORKDIR /go/src/github.com/RichardKnop/example-api
 # either manually or with a tool like "godep".)
 RUN go install github.com/RichardKnop/example-api
 
+# Set environment variables
+ENV PATH /go/bin:$PATH
+
 # Copy the docker-entrypoint.sh script and use it as entrypoint
 COPY ./docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
