@@ -158,6 +158,10 @@
 			"Rev": "9f2c271364b418388d150f9c12ecbf12794095c1"
 		},
 		{
+			"ImportPath": "golang.org/x/net/netutil",
+			"Rev": "9f2c271364b418388d150f9c12ecbf12794095c1"
+		},
+		{
 			"ImportPath": "golang.org/x/oauth2",
 			"Rev": "33fa30fe45020622640e947917fd1fc4c81e3dce"
 		},
@@ -168,6 +172,11 @@
 		{
 			"ImportPath": "golang.org/x/oauth2/internal",
 			"Rev": "33fa30fe45020622640e947917fd1fc4c81e3dce"
+		},
+		{
+			"ImportPath": "gopkg.in/tylerb/graceful.v1",
+			"Comment": "v1.2.3",
+			"Rev": "48afeb21e2fcbcff0f30bd5ad6b97747b0fae38e"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
