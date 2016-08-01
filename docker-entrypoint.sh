@@ -1,12 +1,16 @@
 #!/bin/bash
 
-# 1. Run database migrations
-/go/bin/example-api migrate
+# Migrate the database
+exec /go/bin/example-api migrate
 
-# 2. Load fixtures
-/go/bin/example-api loaddata \
+# Load fixtures
+exec /go/bin/example-api loaddata \
   oauth/fixtures/scopes.yml \
   accounts/fixtures/roles.yml
 
-# Finally, run the server
-/go/bin/example-api runserver
+# It is important that if your image uses such a script,
+# that script should use exec so that the script’s process
+# is replaced by your software. If you do not use exec,
+# then signals sent by docker will go to your wrapper script
+# instead of your software’s process.
+exec /go/bin/example-api runserver
