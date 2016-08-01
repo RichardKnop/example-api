@@ -1,10 +1,9 @@
 #!/bin/bash
+set -e
 
-# Migrate the database
-exec /go/bin/example-api migrate
-
-# Load fixtures
-exec /go/bin/example-api loaddata \
+# Migrate database and load fixtures
+/go/bin/example-api migrate
+/go/bin/example-api loaddata \
   oauth/fixtures/scopes.yml \
   accounts/fixtures/roles.yml
 
@@ -14,3 +13,5 @@ exec /go/bin/example-api loaddata \
 # then signals sent by docker will go to your wrapper script
 # instead of your software’s process.
 exec /go/bin/example-api runserver
+
+exec "$@"
