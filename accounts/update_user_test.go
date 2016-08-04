@@ -11,7 +11,6 @@ import (
 
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/accounts/roles"
-	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/password"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/RichardKnop/jsonhal"
@@ -32,16 +31,19 @@ func (suite *AccountsTestSuite) TestUpdateUserRequiresUserAuthentication() {
 }
 
 func (suite *AccountsTestSuite) TestUpdateUserFailsWithoutPermission() {
+	testUser, _, err := suite.insertTestUser(
+		"harold@finch", "test_password", "Harold", "Finch")
+	assert.NoError(suite.T(), err, "Failed to insert a test user")
+
 	// Prepare a request
 	payload, err := json.Marshal(&accounts.UserRequest{
-		Email:     "test@user",
 		FirstName: "John",
 		LastName:  "Reese",
 	})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"PUT",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", suite.users[2].ID),
+		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", testUser.ID),
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -80,46 +82,13 @@ func (suite *AccountsTestSuite) TestUpdateUserFailsWithoutPermission() {
 }
 
 func (suite *AccountsTestSuite) TestUpdateUser() {
-	var (
-		testOauthUser   *oauth.User
-		testUser        *accounts.User
-		testAccessToken *oauth.AccessToken
-		err             error
-	)
-
-	// Insert a test user
-	testOauthUser, err = suite.service.GetOauthService().CreateUser(
-		"harold@finch",
-		"test_password",
-	)
-	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = accounts.NewUser(
-		suite.accounts[0],
-		testOauthUser,
-		suite.userRole,
-		"",    // facebook ID
-		"",    // first name
-		"",    // last name
-		"",    // picture
-		false, // confirmed
-	)
-	err = suite.db.Create(testUser).Error
+	testUser, testAccessToken, err := suite.insertTestUser(
+		"harold@finch", "test_password", "Harold", "Finch")
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
-	testUser.OauthUser = testOauthUser
-	testUser.Role = suite.userRole
-
-	// Login the test user
-	testAccessToken, _, err = suite.service.GetOauthService().Login(
-		suite.accounts[0].OauthClient,
-		testUser.OauthUser,
-		"read_write", // scope
-	)
-	assert.NoError(suite.T(), err, "Failed to login the test user")
 
 	payload, err := json.Marshal(&accounts.UserRequest{
-		FirstName: "Harold",
-		LastName:  "Finch",
+		FirstName: "John",
+		LastName:  "Reese",
 	})
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
@@ -171,8 +140,8 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 
 	// And correct data was saved
 	assert.Equal(suite.T(), "harold@finch", user.OauthUser.Username)
-	assert.Equal(suite.T(), "Harold", user.FirstName.String)
-	assert.Equal(suite.T(), "Finch", user.LastName.String)
+	assert.Equal(suite.T(), "John", user.FirstName.String)
+	assert.Equal(suite.T(), "Reese", user.LastName.String)
 	assert.Equal(suite.T(), roles.User, user.Role.ID)
 	assert.False(suite.T(), user.Confirmed)
 
@@ -187,8 +156,8 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 		},
 		ID:        user.ID,
 		Email:     "harold@finch",
-		FirstName: "Harold",
-		LastName:  "Finch",
+		FirstName: "John",
+		LastName:  "Reese",
 		Role:      roles.User,
 		Confirmed: false,
 		CreatedAt: util.FormatTime(user.CreatedAt),

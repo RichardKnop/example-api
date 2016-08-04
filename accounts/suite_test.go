@@ -207,3 +207,48 @@ func (suite *AccountsTestSuite) mockPasswordResetEmail() {
 	).Return(emailMock, nil)
 	suite.emailService.On("Send", emailMock).Return(nil)
 }
+
+func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastName string) (*accounts.User, *oauth.AccessToken, error) {
+	var (
+		testOauthUser   *oauth.User
+		testUser        *accounts.User
+		testAccessToken *oauth.AccessToken
+		err             error
+	)
+
+	// Insert a test user
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(email, password)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	testUser = accounts.NewUser(
+		suite.accounts[0],
+		testOauthUser,
+		suite.userRole,
+		"", // facebook ID
+		firstName,
+		lastName,
+		"",    // picture
+		false, // confirmed
+	)
+	err = suite.db.Create(testUser).Error
+	testUser.Account = suite.accounts[0]
+	testUser.OauthUser = testOauthUser
+	testUser.Role = suite.userRole
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Login the test user
+	testAccessToken, _, err = suite.service.GetOauthService().Login(
+		suite.accounts[0].OauthClient,
+		testUser.OauthUser,
+		"read_write", // scope
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return testUser, testAccessToken, nil
+}
