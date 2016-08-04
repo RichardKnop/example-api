@@ -2,7 +2,6 @@ package migrations
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/jinzhu/gorm"
 )
@@ -10,22 +9,20 @@ import (
 // Bootstrap creates "migrations" table
 // to keep track of already run database migrations
 func Bootstrap(db *gorm.DB) error {
-	migrationName := "0000_bootstrap"
+	migrationName := "bootstrap_migrations"
 
 	migration := new(Migration)
 	// Using Error instead of RecordNotFound because we want to check
 	// if the migrations table exists. This is different from later migrations
 	// where we query the already create migrations table.
-	exists := nil == db.Where(Migration{
-		Name: migrationName,
-	}).First(migration).Error
+	exists := nil == db.Where("name = ?", migrationName).First(migration).Error
 
 	if exists {
-		log.Printf("Skipping %s migration", migrationName)
+		logger.Infof("Skipping %s migration", migrationName)
 		return nil
 	}
 
-	log.Printf("Running %s migration", migrationName)
+	logger.Infof("Running %s migration", migrationName)
 
 	// Create migrations table
 	if err := db.CreateTable(new(Migration)).Error; err != nil {

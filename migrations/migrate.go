@@ -6,6 +6,31 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MigrationStage ...
+type MigrationStage struct {
+	Name     string
+	Function func(db *gorm.DB, name string) error
+}
+
+// Migrate ...
+func Migrate(db *gorm.DB, migrations []MigrationStage) error {
+	for _, m := range migrations {
+		if MigrationExists(db, m.Name) {
+			continue
+		}
+
+		if err := m.Function(db, m.Name); err != nil {
+			return err
+		}
+
+		if err := SaveMigration(db, m.Name); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // MigrateAll runs bootstrap, then all migration functions listed against
 // the specified database and logs any errors
 func MigrateAll(db *gorm.DB, migrationFunctions []func(*gorm.DB) error) {
