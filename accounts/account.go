@@ -5,7 +5,6 @@ import (
 
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/util"
-	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -107,15 +106,4 @@ func (s *Service) CreateAccount(name, description, key, secret, redirectURI stri
 	}
 
 	return account, nil
-}
-
-// AccountPreload sets up Gorm preloads for an account object
-func AccountPreload(db *gorm.DB) *gorm.DB {
-	return AccountPreloadWithPrefix(db, "")
-}
-
-// AccountPreloadWithPrefix sets up Gorm preloads for an account object, and prefixes with prefix for nested objects
-func AccountPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
-	return db.
-		Preload(prefix + "OauthClient")
 }

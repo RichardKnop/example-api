@@ -168,3 +168,27 @@ func NewPasswordReset(user *User) *PasswordReset {
 	}
 	return passwordReset
 }
+
+// AccountPreload sets up Gorm preloads for an account object
+func AccountPreload(db *gorm.DB) *gorm.DB {
+	return AccountPreloadWithPrefix(db, "")
+}
+
+// AccountPreloadWithPrefix sets up Gorm preloads for an account object, and prefixes with prefix for nested objects
+func AccountPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.
+		Preload(prefix + "OauthClient")
+}
+
+// UserPreload sets up Gorm preloads for a user object
+func UserPreload(db *gorm.DB) *gorm.DB {
+	return UserPreloadWithPrefix(db, "")
+}
+
+// UserPreloadWithPrefix sets up Gorm preloads for a user object,
+// and prefixes with prefix for nested objects
+func UserPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.
+		Preload(prefix + "Account.OauthClient").Preload(prefix + "OauthUser").
+		Preload(prefix + "Role")
+}

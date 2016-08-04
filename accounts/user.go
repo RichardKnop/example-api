@@ -367,16 +367,3 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 
 	return user, nil
 }
-
-// UserPreload sets up Gorm preloads for a user object
-func UserPreload(db *gorm.DB) *gorm.DB {
-	return UserPreloadWithPrefix(db, "")
-}
-
-// UserPreloadWithPrefix sets up Gorm preloads for a user object,
-// and prefixes with prefix for nested objects
-func UserPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
-	return db.
-		Preload(prefix + "Account.OauthClient").Preload(prefix + "OauthUser").
-		Preload(prefix + "Role")
-}
