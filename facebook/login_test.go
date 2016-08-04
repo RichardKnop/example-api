@@ -88,11 +88,11 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 
 	// Mock fetching profile data from facebook
 	suite.mockFacebookGetMe(fb.Result{
-		"id":         "facebook_id_2",
-		"email":      "test@user",
-		"name":       "test_name_2",
-		"first_name": "test_first_name_2",
-		"last_name":  "test_last_name_2",
+		"id":         suite.users[1].FacebookID.String,
+		"email":      suite.users[1].OauthUser.Username,
+		"name":       suite.users[1].GetName(),
+		"first_name": suite.users[1].FirstName.String,
+		"last_name":  suite.users[1].LastName.String,
 	}, nil)
 
 	// Count before
@@ -169,13 +169,9 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 
 	// Mock fetching profile data from facebook
 	suite.mockFacebookGetMe(fb.Result{
-		"id":    "some_facebook_id",
-		"email": testUser.OauthUser.Username,
-		"name": fmt.Sprintf(
-			"%s %s",
-			testUser.FirstName.String,
-			testUser.LastName.String,
-		),
+		"id":         "some_facebook_id",
+		"email":      testUser.OauthUser.Username,
+		"name":       testUser.GetName(),
 		"first_name": testUser.FirstName.String,
 		"last_name":  testUser.LastName.String,
 		"picture": map[string]interface{}{
