@@ -13,7 +13,10 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var testDbPath = "/tmp/oauth_testdb.sqlite"
+var (
+	testDbUser = "example_api"
+	testDbName = "example_api_oauth_test"
+)
 
 var testFixtures = []string{
 	"./oauth/fixtures/scopes.yml",
@@ -51,7 +54,12 @@ func (suite *OauthTestSuite) SetupSuite() {
 	suite.cnf = config.NewConfig(false, false)
 
 	// Create the test database
-	db, err := database.CreateTestDatabase(testDbPath, testMigrations, testFixtures)
+	db, err := database.CreateTestDatabasePostgres(
+		testDbUser,
+		testDbName,
+		testMigrations,
+		testFixtures,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}

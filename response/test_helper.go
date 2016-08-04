@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -89,22 +88,40 @@ func TestErrorExpectedResponse(t *testing.T, router *mux.Router, operation, url,
 // TestResponseForError tests a response w to see if it returned an error msg with http code
 func TestResponseForError(t *testing.T, w *httptest.ResponseRecorder, msg string, code int) {
 	assert.NotNil(t, w)
-	assert.Equal(t, code, w.Code, fmt.Sprintf("Expected a %d response but got %d", code, w.Code))
-
+	assert.Equal(
+		t,
+		code,
+		w.Code,
+		fmt.Sprintf("Expected a %d response but got %d", code, w.Code),
+	)
 	TestResponseBody(t, w, getErrorJSON(msg))
 }
 
 // TestEmptyResponse tests an empty 204 response
 func TestEmptyResponse(t *testing.T, w *httptest.ResponseRecorder) {
 	assert.Equal(t, 204, w.Code)
+	TestResponseBody(t, w, "")
+}
+
+// TestResponseObject tests response body is equal to expected object in JSON form
+func TestResponseObject(t *testing.T, w *httptest.ResponseRecorder, expected interface{}, code int) {
 	assert.Equal(
 		t,
-		"", // empty string
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
+		code,
+		w.Code,
+		fmt.Sprintf("Expected a %d response but got %d", code, w.Code),
+	)
+	jsonBytes, err := json.Marshal(expected)
+	assert.NoError(t, err)
+	assert.Equal(
+		t,
+		string(jsonBytes),
+		strings.TrimRight(w.Body.String(), "\n"),
+		"Should have returned correct body text",
 	)
 }
 
-// TestResponseBody ...
+// TestResponseBody tests response body is equal to expected string
 func TestResponseBody(t *testing.T, w *httptest.ResponseRecorder, expected string) {
 	assert.Equal(
 		t,
@@ -180,11 +197,6 @@ func TestListValidResponseWithParams(t *testing.T, router *mux.Router, entity st
 		Page:  1,
 	}
 	expectedJSON, err := json.Marshal(expected)
-
-	// use this code to get a dump out of the json
-	if entity == "yourentityhere" {
-		log.Println(string(expectedJSON))
-	}
 
 	if assert.NoError(t, err, "JSON marshalling failed") {
 		TestResponseBody(t, w, string(expectedJSON))
