@@ -205,6 +205,30 @@ func (_m *ServiceInterface) SetPasswordTx(tx *gorm.DB, user *oauth.User, passwor
 
 	return r0
 }
+func (_m *ServiceInterface) UpdateUsername(user *oauth.User, username string) error {
+	ret := _m.Called(user, username)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*oauth.User, string) error); ok {
+		r0 = rf(user, username)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+func (_m *ServiceInterface) UpdateUsernameTx(db *gorm.DB, user *oauth.User, username string) error {
+	ret := _m.Called(db, user, username)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*gorm.DB, *oauth.User, string) error); ok {
+		r0 = rf(db, user, username)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
 func (_m *ServiceInterface) AuthUser(username string, thePassword string) (*oauth.User, error) {
 	ret := _m.Called(username, thePassword)
 
@@ -338,8 +362,17 @@ func (_m *ServiceInterface) GrantAccessToken(client *oauth.Client, user *oauth.U
 
 	return r0, r1
 }
-func (_m *ServiceInterface) DeleteExpiredAccessTokens(client *oauth.Client, user *oauth.User) {
-	_m.Called(client, user)
+func (_m *ServiceInterface) DeleteExpiredAccessTokens(client *oauth.Client, user *oauth.User) error {
+	ret := _m.Called(client, user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*oauth.Client, *oauth.User) error); ok {
+		r0 = rf(client, user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 func (_m *ServiceInterface) GetOrCreateRefreshToken(client *oauth.Client, user *oauth.User, expiresIn int, scope string) (*oauth.RefreshToken, error) {
 	ret := _m.Called(client, user, expiresIn, scope)
