@@ -11,6 +11,6 @@ type ServiceInterface interface {
 	// Exported methods
 	GetAccountsService() accounts.ServiceInterface
 
-	// Needed for the newRoutes to be able to register handlers
-	loginHandler(w http.ResponseWriter, r *http.Request)
+	// Needed for the NewRoutes to be able to register handlers
+	LoginHandler(w http.ResponseWriter, r *http.Request)
 }

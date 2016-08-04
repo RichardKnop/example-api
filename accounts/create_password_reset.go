@@ -8,8 +8,8 @@ import (
 	"github.com/RichardKnop/example-api/response"
 )
 
-// Handles requests to reset a password (POST /v1/accounts/passwordreset)
-func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
+// CreatePasswordResetHandler - requests to reset a password (POST /v1/accounts/passwordreset)
+func (s *Service) CreatePasswordResetHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated client from the request context
 	_, err := GetAuthenticatedAccount(r)
 	if err != nil {

@@ -1,4 +1,4 @@
-package facebook
+package facebook_test
 
 import (
 	"log"
@@ -7,6 +7,7 @@ import (
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/database"
+	"github.com/RichardKnop/example-api/facebook"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"
@@ -17,7 +18,10 @@ import (
 	emailMocks "github.com/RichardKnop/example-api/email/mocks"
 )
 
-var testDbPath = "/tmp/facebook_testdb.sqlite"
+var (
+	testDbUser = "example_api"
+	testDbName = "example_api_facebook_test"
+)
 
 var testFixtures = []string{
 	"../oauth/fixtures/scopes.yml",
@@ -39,8 +43,8 @@ type FacebookTestSuite struct {
 	suite.Suite
 	cnf         *config.Config
 	db          *gorm.DB
-	adapterMock *AdapterMock
-	service     *Service
+	adapterMock *facebook.AdapterMock
+	service     *facebook.Service
 	router      *mux.Router
 	accounts    []*accounts.Account
 	users       []*accounts.User
@@ -53,7 +57,12 @@ func (suite *FacebookTestSuite) SetupSuite() {
 	suite.cnf = config.NewConfig(false, false)
 
 	// Create the test database
-	db, err := database.CreateTestDatabase(testDbPath, testMigrations, testFixtures)
+	db, err := database.CreateTestDatabasePostgres(
+		testDbUser,
+		testDbName,
+		testMigrations,
+		testFixtures,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -74,10 +83,10 @@ func (suite *FacebookTestSuite) SetupSuite() {
 	}
 
 	// Initialise mocks
-	suite.adapterMock = new(AdapterMock)
+	suite.adapterMock = new(facebook.AdapterMock)
 
 	// Initialise the service
-	suite.service = NewService(
+	suite.service = facebook.NewService(
 		suite.cnf,
 		suite.db,
 		accounts.NewService(
@@ -92,7 +101,7 @@ func (suite *FacebookTestSuite) SetupSuite() {
 
 	// Register routes
 	suite.router = mux.NewRouter()
-	RegisterRoutes(suite.router, suite.service)
+	facebook.RegisterRoutes(suite.router, suite.service)
 }
 
 // The TearDownSuite method will be run by testify once, at the very

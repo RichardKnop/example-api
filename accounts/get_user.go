@@ -15,8 +15,8 @@ var (
 	ErrGetUserPermission = errors.New("Need permission to get user")
 )
 
-// Handles requests to get a user (GET /v1/accounts/users/{id:[0-9]+})
-func (s *Service) getUserHandler(w http.ResponseWriter, r *http.Request) {
+// GetUserHandler - requests to get a user (GET /v1/accounts/users/{id:[0-9]+})
+func (s *Service) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {

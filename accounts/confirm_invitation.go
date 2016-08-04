@@ -10,8 +10,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Handles requests to complete an invitation of a user by setting password
-func (s *Service) confirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
+// ConfirmInvitationHandler - requests to complete an invitation of a user by setting password
+func (s *Service) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
 	_, err := GetAuthenticatedAccount(r)
 	if err != nil {

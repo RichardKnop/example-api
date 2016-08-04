@@ -19,7 +19,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "create_user",
 			Method:      "POST",
 			Pattern:     "/users",
-			HandlerFunc: service.createUserHandler,
+			HandlerFunc: service.CreateUserHandler,
 			Middlewares: []negroni.Handler{
 				NewAccountAuthMiddleware(service),
 			},
@@ -28,7 +28,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "get_my_user",
 			Method:      "GET",
 			Pattern:     "/me",
-			HandlerFunc: service.getMyUserHandler,
+			HandlerFunc: service.GetMyUserHandler,
 			Middlewares: []negroni.Handler{
 				NewUserAuthMiddleware(service),
 			},
@@ -37,7 +37,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "get_user",
 			Method:      "GET",
 			Pattern:     "/users/{id:[0-9]+}",
-			HandlerFunc: service.getUserHandler,
+			HandlerFunc: service.GetUserHandler,
 			Middlewares: []negroni.Handler{
 				NewUserAuthMiddleware(service),
 			},
@@ -46,7 +46,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "update_user",
 			Method:      "PUT",
 			Pattern:     "/users/{id:[0-9]+}",
-			HandlerFunc: service.updateUserHandler,
+			HandlerFunc: service.UpdateUserHandler,
 			Middlewares: []negroni.Handler{
 				NewUserAuthMiddleware(service),
 			},
@@ -55,7 +55,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "invite_user",
 			Method:      "POST",
 			Pattern:     "/invitations",
-			HandlerFunc: service.inviteUserHandler,
+			HandlerFunc: service.InviteUserHandler,
 			Middlewares: []negroni.Handler{
 				NewUserAuthMiddleware(service),
 			},
@@ -64,7 +64,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "create_password_reset",
 			Method:      "POST",
 			Pattern:     "/password-reset",
-			HandlerFunc: service.createPasswordResetHandler,
+			HandlerFunc: service.CreatePasswordResetHandler,
 			Middlewares: []negroni.Handler{
 				NewAccountAuthMiddleware(service),
 			},
@@ -73,7 +73,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "confirm_email",
 			Method:      "GET",
 			Pattern:     "/confirmations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
-			HandlerFunc: service.confirmEmailHandler,
+			HandlerFunc: service.ConfirmEmailHandler,
 			Middlewares: []negroni.Handler{
 				NewAccountAuthMiddleware(service),
 			},
@@ -82,7 +82,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "confirm_invitation",
 			Method:      "POST",
 			Pattern:     "/invitations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
-			HandlerFunc: service.confirmInvitationHandler,
+			HandlerFunc: service.ConfirmInvitationHandler,
 			Middlewares: []negroni.Handler{
 				NewAccountAuthMiddleware(service),
 			},
@@ -91,7 +91,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "confirm_password_reset",
 			Method:      "POST",
 			Pattern:     "/password-resets/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
-			HandlerFunc: service.confirmPasswordResetHandler,
+			HandlerFunc: service.ConfirmPasswordResetHandler,
 			Middlewares: []negroni.Handler{
 				NewAccountAuthMiddleware(service),
 			},

@@ -15,8 +15,8 @@ var (
 	ErrAccountMismatch = errors.New("Account mismatch")
 )
 
-// Handles requests to login with Facebook access token (POST /v1/facebook/login)
-func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
+// LoginHandler - requests to login with Facebook access token (POST /v1/facebook/login)
+func (s *Service) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
 	authenticatedAccount, err := accounts.GetAuthenticatedAccount(r)
 	if err != nil {

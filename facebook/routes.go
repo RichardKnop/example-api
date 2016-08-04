@@ -3,8 +3,8 @@ package facebook
 import (
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/routes"
-	"github.com/urfave/negroni"
 	"github.com/gorilla/mux"
+	"github.com/urfave/negroni"
 )
 
 // RegisterRoutes registers route handlers for the accounts service
@@ -20,7 +20,7 @@ func newRoutes(service ServiceInterface) []routes.Route {
 			Name:        "facebook_login",
 			Method:      "POST",
 			Pattern:     "/login",
-			HandlerFunc: service.loginHandler,
+			HandlerFunc: service.LoginHandler,
 			Middlewares: []negroni.Handler{
 				accounts.NewAccountAuthMiddleware(service.GetAccountsService()),
 			},

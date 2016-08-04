@@ -464,7 +464,7 @@ func (_m *ServiceInterface) ConfirmInvitation(invitation *accounts.Invitation, p
 
 	return r0
 }
-func (_m *ServiceInterface) getUserCredentials(token string) (*accounts.Account, *accounts.User, error) {
+func (_m *ServiceInterface) GetUserCredentials(token string) (*accounts.Account, *accounts.User, error) {
 	ret := _m.Called(token)
 
 	var r0 *accounts.Account
@@ -494,7 +494,7 @@ func (_m *ServiceInterface) getUserCredentials(token string) (*accounts.Account,
 
 	return r0, r1, r2
 }
-func (_m *ServiceInterface) getClientCredentials(r *http.Request) (*accounts.Account, *accounts.User, error) {
+func (_m *ServiceInterface) GetClientCredentials(r *http.Request) (*accounts.Account, *accounts.User, error) {
 	ret := _m.Called(r)
 
 	var r0 *accounts.Account
@@ -524,30 +524,30 @@ func (_m *ServiceInterface) getClientCredentials(r *http.Request) (*accounts.Acc
 
 	return r0, r1, r2
 }
-func (_m *ServiceInterface) createUserHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) getMyUserHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) GetMyUserHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) getUserHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) updateUserHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) InviteUserHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) createPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) CreatePasswordResetHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) confirmEmailHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) confirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }
-func (_m *ServiceInterface) confirmPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
+func (_m *ServiceInterface) ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
 	_m.Called(w, r)
 }

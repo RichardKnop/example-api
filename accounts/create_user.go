@@ -9,8 +9,8 @@ import (
 	"github.com/RichardKnop/example-api/response"
 )
 
-// Handles requests to create a new user (POST /v1/accounts/users)
-func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
+// CreateUserHandler - requests to create a new user (POST /v1/accounts/users)
+func (s *Service) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated client from the request context
 	authenticatedAccount, err := GetAuthenticatedAccount(r)
 	if err != nil {

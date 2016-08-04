@@ -12,12 +12,13 @@ import (
 func getCredentialsFromRequest(r *http.Request, service ServiceInterface) (*Account, *User, error) {
 	token, err := util.ParseBearerToken(r)
 	if err == nil {
-		return service.getUserCredentials(string(token))
+		return service.GetUserCredentials(string(token))
 	}
-	return service.getClientCredentials(r)
+	return service.GetClientCredentials(r)
 }
 
-func (s *Service) getUserCredentials(token string) (*Account, *User, error) {
+// GetUserCredentials ...
+func (s *Service) GetUserCredentials(token string) (*Account, *User, error) {
 	var (
 		account          *Account
 		user             *User
@@ -61,7 +62,8 @@ func (s *Service) getUserCredentials(token string) (*Account, *User, error) {
 	return account, user, nil
 }
 
-func (s *Service) getClientCredentials(r *http.Request) (*Account, *User, error) {
+// GetClientCredentials ...
+func (s *Service) GetClientCredentials(r *http.Request) (*Account, *User, error) {
 	// Try to get client credentials from basic auth
 	clientID, secret, ok := r.BasicAuth()
 	if !ok {

@@ -10,8 +10,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Handles requests to complete a password reset by setting new password
-func (s *Service) confirmPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
+// ConfirmPasswordResetHandler - requests to complete a password reset by setting new password
+func (s *Service) ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
 	_, err := GetAuthenticatedAccount(r)
 	if err != nil {

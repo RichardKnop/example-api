@@ -17,8 +17,8 @@ var (
 	ErrUpdateUserPermission = errors.New("Need permission to update user")
 )
 
-// Handles requests to update a user (PUT /v1/accounts/users/{id:[0-9]+})
-func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
+// UpdateUserHandler - requests to update a user (PUT /v1/accounts/users/{id:[0-9]+})
+func (s *Service) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {

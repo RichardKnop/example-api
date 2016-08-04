@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Handles requests to confirm user's email based on a reference string
-func (s *Service) confirmEmailHandler(w http.ResponseWriter, r *http.Request) {
+// ConfirmEmailHandler - requests to confirm user's email based on a reference string
+func (s *Service) ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
 	_, err := GetAuthenticatedAccount(r)
 	if err != nil {

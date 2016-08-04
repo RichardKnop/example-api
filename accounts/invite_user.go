@@ -8,8 +8,8 @@ import (
 	"github.com/RichardKnop/example-api/response"
 )
 
-// Handles requests to invite a new user (POST /v1/accounts/invitations)
-func (s *Service) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
+// InviteUserHandler - requests to invite a new user (POST /v1/accounts/invitations)
+func (s *Service) InviteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {

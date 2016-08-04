@@ -1,4 +1,4 @@
-package facebook
+package facebook_test
 
 import (
 	"encoding/json"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/facebook"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"
@@ -119,7 +120,7 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 	// Check the response body
 	assert.Equal(
 		suite.T(),
-		fmt.Sprintf("{\"error\":\"%s\"}", ErrAccountMismatch.Error()),
+		fmt.Sprintf("{\"error\":\"%s\"}", facebook.ErrAccountMismatch.Error()),
 		strings.TrimSpace(w.Body.String()),
 	)
 }
