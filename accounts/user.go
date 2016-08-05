@@ -127,25 +127,9 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 
 	// Send confirmation email
 	go func() {
-		confirmationEmail, err := s.emailFactory.NewConfirmationEmail(confirmation)
-		if err != nil {
-			logger.Errorf("New confirmation email error: %s", err)
-			return
+		if err := s.sendConfirmationEmail(confirmation); err != nil {
+			logger.Error(err)
 		}
-
-		// Try to send the confirmation email
-		if err := s.emailService.Send(confirmationEmail); err != nil {
-			logger.Errorf("Send email error: %s", err)
-			return
-		}
-
-		// If the email was sent successfully, update the email_sent flag
-		now := time.Now()
-		s.db.Model(confirmation).UpdateColumns(Confirmation{
-			EmailSent:   true,
-			EmailSentAt: util.TimeOrNull(&now),
-			Model:       gorm.Model{UpdatedAt: now},
-		})
 	}()
 
 	return user, nil
@@ -366,4 +350,24 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 	}
 
 	return user, nil
+}
+
+func (s *Service) sendConfirmationEmail(confirmation *Confirmation) error {
+	confirmationEmail, err := s.emailFactory.NewConfirmationEmail(confirmation)
+	if err != nil {
+		return fmt.Errorf("New confirmation email error: %s", err)
+	}
+
+	// Try to send the confirmation email
+	if err := s.emailService.Send(confirmationEmail); err != nil {
+		return fmt.Errorf("Send email error: %s", err)
+	}
+
+	// If the email was sent successfully, update the email_sent flag
+	now := time.Now()
+	return s.db.Model(confirmation).UpdateColumns(Confirmation{
+		EmailSent:   true,
+		EmailSentAt: util.TimeOrNull(&now),
+		Model:       gorm.Model{UpdatedAt: now},
+	}).Error
 }

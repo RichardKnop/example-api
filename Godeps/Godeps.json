@@ -90,18 +90,18 @@
 		},
 		{
 			"ImportPath": "github.com/sendgrid/rest",
-			"Comment": "v2.1.0-4-g2eefcc3",
-			"Rev": "2eefcc3c15fec755eadc793ec2de0214fe858ee9"
+			"Comment": "v2.2.0",
+			"Rev": "d37acbf70185e33da36a233f4df95848b052427c"
 		},
 		{
 			"ImportPath": "github.com/sendgrid/sendgrid-go",
-			"Comment": "v3.0.6-2-g1a97aeb",
-			"Rev": "1a97aeb37efdc10cd9602463989e18dbde23404e"
+			"Comment": "v3.1.0",
+			"Rev": "7833a550f6b86bf960b1a28e35578c3b13d59d4e"
 		},
 		{
 			"ImportPath": "github.com/sendgrid/sendgrid-go/helpers/mail",
-			"Comment": "v3.0.6-2-g1a97aeb",
-			"Rev": "1a97aeb37efdc10cd9602463989e18dbde23404e"
+			"Comment": "v3.1.0",
+			"Rev": "7833a550f6b86bf960b1a28e35578c3b13d59d4e"
 		},
 		{
 			"ImportPath": "github.com/stretchr/objx",

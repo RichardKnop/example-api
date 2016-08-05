@@ -16,8 +16,8 @@ var (
 func (s *Service) FindConfirmationByReference(reference string) (*Confirmation, error) {
 	// Fetch the invitation from the database
 	confirmation := new(Confirmation)
-	notFound := s.db.Where("reference = ?", reference).
-		Preload("User.OauthUser").First(confirmation).RecordNotFound()
+	notFound := ConfirmationPreload(s.db).Where("reference = ?", reference).
+		First(confirmation).RecordNotFound()
 
 	// Not found
 	if notFound {

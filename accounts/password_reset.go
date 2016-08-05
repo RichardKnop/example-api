@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/RichardKnop/example-api/util"
@@ -18,11 +19,8 @@ func (s *Service) FindPasswordResetByReference(reference string) (*PasswordReset
 	// Fetch the password reset from the database
 	passwordReset := new(PasswordReset)
 	validFor := time.Duration(s.cnf.AppSpecific.PasswordResetLifetime) * time.Second
-	notFound := s.db.Where(
-		"reference = ? AND created_at > ?",
-		reference,
-		time.Now().Add(-validFor),
-	).Preload("User.OauthUser").First(passwordReset).RecordNotFound()
+	notFound := PasswordResetPreload(s.db).Where("reference = ?", reference).
+		Where("created_at > ?", time.Now().Add(-validFor)).First(passwordReset).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -63,9 +61,8 @@ func (s *Service) ResetPassword(passwordReset *PasswordReset, password string) e
 func (s *Service) findUserPasswordReset(user *User) (*PasswordReset, error) {
 	// Fetch the password reset from the database
 	passwordReset := new(PasswordReset)
-	notFound := s.db.Where(PasswordReset{
-		UserID: util.PositiveIntOrNull(int64(user.ID)),
-	}).Preload("User.OauthUser").First(passwordReset).RecordNotFound()
+	notFound := PasswordResetPreload(s.db).Where("user_id = ?", user.ID).
+		First(passwordReset).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -105,26 +102,30 @@ func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
 
 	// Send password reset email
 	go func() {
-		passwordResetEmail, err := s.emailFactory.NewPasswordResetEmail(passwordReset)
-		if err != nil {
-			logger.Errorf("New password reset email error: %s", err)
-			return
+		if err := s.sendPasswordResetEmail(passwordReset); err != nil {
+			logger.Error(err)
 		}
-
-		// Try to send the password reset email
-		if err := s.emailService.Send(passwordResetEmail); err != nil {
-			logger.Errorf("Send email error: %s", err)
-			return
-		}
-
-		// If the email was sent successfully, update the email_sent flag
-		now := time.Now()
-		s.db.Model(passwordReset).UpdateColumns(PasswordReset{
-			EmailSent:   true,
-			EmailSentAt: util.TimeOrNull(&now),
-			Model:       gorm.Model{UpdatedAt: now},
-		})
 	}()
 
 	return passwordReset, nil
+}
+
+func (s *Service) sendPasswordResetEmail(passwordReset *PasswordReset) error {
+	passwordResetEmail, err := s.emailFactory.NewPasswordResetEmail(passwordReset)
+	if err != nil {
+		return fmt.Errorf("New password reset email error: %s", err)
+	}
+
+	// Try to send the password reset email
+	if err := s.emailService.Send(passwordResetEmail); err != nil {
+		return fmt.Errorf("Send email error: %s", err)
+	}
+
+	// If the email was sent successfully, update the email_sent flag
+	now := time.Now()
+	return s.db.Model(passwordReset).UpdateColumns(PasswordReset{
+		EmailSent:   true,
+		EmailSentAt: util.TimeOrNull(&now),
+		Model:       gorm.Model{UpdatedAt: now},
+	}).Error
 }

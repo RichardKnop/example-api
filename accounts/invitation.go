@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/RichardKnop/example-api/accounts/roles"
@@ -19,10 +20,7 @@ var (
 func (s *Service) FindInvitationByID(id uint) (*Invitation, error) {
 	// Fetch from the database
 	invitation := new(Invitation)
-	notFound := s.db.
-		Preload("InvitedUser.OauthUser").
-		First(invitation, id).
-		RecordNotFound()
+	notFound := InvitationPreload(s.db).First(invitation, id).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -36,8 +34,8 @@ func (s *Service) FindInvitationByID(id uint) (*Invitation, error) {
 func (s *Service) FindInvitationByReference(reference string) (*Invitation, error) {
 	// Fetch the invitation from the database
 	invitation := new(Invitation)
-	notFound := s.db.Where("reference = ?", reference).
-		Preload("InvitedUser.OauthUser").First(invitation).RecordNotFound()
+	notFound := InvitationPreload(s.db).Where("reference = ?", reference).
+		First(invitation).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -161,26 +159,30 @@ func (s *Service) inviteUserCommon(db *gorm.DB, invitedByUser *User, invitationR
 
 	// Send invitation email
 	go func() {
-		invitationEmail, err := s.emailFactory.NewInvitationEmail(invitation)
-		if err != nil {
-			logger.Errorf("New invitation email error: %s", err)
-			return
+		if err := s.sendInvitationEmail(invitation); err != nil {
+			logger.Error(invitation)
 		}
-
-		// Try to send the invitation email
-		if err := s.emailService.Send(invitationEmail); err != nil {
-			logger.Errorf("Send email error: %s", err)
-			return
-		}
-
-		// If the email was sent successfully, update the email_sent flag
-		now := time.Now()
-		s.db.Model(invitation).UpdateColumns(Invitation{
-			EmailSent:   true,
-			EmailSentAt: util.TimeOrNull(&now),
-			Model:       gorm.Model{UpdatedAt: time.Now()},
-		})
 	}()
 
 	return invitation, nil
+}
+
+func (s *Service) sendInvitationEmail(invitation *Invitation) error {
+	invitationEmail, err := s.emailFactory.NewInvitationEmail(invitation)
+	if err != nil {
+		return fmt.Errorf("New invitation email error: %s", err)
+	}
+
+	// Try to send the invitation email
+	if err := s.emailService.Send(invitationEmail); err != nil {
+		return fmt.Errorf("Send email error: %s", err)
+	}
+
+	// If the email was sent successfully, update the email_sent flag
+	now := time.Now()
+	return s.db.Model(invitation).UpdateColumns(Invitation{
+		EmailSent:   true,
+		EmailSentAt: util.TimeOrNull(&now),
+		Model:       gorm.Model{UpdatedAt: time.Now()},
+	}).Error
 }
