@@ -6,6 +6,8 @@
 
 This is a base project to bootstrap and prototype quickly. It is useful as a starting point for REST APIs and includes full OAuth 2.0 implementation as well as basic endpoints to create and update a user, health check endpoint, Facebook integration, migrations and a ready to rumble Dockerfile.
 
+It relies on `Postgres` for database and `etcd` for configuration but both are easily customizable. An [ORM library](https://github.com/jinzhu/gorm) is used for database communication.
+
 # Index
 
 * [Example API](#example-api)
