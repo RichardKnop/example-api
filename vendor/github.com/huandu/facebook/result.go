@@ -337,15 +337,16 @@ func (res Result) decode(v reflect.Value, fullName string) error {
 		return fmt.Errorf("output value cannot be set.")
 	}
 
-	if fullName != "" {
-		fullName += "."
-	}
-
 	var field reflect.Value
-	var name, fbTag string
+	var fieldInfo reflect.StructField
+	var name, fbTag, dot string
 	var val interface{}
 	var ok, required bool
 	var err error
+
+	if fullName != "" {
+		dot = "."
+	}
 
 	vType := v.Type()
 	num := vType.NumField()
@@ -354,10 +355,15 @@ func (res Result) decode(v reflect.Value, fullName string) error {
 		name = ""
 		required = false
 		field = v.Field(i)
-		fbTag = vType.Field(i).Tag.Get("facebook")
+		fieldInfo = vType.Field(i)
+		fbTag = fieldInfo.Tag.Get("facebook")
 
 		// parse struct field tag
 		if fbTag != "" {
+			if fbTag == "-" {
+				continue
+			}
+
 			index := strings.IndexRune(fbTag, ',')
 
 			if index == -1 {
@@ -371,8 +377,17 @@ func (res Result) decode(v reflect.Value, fullName string) error {
 			}
 		}
 
+		// embedded field is "expanded" when decoding.
+		if fieldInfo.Anonymous {
+			if err = decodeField(reflect.ValueOf(res), field, fullName); err != nil {
+				return err
+			}
+
+			continue
+		}
+
 		if name == "" {
-			name = camelCaseToUnderScore(v.Type().Field(i).Name)
+			name = camelCaseToUnderScore(fieldInfo.Name)
 		}
 
 		val, ok = res[name]
@@ -380,13 +395,13 @@ func (res Result) decode(v reflect.Value, fullName string) error {
 		if !ok {
 			// check whether the field is required. if so, report error.
 			if required {
-				return fmt.Errorf("cannot find field '%v%v' in result.", fullName, name)
+				return fmt.Errorf("cannot find field '%v%v%v' in result.", fullName, dot, name)
 			}
 
 			continue
 		}
 
-		if err = decodeField(reflect.ValueOf(val), field, fmt.Sprintf("%v%v", fullName, name)); err != nil {
+		if err = decodeField(reflect.ValueOf(val), field, fmt.Sprintf("%v%v%v", fullName, dot, name)); err != nil {
 			return err
 		}
 	}
