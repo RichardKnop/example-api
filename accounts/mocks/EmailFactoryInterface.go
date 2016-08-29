@@ -9,15 +9,15 @@ type EmailFactoryInterface struct {
 	mock.Mock
 }
 
-func (_m *EmailFactoryInterface) NewConfirmationEmail(confirmation *accounts.Confirmation) (*email.Email, error) {
+func (_m *EmailFactoryInterface) NewConfirmationEmail(confirmation *accounts.Confirmation) (*email.Message, error) {
 	ret := _m.Called(confirmation)
 
-	var r0 *email.Email
-	if rf, ok := ret.Get(0).(func(*accounts.Confirmation) *email.Email); ok {
+	var r0 *email.Message
+	if rf, ok := ret.Get(0).(func(*accounts.Confirmation) *email.Message); ok {
 		r0 = rf(confirmation)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*email.Email)
+			r0 = ret.Get(0).(*email.Message)
 		}
 	}
 
@@ -30,15 +30,15 @@ func (_m *EmailFactoryInterface) NewConfirmationEmail(confirmation *accounts.Con
 
 	return r0, r1
 }
-func (_m *EmailFactoryInterface) NewInvitationEmail(invitation *accounts.Invitation) (*email.Email, error) {
+func (_m *EmailFactoryInterface) NewInvitationEmail(invitation *accounts.Invitation) (*email.Message, error) {
 	ret := _m.Called(invitation)
 
-	var r0 *email.Email
-	if rf, ok := ret.Get(0).(func(*accounts.Invitation) *email.Email); ok {
+	var r0 *email.Message
+	if rf, ok := ret.Get(0).(func(*accounts.Invitation) *email.Message); ok {
 		r0 = rf(invitation)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*email.Email)
+			r0 = ret.Get(0).(*email.Message)
 		}
 	}
 
@@ -51,15 +51,15 @@ func (_m *EmailFactoryInterface) NewInvitationEmail(invitation *accounts.Invitat
 
 	return r0, r1
 }
-func (_m *EmailFactoryInterface) NewPasswordResetEmail(passwordReset *accounts.PasswordReset) (*email.Email, error) {
+func (_m *EmailFactoryInterface) NewPasswordResetEmail(passwordReset *accounts.PasswordReset) (*email.Message, error) {
 	ret := _m.Called(passwordReset)
 
-	var r0 *email.Email
-	if rf, ok := ret.Get(0).(func(*accounts.PasswordReset) *email.Email); ok {
+	var r0 *email.Message
+	if rf, ok := ret.Get(0).(func(*accounts.PasswordReset) *email.Message); ok {
 		r0 = rf(passwordReset)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*email.Email)
+			r0 = ret.Get(0).(*email.Message)
 		}
 	}
 

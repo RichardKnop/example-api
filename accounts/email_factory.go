@@ -14,6 +14,7 @@ import (
 
 var (
 	htmlEmailLayout                = "./accounts/templates/email_layout.html"
+	htmlEmailStyles                = "./accounts/templates/styles.css"
 	confirmEmailTemplateHTML       = "./accounts/templates/confirm_email.html"
 	confirmEmailTemplateTxt        = "./accounts/templates/confirm_email.txt"
 	passwordResetEmailTemplateHTML = "./accounts/templates/password_reset_email.html"
@@ -33,7 +34,7 @@ func NewEmailFactory(cnf *config.Config) *EmailFactory {
 }
 
 // NewConfirmationEmail returns a confirmation email
-func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.Email, error) {
+func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.Message, error) {
 	// Define a greetings name for the user
 	name := confirmation.User.GetName()
 	if name == "" {
@@ -52,6 +53,7 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.
 	// The email subject
 	subject := "Please confirm your email address"
 
+	// Plain text email
 	plainTextContent, err := newConfirmationEmailPlainTextContent(
 		subject,
 		name,
@@ -62,8 +64,16 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.
 		return nil, err
 	}
 
+	// Read CSS styles file
+	inlineStyles, err := ioutil.ReadFile(htmlEmailStyles)
+	if err != nil {
+		return nil, err
+	}
+
+	// HTML email
 	htmlContent, err := newConfirmationEmailHTMLContent(
 		subject,
+		string(inlineStyles),
 		name,
 		f.cnf.AppSpecific.CompanyName,
 		link,
@@ -72,15 +82,19 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.
 		return nil, err
 	}
 
-	return &email.Email{
+	return &email.Message{
 		Subject: subject,
 		Recipients: []*email.Recipient{&email.Recipient{
-			Email: confirmation.User.OauthUser.Username,
-			Name:  confirmation.User.GetName(),
+			Email: email.Email{
+				Address: confirmation.User.OauthUser.Username,
+				Name:    confirmation.User.GetName(),
+			},
 		}},
 		From: &email.Sender{
-			Email: f.cnf.AppSpecific.CompanyEmail,
-			Name:  f.cnf.AppSpecific.CompanyName,
+			Email: email.Email{
+				Address: f.cnf.AppSpecific.CompanyNoreplyEmail,
+				Name:    f.cnf.AppSpecific.CompanyName,
+			},
 		},
 		Text: plainTextContent,
 		HTML: htmlContent,
@@ -112,7 +126,7 @@ func newConfirmationEmailPlainTextContent(title, name, company, link string) (st
 	return parsedTemplate.String(), nil
 }
 
-func newConfirmationEmailHTMLContent(title, name, company, link string) (string, error) {
+func newConfirmationEmailHTMLContent(title, inlineStyles, name, company, link string) (string, error) {
 	// Layout
 	layoutContents, err := ioutil.ReadFile(htmlEmailLayout)
 	if err != nil {
@@ -150,9 +164,10 @@ func newConfirmationEmailHTMLContent(title, name, company, link string) (string,
 
 	// Insert the content into the layout
 	inventory = map[string]interface{}{
-		"title":   title,
-		"content": htmlTemplate.HTML(parsedContent.String()),
-		"company": company,
+		"title":        title,
+		"inlineStyles": htmlTemplate.CSS(inlineStyles),
+		"content":      htmlTemplate.HTML(parsedContent.String()),
+		"company":      company,
 	}
 	if err := layoutTmpl.Execute(&parsedLayout, inventory); err != nil {
 		return "", err
@@ -162,7 +177,7 @@ func newConfirmationEmailHTMLContent(title, name, company, link string) (string,
 }
 
 // NewPasswordResetEmail returns a password reset email
-func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*email.Email, error) {
+func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*email.Message, error) {
 	// Define a greetings name for the user
 	name := passwordReset.User.GetName()
 	if name == "" {
@@ -181,6 +196,7 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*ema
 	// The email subject
 	subject := fmt.Sprintf("Reset password for %s", f.cnf.Web.AppHost)
 
+	// Plain text email
 	plainTextContent, err := newPasswordResetEmailPlainTextContent(
 		subject,
 		name,
@@ -191,8 +207,16 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*ema
 		return nil, err
 	}
 
+	// Read CSS styles file
+	inlineStyles, err := ioutil.ReadFile(htmlEmailStyles)
+	if err != nil {
+		return nil, err
+	}
+
+	// HTML email
 	htmlContent, err := newPasswordResetEmailHTMLContent(
 		subject,
+		string(inlineStyles),
 		name,
 		f.cnf.AppSpecific.CompanyName,
 		link,
@@ -201,15 +225,19 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*ema
 		return nil, err
 	}
 
-	return &email.Email{
+	return &email.Message{
 		Subject: subject,
 		Recipients: []*email.Recipient{&email.Recipient{
-			Email: passwordReset.User.OauthUser.Username,
-			Name:  passwordReset.User.GetName(),
+			Email: email.Email{
+				Address: passwordReset.User.OauthUser.Username,
+				Name:    passwordReset.User.GetName(),
+			},
 		}},
 		From: &email.Sender{
-			Email: f.cnf.AppSpecific.CompanyEmail,
-			Name:  f.cnf.AppSpecific.CompanyName,
+			Email: email.Email{
+				Address: f.cnf.AppSpecific.CompanyNoreplyEmail,
+				Name:    f.cnf.AppSpecific.CompanyName,
+			},
 		},
 		Text: plainTextContent,
 		HTML: htmlContent,
@@ -241,7 +269,7 @@ func newPasswordResetEmailPlainTextContent(title, name, company, link string) (s
 	return parsedTemplate.String(), nil
 }
 
-func newPasswordResetEmailHTMLContent(title, name, company, link string) (string, error) {
+func newPasswordResetEmailHTMLContent(title, inlineStyles, name, company, link string) (string, error) {
 	// Layout
 	layoutContents, err := ioutil.ReadFile(htmlEmailLayout)
 	if err != nil {
@@ -279,9 +307,10 @@ func newPasswordResetEmailHTMLContent(title, name, company, link string) (string
 
 	// Insert the content into the layout
 	inventory = map[string]interface{}{
-		"title":   title,
-		"content": htmlTemplate.HTML(parsedContent.String()),
-		"company": company,
+		"title":        title,
+		"inlineStyles": htmlTemplate.CSS(inlineStyles),
+		"content":      htmlTemplate.HTML(parsedContent.String()),
+		"company":      company,
 	}
 	if err := layoutTmpl.Execute(&parsedLayout, inventory); err != nil {
 		return "", err
@@ -291,7 +320,7 @@ func newPasswordResetEmailHTMLContent(title, name, company, link string) (string
 }
 
 // NewInvitationEmail returns a user invite email
-func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) (*email.Email, error) {
+func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) (*email.Message, error) {
 	// Define a greetings name for the invited user
 	name := invitation.InvitedUser.GetName()
 	if name == "" {
@@ -316,6 +345,7 @@ func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) (*email.Email,
 	// The email subject
 	subject := fmt.Sprintf("You have been invited to join %s", f.cnf.Web.AppHost)
 
+	// Plain text email
 	plainTextContent, err := newInvitationEmailPlainTextContent(
 		subject,
 		name,
@@ -327,8 +357,16 @@ func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) (*email.Email,
 		return nil, err
 	}
 
+	// Read CSS styles file
+	inlineStyles, err := ioutil.ReadFile(htmlEmailStyles)
+	if err != nil {
+		return nil, err
+	}
+
+	// HTML email
 	htmlContent, err := newInvitationEmailHTMLContent(
 		subject,
+		string(inlineStyles),
 		name,
 		f.cnf.AppSpecific.CompanyName,
 		invitedBy,
@@ -338,15 +376,19 @@ func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) (*email.Email,
 		return nil, err
 	}
 
-	return &email.Email{
+	return &email.Message{
 		Subject: subject,
 		Recipients: []*email.Recipient{&email.Recipient{
-			Email: invitation.InvitedUser.OauthUser.Username,
-			Name:  invitation.InvitedUser.GetName(),
+			Email: email.Email{
+				Address: invitation.InvitedUser.OauthUser.Username,
+				Name:    invitation.InvitedUser.GetName(),
+			},
 		}},
 		From: &email.Sender{
-			Email: invitation.InvitedByUser.OauthUser.Username,
-			Name:  invitation.InvitedByUser.GetName(),
+			Email: email.Email{
+				Address: invitation.InvitedByUser.OauthUser.Username,
+				Name:    invitation.InvitedByUser.GetName(),
+			},
 		},
 		Text: plainTextContent,
 		HTML: htmlContent,
@@ -379,7 +421,7 @@ func newInvitationEmailPlainTextContent(title, name, company, invitedBy, link st
 	return parsedTemplate.String(), nil
 }
 
-func newInvitationEmailHTMLContent(title, name, company, invitedBy, link string) (string, error) {
+func newInvitationEmailHTMLContent(title, inlineStyles, name, company, invitedBy, link string) (string, error) {
 	// Layout
 	layoutContents, err := ioutil.ReadFile(htmlEmailLayout)
 	if err != nil {
@@ -418,9 +460,10 @@ func newInvitationEmailHTMLContent(title, name, company, invitedBy, link string)
 
 	// Insert the content into the layout
 	inventory = map[string]interface{}{
-		"title":   title,
-		"content": htmlTemplate.HTML(parsedContent.String()),
-		"company": company,
+		"title":        title,
+		"inlineStyles": htmlTemplate.CSS(inlineStyles),
+		"content":      htmlTemplate.HTML(parsedContent.String()),
+		"company":      company,
 	}
 	if err := layoutTmpl.Execute(&parsedLayout, inventory); err != nil {
 		return "", err

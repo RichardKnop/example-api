@@ -180,32 +180,32 @@ func (suite *AccountsTestSuite) assertMockExpectations() {
 
 // Mock sending confirmation email
 func (suite *AccountsTestSuite) mockConfirmationEmail() {
-	emailMock := new(email.Email)
+	messageMock := new(email.Message)
 	suite.emailFactory.On(
 		"NewConfirmationEmail",
 		mock.AnythingOfType("*accounts.Confirmation"),
-	).Return(emailMock, nil)
-	suite.emailService.On("Send", emailMock).Return(nil)
+	).Return(messageMock, nil)
+	suite.emailService.On("Send", messageMock).Return(nil)
 }
 
 // Mock sending invitation email
 func (suite *AccountsTestSuite) mockInvitationEmail() {
-	emailMock := new(email.Email)
+	messageMock := new(email.Message)
 	suite.emailFactory.On(
 		"NewInvitationEmail",
 		mock.AnythingOfType("*accounts.Invitation"),
-	).Return(emailMock, nil)
-	suite.emailService.On("Send", emailMock).Return(nil)
+	).Return(messageMock, nil)
+	suite.emailService.On("Send", messageMock).Return(nil)
 }
 
 // Mock sending password reset email
 func (suite *AccountsTestSuite) mockPasswordResetEmail() {
-	emailMock := new(email.Email)
+	messageMock := new(email.Message)
 	suite.emailFactory.On(
 		"NewPasswordResetEmail",
 		mock.AnythingOfType("*accounts.PasswordReset"),
-	).Return(emailMock, nil)
-	suite.emailService.On("Send", emailMock).Return(nil)
+	).Return(messageMock, nil)
+	suite.emailService.On("Send", messageMock).Return(nil)
 }
 
 func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastName string) (*accounts.User, *oauth.AccessToken, error) {
@@ -226,11 +226,12 @@ func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastN
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
-		"", // facebook ID
-		firstName,
-		lastName,
-		"",    // picture
+		"",    // facebook ID
 		false, // confirmed
+		&accounts.UserRequest{
+			FirstName: firstName,
+			LastName:  lastName,
+		},
 	)
 	err = suite.db.Create(testUser).Error
 	testUser.Account = suite.accounts[0]

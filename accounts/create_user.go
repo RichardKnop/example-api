@@ -33,7 +33,7 @@ func (s *Service) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Unmarshal the request body into the request prototype
 	userRequest := new(UserRequest)
-	if err := json.Unmarshal(payload, userRequest); err != nil {
+	if err = json.Unmarshal(payload, userRequest); err != nil {
 		logger.Errorf("Failed to unmarshal user request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return

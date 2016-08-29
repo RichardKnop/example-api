@@ -17,18 +17,20 @@ func NewService(cnf *config.Config) *Service {
 }
 
 // Send sends email using sendgrid
-func (s *Service) Send(e *Email) error {
+func (s *Service) Send(m *Message) error {
 	// Construct the mail
-	m := new(mail.SGMailV3)
-	m.SetFrom(&mail.Email{Address: e.From.Email, Name: e.From.Name})
-	m.Subject = e.Subject
-	p := mail.NewPersonalization()
-	for _, recipient := range e.Recipients {
-		p.AddTos(&mail.Email{Address: recipient.Email, Name: recipient.Name})
+	message := new(mail.SGMailV3)
+	for _, recipient := range m.Recipients {
+		message.SetFrom(&mail.Email{Address: recipient.Address, Name: recipient.Name})
 	}
-	m.AddPersonalizations(p)
-	content := mail.NewContent("text/plain", e.Text)
-	m.AddContent(content)
+	message.Subject = m.Subject
+	p := mail.NewPersonalization()
+	for _, recipient := range m.Recipients {
+		p.AddTos(&mail.Email{Address: recipient.Address, Name: recipient.Name})
+	}
+	message.AddPersonalizations(p)
+	content := mail.NewContent("text/plain", m.Text)
+	message.AddContent(content)
 
 	// And send the mail
 	request := sendgrid.GetRequest(
@@ -37,7 +39,7 @@ func (s *Service) Send(e *Email) error {
 		"https://api.sendgrid.com",
 	)
 	request.Method = "POST"
-	request.Body = mail.GetRequestBody(m)
+	request.Body = mail.GetRequestBody(message)
 	_, err := sendgrid.API(request)
 	if err != nil {
 		return err

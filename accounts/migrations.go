@@ -9,7 +9,10 @@ import (
 
 var (
 	list = []migrations.MigrationStage{
-		{"accounts_initial", migrate0001},
+		{
+			Name:     "accounts_initial",
+			Function: migrate0001,
+		},
 	}
 )
 
@@ -19,8 +22,6 @@ func MigrateAll(db *gorm.DB) error {
 }
 
 func migrate0001(db *gorm.DB, name string) error {
-	var err error
-
 	// Create tables
 	if err := db.CreateTable(new(Account)).Error; err != nil {
 		return fmt.Errorf("Error creating account_accounts table: %s", err)
@@ -42,7 +43,7 @@ func migrate0001(db *gorm.DB, name string) error {
 	}
 
 	// Add foreign keys
-	err = db.Model(new(Account)).AddForeignKey(
+	err := db.Model(new(Account)).AddForeignKey(
 		"oauth_client_id", "oauth_clients(id)",
 		"RESTRICT", "RESTRICT",
 	).Error

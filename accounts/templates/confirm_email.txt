@@ -1,10 +1,10 @@
 Hi {{.name}},
 
-Thanks for creating an account with {{.company}}.
+Please confirm your email address by clicking the link below.
 
-We'll need to communicate with you (sometimes via email) so we'd like to confirm that you have access to this email address.
+We may need to send you critical information about our service and it is important that we have an accurate email address.
 
-Please confirm your email using this link: {{.confirmURL}}
+{{.confirmURL}}
 
 Best,
 

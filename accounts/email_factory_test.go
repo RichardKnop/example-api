@@ -18,8 +18,8 @@ func TestNewConfirmationEmail(t *testing.T) {
 			AppHost:   "example.com",
 		},
 		AppSpecific: config.AppSpecificConfig{
-			CompanyName:  "Your Company Name",
-			CompanyEmail: "contact@example.com",
+			CompanyName:         "Your Company",
+			CompanyNoreplyEmail: "noreply@example.com",
 		},
 	})
 	confirmation := &accounts.Confirmation{
@@ -36,10 +36,10 @@ func TestNewConfirmationEmail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "Please confirm your email address", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
-	assert.Equal(t, "john@reese", email.Recipients[0].Email)
+	assert.Equal(t, "john@reese", email.Recipients[0].Address)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "contact@example.com", email.From.Email)
-	assert.Equal(t, "Your Company Name", email.From.Name)
+	assert.Equal(t, "noreply@example.com", email.From.Address)
+	assert.Equal(t, "Your Company", email.From.Name)
 
 	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/confirm_email.txt")
 	assert.NoError(t, err)
@@ -57,8 +57,8 @@ func TestNewPasswordResetEmail(t *testing.T) {
 			AppHost:   "example.com",
 		},
 		AppSpecific: config.AppSpecificConfig{
-			CompanyName:  "Your Company Name",
-			CompanyEmail: "contact@example.com",
+			CompanyName:         "Your Company",
+			CompanyNoreplyEmail: "noreply@example.com",
 		},
 	})
 	passwordReset := &accounts.PasswordReset{
@@ -75,10 +75,10 @@ func TestNewPasswordResetEmail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "Reset password for example.com", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
-	assert.Equal(t, "john@reese", email.Recipients[0].Email)
+	assert.Equal(t, "john@reese", email.Recipients[0].Address)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "contact@example.com", email.From.Email)
-	assert.Equal(t, "Your Company Name", email.From.Name)
+	assert.Equal(t, "noreply@example.com", email.From.Address)
+	assert.Equal(t, "Your Company", email.From.Name)
 
 	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/password_reset_email.txt")
 	assert.NoError(t, err)
@@ -96,8 +96,8 @@ func TestNewInvitationEmail(t *testing.T) {
 			AppHost:   "example.com",
 		},
 		AppSpecific: config.AppSpecificConfig{
-			CompanyName:  "Your Company Name",
-			CompanyEmail: "contact@example.com",
+			CompanyName:         "Your Company",
+			CompanyNoreplyEmail: "noreply@example.com",
 		},
 	})
 	invitation := &accounts.Invitation{
@@ -121,9 +121,9 @@ func TestNewInvitationEmail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "You have been invited to join example.com", email.Subject)
 	assert.Equal(t, 1, len(email.Recipients))
-	assert.Equal(t, "john@reese", email.Recipients[0].Email)
+	assert.Equal(t, "john@reese", email.Recipients[0].Address)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
-	assert.Equal(t, "harold@finch", email.From.Email)
+	assert.Equal(t, "harold@finch", email.From.Address)
 	assert.Equal(t, "Harold Finch", email.From.Name)
 
 	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/invitation_email.txt")

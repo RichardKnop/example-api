@@ -41,7 +41,7 @@ func (s *Service) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Unmarshal the request body into the request prototype
 	userRequest := new(UserRequest)
-	if err := json.Unmarshal(payload, userRequest); err != nil {
+	if err = json.Unmarshal(payload, userRequest); err != nil {
 		logger.Errorf("Failed to unmarshal user request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -63,13 +63,13 @@ func (s *Service) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check permissions
-	if err := checkUpdateUserPermissions(authenticatedUser, user); err != nil {
+	if err = checkUpdateUserPermissions(authenticatedUser, user); err != nil {
 		response.Error(w, err.Error(), http.StatusForbidden)
 		return
 	}
 
 	// Update the user
-	if err := s.UpdateUser(user, userRequest); err != nil {
+	if err = s.UpdateUser(user, userRequest); err != nil {
 		logger.Errorf("Update user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))
 		return

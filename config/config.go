@@ -42,7 +42,7 @@ type WebConfig struct {
 type AppSpecificConfig struct {
 	PasswordResetLifetime int
 	CompanyName           string
-	CompanyEmail          string
+	CompanyNoreplyEmail   string
 }
 
 // Config stores all configuration options

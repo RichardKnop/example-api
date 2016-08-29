@@ -124,15 +124,16 @@ func (s *Service) inviteUserCommon(db *gorm.DB, invitedByUser *User, invitationR
 		invitedByUser.Account,
 		oauthUser,
 		role,
-		"", // facebook ID
-		invitationRequest.FirstName,
-		invitationRequest.LastName,
-		"",    // picture
+		"",    // facebook ID
 		false, // confirmed
+		&UserRequest{
+			FirstName: invitationRequest.FirstName,
+			LastName:  invitationRequest.LastName,
+		},
 	)
 
 	// Save the user to the database
-	if err := db.Create(invitedUser).Error; err != nil {
+	if err = db.Create(invitedUser).Error; err != nil {
 		return nil, err
 	}
 

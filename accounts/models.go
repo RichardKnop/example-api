@@ -11,7 +11,8 @@ import (
 	"github.com/lib/pq"
 )
 
-// Account ...
+// Account represents an extension of Oauth 2.0 client,
+// can be used to group users together
 type Account struct {
 	gorm.Model
 	OauthClientID sql.NullInt64 `sql:"index;not null"`
@@ -25,7 +26,7 @@ func (p *Account) TableName() string {
 	return "account_accounts"
 }
 
-// Role is a one of roles user can have
+// Role is a one of roles user can have (currently superuser or user)
 type Role struct {
 	database.TimestampModel
 	ID   string `gorm:"primary_key" sql:"type:varchar(20)"`
@@ -37,7 +38,7 @@ func (r *Role) TableName() string {
 	return "account_roles"
 }
 
-// User ...
+// User represents a platform user
 type User struct {
 	gorm.Model
 	AccountID   sql.NullInt64  `sql:"index;not null"`
@@ -58,7 +59,9 @@ func (u *User) TableName() string {
 	return "account_users"
 }
 
-// Confirmation ...
+// Confirmation objects is created when we send user a confirmation email
+// It is then fetched when user clicks on the verification link in the email
+// so we can verify his/her email
 type Confirmation struct {
 	gorm.Model
 	UserID      sql.NullInt64 `sql:"index;not null"`
@@ -73,7 +76,9 @@ func (c *Confirmation) TableName() string {
 	return "account_confirmations"
 }
 
-// Invitation ...
+// Invitation is created when user invites another user to the platform.
+// We send out an invite email and the invited user can follow the link to
+// set a password and finish the sign up process
 type Invitation struct {
 	gorm.Model
 	InvitedUserID   sql.NullInt64 `sql:"index;not null"`
@@ -90,7 +95,8 @@ func (i *Invitation) TableName() string {
 	return "account_invitations"
 }
 
-// PasswordReset ...
+// PasswordReset is created when user forgets his/her password and requests
+// a new one. We send out an email with a link where user can set a new password.
 type PasswordReset struct {
 	gorm.Model
 	UserID      sql.NullInt64 `sql:"index;not null"`
@@ -117,7 +123,7 @@ func NewAccount(oauthClient *oauth.Client, name, description string) *Account {
 }
 
 // NewUser creates new User instance
-func NewUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, firstName, lastName, picture string, confirmed bool) *User {
+func NewUser(account *Account, oauthUser *oauth.User, role *Role, facebookID string, confirmed bool, data *UserRequest) *User {
 	accountID := util.PositiveIntOrNull(int64(account.ID))
 	oauthUserID := util.PositiveIntOrNull(int64(oauthUser.ID))
 	roleID := util.StringOrNull(role.ID)
@@ -126,9 +132,9 @@ func NewUser(account *Account, oauthUser *oauth.User, role *Role, facebookID, fi
 		OauthUserID: oauthUserID,
 		RoleID:      roleID,
 		FacebookID:  util.StringOrNull(facebookID),
-		FirstName:   util.StringOrNull(firstName),
-		LastName:    util.StringOrNull(lastName),
-		Picture:     util.StringOrNull(picture),
+		FirstName:   util.StringOrNull(data.FirstName),
+		LastName:    util.StringOrNull(data.LastName),
+		Picture:     util.StringOrNull(data.Picture),
 		Confirmed:   confirmed,
 	}
 	return user

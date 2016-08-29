@@ -143,10 +143,12 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 		testOauthUser,
 		&accounts.Role{ID: roles.User},
 		"some_facebook_id", // facebook ID
-		"Harold",
-		"Finch",
-		"some_picture",
-		true, // confirmed
+		true,               // confirmed
+		&accounts.UserRequest{
+			FirstName: "Harold",
+			LastName:  "Finch",
+			Picture:   "some_picture",
+		},
 	)
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
@@ -256,10 +258,12 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 		testOauthUser,
 		&accounts.Role{ID: roles.User},
 		"some_facebook_id", // facebook ID
-		"Harold",
-		"Finch",
-		"some_picture",
-		true, // confirmed
+		true,               // confirmed
+		&accounts.UserRequest{
+			FirstName: "Harold",
+			LastName:  "Finch",
+			Picture:   "some_picture",
+		},
 	)
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")

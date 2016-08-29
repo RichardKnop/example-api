@@ -2,7 +2,9 @@ Hi {{.name}},
 
 You have been invited to {{.company}} by {{.invitedBy}}.
 
-Please setup your account using this link: {{.invitationURL}}
+Please accept the invitation by clicking the link below.
+
+{{.invitationURL}}
 
 Best,
 

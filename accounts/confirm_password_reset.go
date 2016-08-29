@@ -34,7 +34,7 @@ func (s *Service) ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Req
 
 	// Unmarshal the request body into the request prototype
 	confirmPasswordResetRequest := new(ConfirmPasswordResetRequest)
-	if err := json.Unmarshal(payload, confirmPasswordResetRequest); err != nil {
+	if err = json.Unmarshal(payload, confirmPasswordResetRequest); err != nil {
 		logger.Errorf("Failed to unmarshal confirm password reset request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return

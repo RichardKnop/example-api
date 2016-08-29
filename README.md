@@ -18,6 +18,7 @@ It relies on `Postgres` for database and `etcd` for configuration but both are e
 * [Test Data](#test-data)
 * [Testing](#testing)
 * [Docker](#docker)
+* [Docker Compose](#docker-compose)
 
 # Dependencies
 
@@ -135,8 +136,8 @@ make test
 Build a Docker image and run the app in a container:
 
 ```
-docker build -t example_api .
-docker run -e ETCD_ENDPOINT=localhost:2379 -p 6060:8080 example_api
+docker build -t example-api:latest .
+docker run -e ETCD_ENDPOINT=localhost:2379 -p 8080:8080 --name example-api example-api:latest
 ```
 
 You can load fixtures with `docker exec` command:
@@ -152,4 +153,17 @@ You can also execute interactive commands by passing `-i` flag:
 ```
 docker exec -i <container_id> /go/bin/example-api createaccount
 docker exec -i <container_id> /go/bin/example-api createsuperuser
+```
+
+# Docker Compose
+
+You can use [docker-compose](https://docs.docker.com/compose/) to start the app, postgres, etcd in separate linked containers:
+
+```
+docker-compose up
+```
+
+During up process all configuration and fixtures will be loaded. After successful up you can check, that app is running using for example the health check request:
+```
+curl --compressed -v localhost:8080/v1/health
 ```

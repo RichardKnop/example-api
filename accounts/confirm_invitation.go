@@ -34,7 +34,7 @@ func (s *Service) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Reques
 
 	// Unmarshal the request body into the request prototype
 	confirmInvitationRequest := new(ConfirmInvitationRequest)
-	if err := json.Unmarshal(payload, confirmInvitationRequest); err != nil {
+	if err = json.Unmarshal(payload, confirmInvitationRequest); err != nil {
 		logger.Errorf("Failed to unmarshal confirm invitation request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return

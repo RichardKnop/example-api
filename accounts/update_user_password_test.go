@@ -37,11 +37,12 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
-		"", // facebook ID
-		"Harold",
-		"Finch",
-		"",    // picture
+		"",    // facebook ID
 		false, // confirmed
+		&accounts.UserRequest{
+			FirstName: "Harold",
+			LastName:  "Finch",
+		},
 	)
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
@@ -121,10 +122,11 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 		testOauthUser,
 		suite.userRole,
 		"some_facebook_id", // facebook ID
-		"Harold",
-		"Finch",
-		"",    // picture
-		false, // confirmed
+		false,              // confirmed
+		&accounts.UserRequest{
+			FirstName: "Harold",
+			LastName:  "Finch",
+		},
 	)
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
@@ -203,11 +205,12 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 		suite.accounts[0],
 		testOauthUser,
 		suite.userRole,
-		"", // facebook ID
-		"Harold",
-		"Finch",
-		"",    // picture
+		"",    // facebook ID
 		false, // confirmed
+		&accounts.UserRequest{
+			FirstName: "Harold",
+			LastName:  "Finch",
+		},
 	)
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")

@@ -40,7 +40,7 @@ func (s *Service) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check permissions
-	if err := checkGetUserPermissions(authenticatedUser, user); err != nil {
+	if err = checkGetUserPermissions(authenticatedUser, user); err != nil {
 		response.Error(w, err.Error(), http.StatusForbidden)
 		return
 	}

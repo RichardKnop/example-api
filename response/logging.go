@@ -16,7 +16,7 @@ type Logger struct {
 	*log.Logger
 }
 
-// NewLogger returns a new Logger instance
+// NewURLLogger returns a new Logger instance
 func NewURLLogger() *Logger {
 	return &Logger{log.New(os.Stdout, "[negroni] ", 0)}
 }

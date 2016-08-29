@@ -230,7 +230,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 		}
 
 		// Commit the transaction
-		if err := tx.Commit().Error; err != nil {
+		if err = tx.Commit().Error; err != nil {
 			tx.Rollback() // rollback the transaction
 			return nil, err
 		}
@@ -254,7 +254,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 	}
 
 	// Commit the transaction
-	if err := tx.Commit().Error; err != nil {
+	if err = tx.Commit().Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
@@ -327,14 +327,16 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 		oauthUser,
 		role,
 		facebookID,
-		userRequest.FirstName,
-		userRequest.LastName,
-		userRequest.Picture,
 		confirmed,
+		&UserRequest{
+			FirstName: userRequest.FirstName,
+			LastName:  userRequest.LastName,
+			Picture:   userRequest.Picture,
+		},
 	)
 
 	// Save the user to the database
-	if err := db.Create(user).Error; err != nil {
+	if err = db.Create(user).Error; err != nil {
 		return nil, err
 	}
 

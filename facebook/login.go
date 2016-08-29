@@ -25,7 +25,7 @@ func (s *Service) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse the form so r.Form becomes available
-	if err := r.ParseForm(); err != nil {
+	if err = r.ParseForm(); err != nil {
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -51,7 +51,7 @@ func (s *Service) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	// Decode the response to struct
-	if err := resp.Decode(&profile); err != nil {
+	if err = resp.Decode(&profile); err != nil {
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

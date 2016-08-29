@@ -6,7 +6,7 @@ import (
 
 // EmailFactoryInterface defines exported methods
 type EmailFactoryInterface interface {
-	NewConfirmationEmail(confirmation *Confirmation) (*email.Email, error)
-	NewInvitationEmail(invitation *Invitation) (*email.Email, error)
-	NewPasswordResetEmail(passwordReset *PasswordReset) (*email.Email, error)
+	NewConfirmationEmail(confirmation *Confirmation) (*email.Message, error)
+	NewInvitationEmail(invitation *Invitation) (*email.Message, error)
+	NewPasswordResetEmail(passwordReset *PasswordReset) (*email.Message, error)
 }

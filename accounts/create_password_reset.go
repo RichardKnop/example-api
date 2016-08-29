@@ -32,7 +32,7 @@ func (s *Service) CreatePasswordResetHandler(w http.ResponseWriter, r *http.Requ
 
 	// Unmarshal the request body into the request prototype
 	passwordResetRequest := new(PasswordResetRequest)
-	if err := json.Unmarshal(payload, passwordResetRequest); err != nil {
+	if err = json.Unmarshal(payload, passwordResetRequest); err != nil {
 		logger.Errorf("Failed to unmarshal password reset request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return

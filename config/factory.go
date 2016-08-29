@@ -53,8 +53,8 @@ var Cnf = &Config{
 	},
 	AppSpecific: AppSpecificConfig{
 		PasswordResetLifetime: 604800, // 7 days
-		CompanyName:           "Your Company Name",
-		CompanyEmail:          "contact@example.com",
+		CompanyName:           "Your Company",
+		CompanyNoreplyEmail:   "noreply@example.com",
 	},
 	IsDevelopment: true,
 }
