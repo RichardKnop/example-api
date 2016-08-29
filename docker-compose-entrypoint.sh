@@ -19,12 +19,12 @@ if [ "$1" = 'example-api' ] && [ "$2" = 'runserver' ]; then
       "AuthCodeLifetime": 3600
     },
     "Facebook": {
-  		"AppID": "facebook_app_id",
-  		"AppSecret": "facebook_app_secret"
-  	},
-  	"Sendgrid": {
-  		APIKey: "sendgrid_api_key"
-  	},
+      "AppID": "facebook_app_id",
+      "AppSecret": "facebook_app_secret"
+    },
+    "Sendgrid": {
+      APIKey: "sendgrid_api_key"
+    },
     "Web": {
       "Scheme": "http",
       "Host": "localhost:8080",
