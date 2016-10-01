@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-var realm = "example_api_api"
+var realm = "example_api"
 
 // WriteJSON writes JSON response
 func WriteJSON(w http.ResponseWriter, v interface{}, code int) {

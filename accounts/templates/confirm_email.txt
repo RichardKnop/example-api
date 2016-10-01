@@ -8,4 +8,4 @@ We may need to send you critical information about our service and it is importa
 
 Best,
 
-The {{.company}} Team
+{{.company}} Team

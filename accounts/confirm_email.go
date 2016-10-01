@@ -2,16 +2,20 @@ package accounts
 
 import (
 	"net/http"
-
-	"github.com/RichardKnop/example-api/response"
+	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/RichardKnop/jsonhal"
+	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/tokentypes"
+	"github.com/RichardKnop/example-api/response"
 )
 
-// ConfirmEmailHandler - requests to confirm user's email based on a reference string
-func (s *Service) ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to confirm user's email
+// GET /v1/confirmations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}
+func (s *Service) confirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
-	_, err := GetAuthenticatedAccount(r)
+	authenticatedAccount, err := GetAuthenticatedAccount(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
 		return
@@ -21,7 +25,7 @@ func (s *Service) ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	reference := vars["reference"]
 
-	// Fetch the confirmation we want to get
+	// Fetch the confirmation we want to work with (by reference from email link)
 	confirmation, err := s.FindConfirmationByReference(reference)
 	if err != nil {
 		response.Error(w, err.Error(), http.StatusNotFound)
@@ -29,13 +33,53 @@ func (s *Service) ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Confirm the user
-	if !confirmation.User.Confirmed {
-		if err := s.ConfirmUser(confirmation.User); err != nil {
+	if err = s.ConfirmUser(confirmation); err != nil {
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Create confirmation response
+	confirmationResponse, err := NewConfirmationResponse(confirmation)
+	if err != nil {
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Was autologin flag passed in the query string
+	autoLogin, _ := strconv.ParseBool(r.URL.Query().Get("autologin"))
+
+	// If autologin == true, login the user and embed access token in the response object
+	if autoLogin {
+		// Login the user
+		accessToken, refreshToken, err := s.GetOauthService().Login(
+			authenticatedAccount.OauthClient,
+			confirmation.User.OauthUser,
+			"read_write",
+		)
+		if err != nil {
 			response.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		// Create access token response
+		accessTokenResponse, err := oauth.NewAccessTokenResponse(
+			accessToken,
+			refreshToken,
+			s.cnf.Oauth.AccessTokenLifetime,
+			tokentypes.Bearer,
+		)
+		if err != nil {
+			response.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Set embedded access token
+		confirmationResponse.SetEmbedded(
+			"access-token",
+			jsonhal.Embedded(accessTokenResponse),
+		)
 	}
 
-	// 204 no content response
-	response.NoContent(w)
+	// Write the response
+	response.WriteJSON(w, confirmationResponse, 200)
 }

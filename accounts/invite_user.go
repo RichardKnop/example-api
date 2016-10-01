@@ -8,8 +8,9 @@ import (
 	"github.com/RichardKnop/example-api/response"
 )
 
-// InviteUserHandler - requests to invite a new user (POST /v1/accounts/invitations)
-func (s *Service) InviteUserHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to invite a new user
+// POST /v1/invitations
+func (s *Service) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {
@@ -39,13 +40,20 @@ func (s *Service) InviteUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a new invited user account
-	_, err = s.InviteUser(authenticatedUser, invitationRequest)
+	invitation, err := s.InviteUser(authenticatedUser, invitationRequest)
 	if err != nil {
 		logger.Errorf("Invite user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))
 		return
 	}
 
-	// 204 no content response
-	response.NoContent(w)
+	// Create invitation response
+	invitationResponse, err := NewInvitationResponse(invitation)
+	if err != nil {
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Write the response
+	response.WriteJSON(w, invitationResponse, 201)
 }

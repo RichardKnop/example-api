@@ -3,9 +3,9 @@ package accounts
 import (
 	"net/http"
 
+	"github.com/gorilla/context"
 	"github.com/RichardKnop/example-api/response"
 	"github.com/RichardKnop/example-api/util"
-	"github.com/gorilla/context"
 )
 
 // NewAccountAuthMiddleware creates a new AccountAuthMiddleware instance
@@ -27,18 +27,14 @@ func (m *AccountAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	account, _, err := getCredentialsFromRequest(r, m.service)
+	account, err := getClientCredentialsFromRequest(r, m.service)
 
-	if err != nil {
+	if err != nil || account == nil {
+		// For security reasons, return a generic error message
 		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
 		return
 	}
 
-	if account != nil {
-		context.Set(r, AuthenticatedAccountKey, account)
-		next(w, r)
-	} else {
-		response.UnauthorizedError(w, ErrAccountAuthenticationRequired.Error())
-		return
-	}
+	context.Set(r, AuthenticatedAccountKey, account)
+	next(w, r)
 }

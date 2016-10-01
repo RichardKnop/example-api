@@ -13,14 +13,16 @@ import (
 )
 
 var (
-	htmlEmailLayout                = "./accounts/templates/email_layout.html"
-	htmlEmailStyles                = "./accounts/templates/styles.css"
-	confirmEmailTemplateHTML       = "./accounts/templates/confirm_email.html"
-	confirmEmailTemplateTxt        = "./accounts/templates/confirm_email.txt"
-	passwordResetEmailTemplateHTML = "./accounts/templates/password_reset_email.html"
-	passwordResetEmailTemplateTxt  = "./accounts/templates/password_reset_email.txt"
-	invitationEmailTemplateHTML    = "./accounts/templates/invitation_email.html"
-	invitationEmailTemplateTxt     = "./accounts/templates/invitation_email.txt"
+	htmlEmailLayout                       = "./accounts/templates/email_layout.html"
+	htmlEmailStyles                       = "./accounts/templates/styles.css"
+	confirmEmailTemplateHTML              = "./accounts/templates/confirm_email.html"
+	confirmEmailTemplateTxt               = "./accounts/templates/confirm_email.txt"
+	passwordResetEmailTemplateHTML        = "./accounts/templates/password_reset_email.html"
+	passwordResetEmailTemplateTxt         = "./accounts/templates/password_reset_email.txt"
+	invitationEmailTemplateHTML           = "./accounts/templates/invitation_email.html"
+	invitationEmailTemplateTxt            = "./accounts/templates/invitation_email.txt"
+	onboardingCheckpointEmailTemplateHTML = "./accounts/templates/onboarding_checkpoint_email.html"
+	onboardingCheckpointEmailTemplateTxt  = "./accounts/templates/onboarding_checkpoint_email.txt"
 )
 
 // EmailFactory facilitates construction of email.Email objects
@@ -34,9 +36,9 @@ func NewEmailFactory(cnf *config.Config) *EmailFactory {
 }
 
 // NewConfirmationEmail returns a confirmation email
-func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.Message, error) {
+func (f *EmailFactory) NewConfirmationEmail(o *Confirmation) (*email.Message, error) {
 	// Define a greetings name for the user
-	name := confirmation.User.GetName()
+	name := o.User.GetName()
 	if name == "" {
 		name = "there"
 	}
@@ -44,10 +46,10 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.
 
 	// Confirmation link where the user can confirm his/her email
 	link := fmt.Sprintf(
-		"%s://%s/web/confirm-email/%s",
+		f.cnf.AppSpecific.ConfirmationURLFormat,
 		f.cnf.Web.AppScheme,
 		f.cnf.Web.AppHost,
-		confirmation.Reference,
+		o.Reference,
 	)
 
 	// The email subject
@@ -86,8 +88,8 @@ func (f *EmailFactory) NewConfirmationEmail(confirmation *Confirmation) (*email.
 		Subject: subject,
 		Recipients: []*email.Recipient{&email.Recipient{
 			Email: email.Email{
-				Address: confirmation.User.OauthUser.Username,
-				Name:    confirmation.User.GetName(),
+				Address: o.User.OauthUser.Username,
+				Name:    o.User.GetName(),
 			},
 		}},
 		From: &email.Sender{
@@ -177,9 +179,9 @@ func newConfirmationEmailHTMLContent(title, inlineStyles, name, company, link st
 }
 
 // NewPasswordResetEmail returns a password reset email
-func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*email.Message, error) {
+func (f *EmailFactory) NewPasswordResetEmail(o *PasswordReset) (*email.Message, error) {
 	// Define a greetings name for the user
-	name := passwordReset.User.GetName()
+	name := o.User.GetName()
 	if name == "" {
 		name = "friend"
 	}
@@ -187,10 +189,10 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*ema
 
 	// Password reset link where the user can set a new password
 	link := fmt.Sprintf(
-		"%s://%s/web/confirm-password-reset/%s",
+		f.cnf.AppSpecific.PasswordResetURLFormat,
 		f.cnf.Web.AppScheme,
 		f.cnf.Web.AppHost,
-		passwordReset.Reference,
+		o.Reference,
 	)
 
 	// The email subject
@@ -229,8 +231,8 @@ func (f *EmailFactory) NewPasswordResetEmail(passwordReset *PasswordReset) (*ema
 		Subject: subject,
 		Recipients: []*email.Recipient{&email.Recipient{
 			Email: email.Email{
-				Address: passwordReset.User.OauthUser.Username,
-				Name:    passwordReset.User.GetName(),
+				Address: o.User.OauthUser.Username,
+				Name:    o.User.GetName(),
 			},
 		}},
 		From: &email.Sender{
@@ -320,26 +322,26 @@ func newPasswordResetEmailHTMLContent(title, inlineStyles, name, company, link s
 }
 
 // NewInvitationEmail returns a user invite email
-func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) (*email.Message, error) {
+func (f *EmailFactory) NewInvitationEmail(o *Invitation) (*email.Message, error) {
 	// Define a greetings name for the invited user
-	name := invitation.InvitedUser.GetName()
+	name := o.InvitedUser.GetName()
 	if name == "" {
 		name = "friend"
 	}
 	name = strings.Split(name, " ")[0]
 
 	// Define a name of the person who invited the new user
-	invitedBy := invitation.InvitedByUser.GetName()
+	invitedBy := o.InvitedByUser.GetName()
 	if invitedBy == "" {
-		invitedBy = invitation.InvitedByUser.OauthUser.Username
+		invitedBy = o.InvitedByUser.OauthUser.Username
 	}
 
 	// Confirmation link where the invited user can set his/her password
 	link := fmt.Sprintf(
-		"%s://%s/web/confirm-invitation/%s",
+		f.cnf.AppSpecific.InvitationURLFormat,
 		f.cnf.Web.AppScheme,
 		f.cnf.Web.AppHost,
-		invitation.Reference,
+		o.Reference,
 	)
 
 	// The email subject
@@ -380,14 +382,14 @@ func (f *EmailFactory) NewInvitationEmail(invitation *Invitation) (*email.Messag
 		Subject: subject,
 		Recipients: []*email.Recipient{&email.Recipient{
 			Email: email.Email{
-				Address: invitation.InvitedUser.OauthUser.Username,
-				Name:    invitation.InvitedUser.GetName(),
+				Address: o.InvitedUser.OauthUser.Username,
+				Name:    o.InvitedUser.GetName(),
 			},
 		}},
 		From: &email.Sender{
 			Email: email.Email{
-				Address: invitation.InvitedByUser.OauthUser.Username,
-				Name:    invitation.InvitedByUser.GetName(),
+				Address: o.InvitedByUser.OauthUser.Username,
+				Name:    o.InvitedByUser.GetName(),
 			},
 		},
 		Text: plainTextContent,

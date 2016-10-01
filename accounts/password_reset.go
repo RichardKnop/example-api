@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RichardKnop/example-api/util"
 	"github.com/jinzhu/gorm"
 )
 
@@ -15,12 +14,12 @@ var (
 )
 
 // FindPasswordResetByReference looks up a password reset by a reference
+// only return the object if it's not expired
 func (s *Service) FindPasswordResetByReference(reference string) (*PasswordReset, error) {
 	// Fetch the password reset from the database
 	passwordReset := new(PasswordReset)
-	validFor := time.Duration(s.cnf.AppSpecific.PasswordResetLifetime) * time.Second
 	notFound := PasswordResetPreload(s.db).Where("reference = ?", reference).
-		Where("created_at > ?", time.Now().Add(-validFor)).First(passwordReset).RecordNotFound()
+		Where("expires_at > ?", time.Now().UTC()).First(passwordReset).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -83,7 +82,11 @@ func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
 	}
 
 	// Create a new password reset
-	passwordReset := NewPasswordReset(user)
+	passwordReset, err := NewPasswordReset(user, s.cnf.AppSpecific.PasswordResetLifetime)
+	if err != nil {
+		tx.Rollback() // rollback the transaction
+		return nil, err
+	}
 
 	// Save the password reset to the database
 	if err := tx.Create(passwordReset).Error; err != nil {
@@ -122,10 +125,12 @@ func (s *Service) sendPasswordResetEmail(passwordReset *PasswordReset) error {
 	}
 
 	// If the email was sent successfully, update the email_sent flag
-	now := time.Now()
+	now := gorm.NowFunc()
 	return s.db.Model(passwordReset).UpdateColumns(PasswordReset{
-		EmailSent:   true,
-		EmailSentAt: util.TimeOrNull(&now),
-		Model:       gorm.Model{UpdatedAt: now},
+		EmailTokenModel: EmailTokenModel{
+			EmailSent:   true,
+			EmailSentAt: &now,
+			Model:       gorm.Model{UpdatedAt: now},
+		},
 	}).Error
 }

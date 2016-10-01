@@ -11,9 +11,10 @@ import (
 	"strings"
 
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/accounts/roles"
 	"github.com/RichardKnop/example-api/facebook"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/oauth/tokentypes"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"
 	"github.com/stretchr/testify/assert"
@@ -134,14 +135,14 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 
 	// Insert a test user
 	testOauthUser, err = suite.service.GetAccountsService().GetOauthService().CreateUser(
+		roles.User,
 		"harold@finch",
 		"", // empty password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = accounts.NewUser(
+	testUser, err = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		&accounts.Role{ID: roles.User},
 		"some_facebook_id", // facebook ID
 		true,               // confirmed
 		&accounts.UserRequest{
@@ -150,6 +151,7 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 			Picture:   "some_picture",
 		},
 	)
+	assert.NoError(suite.T(), err, "Failed to create a new test account user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
 	testUser.OauthUser = testOauthUser
@@ -231,7 +233,7 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
-		TokenType:    oauth.TokenType,
+		TokenType:    tokentypes.Bearer,
 		Scope:        "read_write",
 		RefreshToken: refreshToken.Token,
 	})
@@ -249,14 +251,14 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 
 	// Insert a test user
 	testOauthUser, err = suite.service.GetAccountsService().GetOauthService().CreateUser(
+		roles.User,
 		"harold@finch",
 		"", // empty password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = accounts.NewUser(
+	testUser, err = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		&accounts.Role{ID: roles.User},
 		"some_facebook_id", // facebook ID
 		true,               // confirmed
 		&accounts.UserRequest{
@@ -265,6 +267,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 			Picture:   "some_picture",
 		},
 	)
+	assert.NoError(suite.T(), err, "Failed to create a new test account user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
 	testUser.OauthUser = testOauthUser
@@ -332,7 +335,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 	assert.Equal(suite.T(), "New Last Name", user.LastName.String)
 	assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
 	assert.Equal(suite.T(), "new_picture", user.Picture.String)
-	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 
 	// Fetch oauth tokens
 	accessToken := new(oauth.AccessToken)
@@ -347,7 +350,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
-		TokenType:    oauth.TokenType,
+		TokenType:    tokentypes.Bearer,
 		Scope:        "read_write",
 		RefreshToken: refreshToken.Token,
 	})
@@ -420,7 +423,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 	assert.Equal(suite.T(), "Reese", user.LastName.String)
 	assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
 	assert.Equal(suite.T(), "johns_picture", user.Picture.String)
-	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 
 	// Fetch oauth tokens
 	accessToken := new(oauth.AccessToken)
@@ -435,7 +438,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
-		TokenType:    oauth.TokenType,
+		TokenType:    tokentypes.Bearer,
 		Scope:        "read_write",
 		RefreshToken: refreshToken.Token,
 	})
@@ -503,7 +506,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNilEmail() {
 	assert.Equal(suite.T(), "John", user.FirstName.String)
 	assert.Equal(suite.T(), "Reese", user.LastName.String)
 	assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
-	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	assert.True(suite.T(), user.Confirmed)
 
 	// Fetch oauth tokens
@@ -519,7 +522,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNilEmail() {
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
-		TokenType:    oauth.TokenType,
+		TokenType:    tokentypes.Bearer,
 		Scope:        "read_write",
 		RefreshToken: refreshToken.Token,
 	})
@@ -589,7 +592,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNoPicture() {
 	assert.Equal(suite.T(), "Reese", user.LastName.String)
 	assert.Equal(suite.T(), "new_facebook_id", user.FacebookID.String)
 	assert.False(suite.T(), user.Picture.Valid)
-	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 
 	// Fetch oauth tokens
 	accessToken := new(oauth.AccessToken)
@@ -604,7 +607,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNoPicture() {
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    3600,
-		TokenType:    oauth.TokenType,
+		TokenType:    tokentypes.Bearer,
 		Scope:        "read_write",
 		RefreshToken: refreshToken.Token,
 	})

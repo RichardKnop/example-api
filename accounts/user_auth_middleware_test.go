@@ -1,13 +1,12 @@
 package accounts_test
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 
-	"github.com/RichardKnop/example-api/accounts"
 	"github.com/stretchr/testify/assert"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/test-util"
 )
 
 func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
@@ -28,25 +27,14 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	next = func(w http.ResponseWriter, r *http.Request) {}
 	middleware.ServeHTTP(w, r, next)
 
-	// Check the status code
-	assert.Equal(suite.T(), 401, w.Code)
-
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		fmt.Sprintf(
-			"{\"error\":\"%s\"}",
-			accounts.ErrUserAuthenticationRequired,
-		),
-		strings.TrimSpace(w.Body.String()),
-	)
+	// Check the response
+	testutil.TestResponseForError(suite.T(), w, accounts.ErrUserAuthenticationRequired.Error(), 401)
 
 	// Check the context variable has not been set
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
-	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
-	}
+	assert.Error(suite.T(), err)
+	assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
 
 	// Send a request with empty bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
@@ -56,25 +44,14 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	next = func(w http.ResponseWriter, r *http.Request) {}
 	middleware.ServeHTTP(w, r, next)
 
-	// Check the status code
-	assert.Equal(suite.T(), 401, w.Code)
-
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		fmt.Sprintf(
-			"{\"error\":\"%s\"}",
-			accounts.ErrUserAuthenticationRequired,
-		),
-		strings.TrimSpace(w.Body.String()),
-	)
+	// Check the response
+	testutil.TestResponseForError(suite.T(), w, accounts.ErrUserAuthenticationRequired.Error(), 401)
 
 	// Check the context variable has not been set
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
-	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
-	}
+	assert.Error(suite.T(), err)
+	assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
 
 	// Send a request with incorrect bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
@@ -84,25 +61,14 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	next = func(w http.ResponseWriter, r *http.Request) {}
 	middleware.ServeHTTP(w, r, next)
 
-	// Check the status code
-	assert.Equal(suite.T(), 401, w.Code)
-
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		fmt.Sprintf(
-			"{\"error\":\"%s\"}",
-			accounts.ErrUserAuthenticationRequired,
-		),
-		strings.TrimSpace(w.Body.String()),
-	)
+	// Check the response
+	testutil.TestResponseForError(suite.T(), w, accounts.ErrUserAuthenticationRequired.Error(), 401)
 
 	// Check the context variable has not been set
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
-	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
-	}
+	assert.Error(suite.T(), err)
+	assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
 
 	// Send a request with client bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
@@ -112,25 +78,14 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 	next = func(w http.ResponseWriter, r *http.Request) {}
 	middleware.ServeHTTP(w, r, next)
 
-	// Check the status code
-	assert.Equal(suite.T(), 401, w.Code)
-
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		fmt.Sprintf(
-			"{\"error\":\"%s\"}",
-			accounts.ErrUserAuthenticationRequired,
-		),
-		strings.TrimSpace(w.Body.String()),
-	)
+	// Check the response
+	testutil.TestResponseForError(suite.T(), w, accounts.ErrUserAuthenticationRequired.Error(), 401)
 
 	// Check the context variable has not been set
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
-	if assert.NotNil(suite.T(), err) {
-		assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
-	}
+	assert.Error(suite.T(), err)
+	assert.Equal(suite.T(), accounts.ErrUserAuthenticationRequired, err)
 
 	// Send a request with correct bearer token through the middleware
 	r, err = http.NewRequest("POST", "http://1.2.3.4/something", nil)
@@ -145,8 +100,7 @@ func (suite *AccountsTestSuite) TestUserAuthMiddleware() {
 
 	// Check the context variable has been set
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
-	assert.Nil(suite.T(), err)
-	if assert.NotNil(suite.T(), authenticatedUser) {
-		assert.Equal(suite.T(), "test@user", authenticatedUser.OauthUser.Username)
-	}
+	assert.NoError(suite.T(), err)
+	assert.NotNil(suite.T(), authenticatedUser)
+	assert.Equal(suite.T(), "test@user", authenticatedUser.OauthUser.Username)
 }

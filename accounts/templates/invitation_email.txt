@@ -8,4 +8,4 @@ Please accept the invitation by clicking the link below.
 
 Best,
 
-The {{.company}} Team
+{{.company}} Team

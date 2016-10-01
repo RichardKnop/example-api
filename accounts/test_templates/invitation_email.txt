@@ -1,11 +1,11 @@
 Hi John,
 
-You have been invited to Your Company by Harold Finch.
+You have been invited to Example Ltd by Harold Finch.
 
 Please accept the invitation by clicking the link below.
 
-https://example.com/web/confirm-invitation/some-reference
+https://example.com/confirm-invitation/some-reference
 
 Best,
 
-The Your Company Team
+Example Ltd Team

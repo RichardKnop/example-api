@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/RichardKnop/example-api/config"
-	"github.com/RichardKnop/example-api/database"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/test-util"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/suite"
@@ -16,18 +16,18 @@ import (
 var (
 	testDbUser = "example_api"
 	testDbName = "example_api_oauth_test"
+
+	testFixtures = []string{
+		"./oauth/fixtures/scopes.yml",
+		"./oauth/fixtures/roles.yml",
+		"./oauth/fixtures/test_clients.yml",
+		"./oauth/fixtures/test_users.yml",
+	}
+
+	testMigrations = []func(*gorm.DB) error{
+		oauth.MigrateAll,
+	}
 )
-
-var testFixtures = []string{
-	"./oauth/fixtures/scopes.yml",
-	"./oauth/fixtures/test_clients.yml",
-	"./oauth/fixtures/test_users.yml",
-}
-
-// db migrations needed for tests
-var testMigrations = []func(*gorm.DB) error{
-	oauth.MigrateAll,
-}
 
 func init() {
 	if err := os.Chdir("../"); err != nil {
@@ -49,12 +49,11 @@ type OauthTestSuite struct {
 // The SetupSuite method will be run by testify once, at the very
 // start of the testing suite, before any tests are run.
 func (suite *OauthTestSuite) SetupSuite() {
-
 	// Initialise the config
 	suite.cnf = config.NewConfig(false, false)
 
 	// Create the test database
-	db, err := database.CreateTestDatabasePostgres(
+	db, err := testutil.CreateTestDatabasePostgres(
 		testDbUser,
 		testDbName,
 		testMigrations,
@@ -82,7 +81,7 @@ func (suite *OauthTestSuite) SetupSuite() {
 
 	// Register routes
 	suite.router = mux.NewRouter()
-	oauth.RegisterRoutes(suite.router, suite.service)
+	suite.service.RegisterRoutes(suite.router, "/v1/oauth")
 }
 
 // The TearDownSuite method will be run by testify once, at the very

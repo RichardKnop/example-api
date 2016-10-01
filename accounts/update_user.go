@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/response"
 	"github.com/gorilla/mux"
 )
@@ -15,14 +15,32 @@ import (
 var (
 	// ErrUpdateUserPermission ...
 	ErrUpdateUserPermission = errors.New("Need permission to update user")
+	// ErrUpdateUserMustBeSuperuser ...
+	ErrUpdateUserMustBeSuperuser = errors.New("You must be a superuser to update these fields")
 )
 
-// UpdateUserHandler - requests to update a user (PUT /v1/accounts/users/{id:[0-9]+})
-func (s *Service) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to update a user
+// PUT /v1/users/{id:[0-9]+}
+func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
+		return
+	}
+
+	// Get the id from request URI and type assert it
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		response.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Fetch the user we want to update
+	user, err := s.FindUserByID(uint(userID))
+	if err != nil {
+		response.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -47,23 +65,8 @@ func (s *Service) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get the id from request URI and type assert it
-	vars := mux.Vars(r)
-	userID, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		response.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// Fetch the user we want to update
-	user, err := s.FindUserByID(uint(userID))
-	if err != nil {
-		response.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
 	// Check permissions
-	if err = checkUpdateUserPermissions(authenticatedUser, user); err != nil {
+	if err = checkUpdateUserPermissions(authenticatedUser, user, userRequest); err != nil {
 		response.Error(w, err.Error(), http.StatusForbidden)
 		return
 	}
@@ -85,9 +88,9 @@ func (s *Service) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, userResponse, http.StatusOK)
 }
 
-func checkUpdateUserPermissions(authenticatedUser, user *User) error {
+func checkUpdateUserPermissions(authenticatedUser, user *User, req *UserRequest) error {
 	// Superusers can update any users
-	if authenticatedUser.Role.Name == roles.Superuser {
+	if authenticatedUser.OauthUser.RoleID.String == roles.Superuser {
 		return nil
 	}
 

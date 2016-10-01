@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/accounts/roles"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/password"
+	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
@@ -29,26 +28,26 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 
 	// Insert a test user
 	testOauthUser, err = suite.service.GetOauthService().CreateUser(
+		roles.User,
 		"harold@finch",
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = accounts.NewUser(
+	testUser, err = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		suite.userRole,
-		"",    // facebook ID
+		"",    //facebook ID
 		false, // confirmed
 		&accounts.UserRequest{
 			FirstName: "Harold",
 			LastName:  "Finch",
 		},
 	)
+	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
 	testUser.Account = suite.accounts[0]
 	testUser.OauthUser = testOauthUser
-	testUser.Role = suite.userRole
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.GetOauthService().Login(
@@ -65,7 +64,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"PUT",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", testUser.ID),
+		fmt.Sprintf("http://1.2.3.4/v1/users/%d", testUser.ID),
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -85,22 +84,8 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
 
-	// Check the status code
-	if !assert.Equal(suite.T(), 400, w.Code) {
-		log.Print(w.Body.String())
-	}
-
-	// Check the response body
-	expectedJSON, err := json.Marshal(
-		map[string]string{"error": oauth.ErrInvalidUserPassword.Error()})
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"),
-			"Body should contain JSON detailing the error",
-		)
-	}
+	// Check the response
+	testutil.TestResponseForError(suite.T(), w, oauth.ErrInvalidUserPassword.Error(), 400)
 }
 
 func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser() {
@@ -113,26 +98,26 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 
 	// Insert a test user
 	testOauthUser, err = suite.service.GetOauthService().CreateUser(
+		roles.User,
 		"harold@finch",
 		"", // empty password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = accounts.NewUser(
+	testUser, err = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		suite.userRole,
-		"some_facebook_id", // facebook ID
-		false,              // confirmed
+		"",    //facebook ID
+		false, // confirmed
 		&accounts.UserRequest{
 			FirstName: "Harold",
 			LastName:  "Finch",
 		},
 	)
+	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
 	testUser.Account = suite.accounts[0]
 	testUser.OauthUser = testOauthUser
-	testUser.Role = suite.userRole
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.GetOauthService().Login(
@@ -149,7 +134,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"PUT",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", testUser.ID),
+		fmt.Sprintf("http://1.2.3.4/v1/users/%d", testUser.ID),
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -169,22 +154,8 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
 
-	// Check the status code
-	if !assert.Equal(suite.T(), 400, w.Code) {
-		log.Print(w.Body.String())
-	}
-
-	// Check the response body
-	expectedJSON, err := json.Marshal(
-		map[string]string{"error": oauth.ErrUserPasswordNotSet.Error()})
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"),
-			"Body should contain JSON detailing the error",
-		)
-	}
+	// Check the response
+	testutil.TestResponseForError(suite.T(), w, oauth.ErrUserPasswordNotSet.Error(), 400)
 }
 
 func (suite *AccountsTestSuite) TestUpdateUserPassword() {
@@ -197,26 +168,26 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 
 	// Insert a test user
 	testOauthUser, err = suite.service.GetOauthService().CreateUser(
+		roles.User,
 		"harold@finch",
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = accounts.NewUser(
+	testUser, err = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		suite.userRole,
-		"",    // facebook ID
+		"",    //facebook ID
 		false, // confirmed
 		&accounts.UserRequest{
 			FirstName: "Harold",
 			LastName:  "Finch",
 		},
 	)
+	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
 	testUser.Account = suite.accounts[0]
 	testUser.OauthUser = testOauthUser
-	testUser.Role = suite.userRole
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.GetOauthService().Login(
@@ -233,7 +204,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"PUT",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", testUser.ID),
+		fmt.Sprintf("http://1.2.3.4/v1/users/%d", testUser.ID),
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -256,11 +227,6 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
-
-	// Check the status code
-	if !assert.Equal(suite.T(), 200, w.Code) {
-		log.Print(w.Body.String())
-	}
 
 	// Count after
 	var countAfter int
@@ -286,15 +252,15 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 	assert.Equal(suite.T(), "harold@finch", user.OauthUser.Username)
 	assert.Equal(suite.T(), "Harold", user.FirstName.String)
 	assert.Equal(suite.T(), "Finch", user.LastName.String)
-	assert.Equal(suite.T(), roles.User, user.Role.ID)
+	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	assert.False(suite.T(), user.Confirmed)
 
-	// Check the response body
+	// Check the response
 	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
-					Href: fmt.Sprintf("/v1/accounts/users/%d", user.ID),
+					Href: fmt.Sprintf("/v1/users/%d", user.ID),
 				},
 			},
 		},
@@ -304,15 +270,8 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 		LastName:  "Finch",
 		Role:      roles.User,
 		Confirmed: false,
-		CreatedAt: util.FormatTime(user.CreatedAt),
-		UpdatedAt: util.FormatTime(user.UpdatedAt),
+		CreatedAt: util.FormatTime(&user.CreatedAt),
+		UpdatedAt: util.FormatTime(&user.UpdatedAt),
 	}
-	expectedJSON, err := json.Marshal(expected)
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-		)
-	}
+	testutil.TestResponseObject(suite.T(), w, expected, 200)
 }

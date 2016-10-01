@@ -9,8 +9,9 @@ import (
 	"github.com/RichardKnop/example-api/response"
 )
 
-// CreateUserHandler - requests to create a new user (POST /v1/accounts/users)
-func (s *Service) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to create a new user
+// POST /v1/users
+func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated client from the request context
 	authenticatedAccount, err := GetAuthenticatedAccount(r)
 	if err != nil {
@@ -54,7 +55,7 @@ func (s *Service) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Set Location header to the newly created resource
-	w.Header().Set("Location", fmt.Sprintf("/v1/accounts/users/%d", user.ID))
+	w.Header().Set("Location", fmt.Sprintf("/v1/users/%d", user.ID))
 	// Write JSON response
 	response.WriteJSON(w, userResponse, http.StatusCreated)
 }

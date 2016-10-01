@@ -10,8 +10,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// ConfirmPasswordResetHandler - requests to complete a password reset by setting new password
-func (s *Service) ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to complete a password reset by setting new password
+// POST /password-resets/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}
+func (s *Service) confirmPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
 	_, err := GetAuthenticatedAccount(r)
 	if err != nil {
@@ -44,7 +45,7 @@ func (s *Service) ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	reference := vars["reference"]
 
-	// Fetch the password reset we want to get
+	// Fetch the password reset we want to work with (by reference from email link)
 	passwordReset, err := s.FindPasswordResetByReference(reference)
 	if err != nil {
 		response.Error(w, err.Error(), http.StatusNotFound)
@@ -52,11 +53,18 @@ func (s *Service) ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	// Reset the password
-	if err := s.ResetPassword(passwordReset, confirmPasswordResetRequest.Password); err != nil {
+	if err = s.ResetPassword(passwordReset, confirmPasswordResetRequest.Password); err != nil {
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// 204 no content response
-	response.NoContent(w)
+	// Create password reset response
+	passwordResetResponse, err := NewPasswordResetResponse(passwordReset)
+	if err != nil {
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Write the response
+	response.WriteJSON(w, passwordResetResponse, 200)
 }

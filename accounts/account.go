@@ -62,8 +62,8 @@ func (s *Service) FindAccountByName(name string) (*Account, error) {
 // CreateAccount creates a new account
 func (s *Service) CreateAccount(name, description, key, secret, redirectURI string) (*Account, error) {
 	// Check uniqueness of the name
-	account, err := s.FindAccountByName(name)
-	if account != nil && err == nil {
+	_, err := s.FindAccountByName(name)
+	if err == nil {
 		return nil, ErrAccountNameTaken
 	}
 
@@ -88,7 +88,10 @@ func (s *Service) CreateAccount(name, description, key, secret, redirectURI stri
 	}
 
 	// Create a new account
-	account = NewAccount(oauthClient, name, description)
+	account, err := NewAccount(oauthClient, name, description)
+	if err != nil {
+		return nil, err
+	}
 
 	// Save the account to the database
 	if err := tx.Create(account).Error; err != nil {

@@ -7,11 +7,26 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/accounts/roles"
-	"github.com/RichardKnop/example-api/response"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/test-util"
 )
+
+func (suite *AccountsTestSuite) TestInviteUserRequiresUserAuthentication() {
+	testutil.TestPostErrorExpectedResponse(
+		suite.T(),
+		suite.router,
+		"http://1.2.3.4/v1/invitations",
+		"invite_user",
+		nil,
+		"", // no access token
+		accounts.ErrUserAuthenticationRequired.Error(),
+		http.StatusUnauthorized,
+		suite.assertMockExpectations,
+	)
+}
 
 func (suite *AccountsTestSuite) TestInviteUser() {
 	// Prepare a request
@@ -21,7 +36,7 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"POST",
-		"http://1.2.3.4/v1/accounts/invitations",
+		"http://1.2.3.4/v1/invitations",
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -29,6 +44,13 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 
 	// Mock invitation email
 	suite.mockInvitationEmail()
+
+	// Check the routing
+	match := new(mux.RouteMatch)
+	suite.router.Match(r, match)
+	if assert.NotNil(suite.T(), match.Route) {
+		assert.Equal(suite.T(), "invite_user", match.Route.GetName())
+	}
 
 	// Count before
 	var (
@@ -42,9 +64,6 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
-	// Check empty response
-	response.TestEmptyResponse(suite.T(), w)
-
 	// Count after
 	var (
 		countAfter            int
@@ -57,17 +76,20 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 
 	// Fetch the created invitation
 	invitation := new(accounts.Invitation)
-	assert.False(suite.T(), suite.db.
-		Preload("InvitedUser.OauthUser").Preload("InvitedUser.Role").
-		Preload("InvitedByUser.OauthUser").Preload("InvitedByUser.Role").
+	assert.False(suite.T(), accounts.InvitationPreload(suite.db).
 		Last(invitation).RecordNotFound())
 
 	// And correct data was saved
 	assert.Equal(suite.T(), invitation.InvitedUser.ID, invitation.InvitedUser.OauthUser.MetaUserID)
 	assert.Equal(suite.T(), "john@reese", invitation.InvitedUser.OauthUser.Username)
 	assert.False(suite.T(), invitation.InvitedUser.OauthUser.Password.Valid)
-	assert.Equal(suite.T(), roles.User, invitation.InvitedUser.RoleID.String)
+	assert.Equal(suite.T(), roles.User, invitation.InvitedUser.OauthUser.RoleID.String)
 	assert.Equal(suite.T(), "test@user", invitation.InvitedByUser.OauthUser.Username)
+
+	// Check the response
+	expected, err := accounts.NewInvitationResponse(invitation)
+	assert.NoError(suite.T(), err, "Failed to create expected response object")
+	testutil.TestResponseObject(suite.T(), w, expected, 201)
 
 	// Wait for the email goroutine to finish
 	<-time.After(5 * time.Millisecond)

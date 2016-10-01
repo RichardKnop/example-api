@@ -6,7 +6,8 @@ import "github.com/stretchr/testify/mock"
 import "net/http"
 import "github.com/RichardKnop/example-api/config"
 import "github.com/RichardKnop/example-api/oauth"
-import "github.com/jinzhu/gorm"
+import "github.com/RichardKnop/example-api/routes"
+import "github.com/gorilla/mux"
 
 type ServiceInterface struct {
 	mock.Mock
@@ -37,6 +38,116 @@ func (_m *ServiceInterface) GetOauthService() oauth.ServiceInterface {
 	}
 
 	return r0
+}
+func (_m *ServiceInterface) GetRoutes() []routes.Route {
+	ret := _m.Called()
+
+	var r0 []routes.Route
+	if rf, ok := ret.Get(0).(func() []routes.Route); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]routes.Route)
+		}
+	}
+
+	return r0
+}
+func (_m *ServiceInterface) RegisterRoutes(router *mux.Router, prefix string) {
+	_m.Called(router, prefix)
+}
+func (_m *ServiceInterface) GetUserCredentialsFromToken(token string) (*accounts.User, error) {
+	ret := _m.Called(token)
+
+	var r0 *accounts.User
+	if rf, ok := ret.Get(0).(func(string) *accounts.User); ok {
+		r0 = rf(token)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*accounts.User)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(token)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+func (_m *ServiceInterface) GetClientCredentialsFromBaseAuth(r *http.Request) (*accounts.Account, error) {
+	ret := _m.Called(r)
+
+	var r0 *accounts.Account
+	if rf, ok := ret.Get(0).(func(*http.Request) *accounts.Account); ok {
+		r0 = rf(r)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*accounts.Account)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*http.Request) error); ok {
+		r1 = rf(r)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+func (_m *ServiceInterface) GetClientCredentialsFromToken(token string) (*accounts.Account, error) {
+	ret := _m.Called(token)
+
+	var r0 *accounts.Account
+	if rf, ok := ret.Get(0).(func(string) *accounts.Account); ok {
+		r0 = rf(token)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*accounts.Account)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(token)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+func (_m *ServiceInterface) GetMixedCredentialsFromToken(token string) (*accounts.Account, *accounts.User, error) {
+	ret := _m.Called(token)
+
+	var r0 *accounts.Account
+	if rf, ok := ret.Get(0).(func(string) *accounts.Account); ok {
+		r0 = rf(token)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*accounts.Account)
+		}
+	}
+
+	var r1 *accounts.User
+	if rf, ok := ret.Get(1).(func(string) *accounts.User); ok {
+		r1 = rf(token)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*accounts.User)
+		}
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(string) error); ok {
+		r2 = rf(token)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 func (_m *ServiceInterface) FindAccountByOauthClientID(oauthClientID uint) (*accounts.Account, error) {
 	ret := _m.Called(oauthClientID)
@@ -227,27 +338,6 @@ func (_m *ServiceInterface) CreateUser(account *accounts.Account, userRequest *a
 
 	return r0, r1
 }
-func (_m *ServiceInterface) CreateUserTx(tx *gorm.DB, account *accounts.Account, userRequest *accounts.UserRequest) (*accounts.User, error) {
-	ret := _m.Called(tx, account, userRequest)
-
-	var r0 *accounts.User
-	if rf, ok := ret.Get(0).(func(*gorm.DB, *accounts.Account, *accounts.UserRequest) *accounts.User); ok {
-		r0 = rf(tx, account, userRequest)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*accounts.User)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(*gorm.DB, *accounts.Account, *accounts.UserRequest) error); ok {
-		r1 = rf(tx, account, userRequest)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
 func (_m *ServiceInterface) UpdateUser(user *accounts.User, userRequest *accounts.UserRequest) error {
 	ret := _m.Called(user, userRequest)
 
@@ -259,6 +349,46 @@ func (_m *ServiceInterface) UpdateUser(user *accounts.User, userRequest *account
 	}
 
 	return r0
+}
+func (_m *ServiceInterface) PaginatedUsersCount() (int, error) {
+	ret := _m.Called()
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func() int); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+func (_m *ServiceInterface) FindPaginatedUsers(offset int, limit int, sorts map[string]string) ([]*accounts.User, error) {
+	ret := _m.Called(offset, limit, sorts)
+
+	var r0 []*accounts.User
+	if rf, ok := ret.Get(0).(func(int, int, map[string]string) []*accounts.User); ok {
+		r0 = rf(offset, limit, sorts)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*accounts.User)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int, int, map[string]string) error); ok {
+		r1 = rf(offset, limit, sorts)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 func (_m *ServiceInterface) FindConfirmationByReference(reference string) (*accounts.Confirmation, error) {
 	ret := _m.Called(reference)
@@ -281,12 +411,12 @@ func (_m *ServiceInterface) FindConfirmationByReference(reference string) (*acco
 
 	return r0, r1
 }
-func (_m *ServiceInterface) ConfirmUser(user *accounts.User) error {
-	ret := _m.Called(user)
+func (_m *ServiceInterface) ConfirmUser(confirmation *accounts.Confirmation) error {
+	ret := _m.Called(confirmation)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*accounts.User) error); ok {
-		r0 = rf(user)
+	if rf, ok := ret.Get(0).(func(*accounts.Confirmation) error); ok {
+		r0 = rf(confirmation)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -368,27 +498,6 @@ func (_m *ServiceInterface) CreateSuperuser(account *accounts.Account, email str
 
 	return r0, r1
 }
-func (_m *ServiceInterface) FindInvitationByID(invitationID uint) (*accounts.Invitation, error) {
-	ret := _m.Called(invitationID)
-
-	var r0 *accounts.Invitation
-	if rf, ok := ret.Get(0).(func(uint) *accounts.Invitation); ok {
-		r0 = rf(invitationID)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*accounts.Invitation)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(uint) error); ok {
-		r1 = rf(invitationID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
 func (_m *ServiceInterface) FindInvitationByReference(reference string) (*accounts.Invitation, error) {
 	ret := _m.Called(reference)
 
@@ -431,27 +540,6 @@ func (_m *ServiceInterface) InviteUser(invitedByUser *accounts.User, invitationR
 
 	return r0, r1
 }
-func (_m *ServiceInterface) InviteUserTx(tx *gorm.DB, invitedByUser *accounts.User, invitationRequest *accounts.InvitationRequest) (*accounts.Invitation, error) {
-	ret := _m.Called(tx, invitedByUser, invitationRequest)
-
-	var r0 *accounts.Invitation
-	if rf, ok := ret.Get(0).(func(*gorm.DB, *accounts.User, *accounts.InvitationRequest) *accounts.Invitation); ok {
-		r0 = rf(tx, invitedByUser, invitationRequest)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*accounts.Invitation)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(*gorm.DB, *accounts.User, *accounts.InvitationRequest) error); ok {
-		r1 = rf(tx, invitedByUser, invitationRequest)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
 func (_m *ServiceInterface) ConfirmInvitation(invitation *accounts.Invitation, password string) error {
 	ret := _m.Called(invitation, password)
 
@@ -464,90 +552,24 @@ func (_m *ServiceInterface) ConfirmInvitation(invitation *accounts.Invitation, p
 
 	return r0
 }
-func (_m *ServiceInterface) GetUserCredentials(token string) (*accounts.Account, *accounts.User, error) {
-	ret := _m.Called(token)
-
-	var r0 *accounts.Account
-	if rf, ok := ret.Get(0).(func(string) *accounts.Account); ok {
-		r0 = rf(token)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*accounts.Account)
-		}
-	}
-
-	var r1 *accounts.User
-	if rf, ok := ret.Get(1).(func(string) *accounts.User); ok {
-		r1 = rf(token)
-	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*accounts.User)
-		}
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(string) error); ok {
-		r2 = rf(token)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-func (_m *ServiceInterface) GetClientCredentials(r *http.Request) (*accounts.Account, *accounts.User, error) {
+func (_m *ServiceInterface) GetUserFromQueryString(r *http.Request) (*accounts.User, error) {
 	ret := _m.Called(r)
 
-	var r0 *accounts.Account
-	if rf, ok := ret.Get(0).(func(*http.Request) *accounts.Account); ok {
+	var r0 *accounts.User
+	if rf, ok := ret.Get(0).(func(*http.Request) *accounts.User); ok {
 		r0 = rf(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*accounts.Account)
+			r0 = ret.Get(0).(*accounts.User)
 		}
 	}
 
-	var r1 *accounts.User
-	if rf, ok := ret.Get(1).(func(*http.Request) *accounts.User); ok {
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*http.Request) error); ok {
 		r1 = rf(r)
 	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*accounts.User)
-		}
+		r1 = ret.Error(1)
 	}
 
-	var r2 error
-	if rf, ok := ret.Get(2).(func(*http.Request) error); ok {
-		r2 = rf(r)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-func (_m *ServiceInterface) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) GetMyUserHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) GetUserHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) InviteUserHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) CreatePasswordResetHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
-}
-func (_m *ServiceInterface) ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
-	_m.Called(w, r)
+	return r0, r1
 }

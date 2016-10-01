@@ -8,8 +8,9 @@ import (
 	"github.com/RichardKnop/example-api/response"
 )
 
-// CreatePasswordResetHandler - requests to reset a password (POST /v1/accounts/passwordreset)
-func (s *Service) CreatePasswordResetHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to reset a password
+// POST /v1/password-resets
+func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated client from the request context
 	_, err := GetAuthenticatedAccount(r)
 	if err != nil {
@@ -46,13 +47,20 @@ func (s *Service) CreatePasswordResetHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Create a new password reset
-	_, err = s.createPasswordReset(user)
+	passwordReset, err := s.createPasswordReset(user)
 	if err != nil {
 		logger.Errorf("Create password reset error: %s", err)
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// 204 no content response
-	response.NoContent(w)
+	// Create password reset response
+	passwordResetResponse, err := NewPasswordResetResponse(passwordReset)
+	if err != nil {
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Write the response
+	response.WriteJSON(w, passwordResetResponse, 201)
 }

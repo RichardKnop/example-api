@@ -5,7 +5,8 @@ import (
 
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/oauth"
-	"github.com/jinzhu/gorm"
+	"github.com/RichardKnop/example-api/routes"
+	"github.com/gorilla/mux"
 )
 
 // ServiceInterface defines exported methods
@@ -13,6 +14,12 @@ type ServiceInterface interface {
 	// Exported methods
 	GetConfig() *config.Config
 	GetOauthService() oauth.ServiceInterface
+	GetRoutes() []routes.Route
+	RegisterRoutes(router *mux.Router, prefix string)
+	GetUserCredentialsFromToken(token string) (*User, error)
+	GetClientCredentialsFromBaseAuth(r *http.Request) (*Account, error)
+	GetClientCredentialsFromToken(token string) (*Account, error)
+	GetMixedCredentialsFromToken(token string) (*Account, *User, error)
 	FindAccountByOauthClientID(oauthClientID uint) (*Account, error)
 	FindAccountByID(accountID uint) (*Account, error)
 	FindAccountByName(name string) (*Account, error)
@@ -22,30 +29,17 @@ type ServiceInterface interface {
 	FindUserByID(userID uint) (*User, error)
 	FindUserByFacebookID(facebookID string) (*User, error)
 	CreateUser(account *Account, userRequest *UserRequest) (*User, error)
-	CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserRequest) (*User, error)
 	UpdateUser(user *User, userRequest *UserRequest) error
+	PaginatedUsersCount() (int, error)
+	FindPaginatedUsers(offset, limit int, sorts map[string]string) ([]*User, error)
 	FindConfirmationByReference(reference string) (*Confirmation, error)
-	ConfirmUser(user *User) error
+	ConfirmUser(confirmation *Confirmation) error
 	FindPasswordResetByReference(reference string) (*PasswordReset, error)
 	ResetPassword(passwordReset *PasswordReset, password string) error
 	GetOrCreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error)
 	CreateSuperuser(account *Account, email, password string) (*User, error)
-	FindInvitationByID(invitationID uint) (*Invitation, error)
 	FindInvitationByReference(reference string) (*Invitation, error)
 	InviteUser(invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error)
-	InviteUserTx(tx *gorm.DB, invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error)
 	ConfirmInvitation(invitation *Invitation, password string) error
-	GetUserCredentials(token string) (*Account, *User, error)
-	GetClientCredentials(r *http.Request) (*Account, *User, error)
-
-	// Needed for the NewRoutes to be able to register handlers
-	CreateUserHandler(w http.ResponseWriter, r *http.Request)
-	GetMyUserHandler(w http.ResponseWriter, r *http.Request)
-	GetUserHandler(w http.ResponseWriter, r *http.Request)
-	UpdateUserHandler(w http.ResponseWriter, r *http.Request)
-	InviteUserHandler(w http.ResponseWriter, r *http.Request)
-	CreatePasswordResetHandler(w http.ResponseWriter, r *http.Request)
-	ConfirmEmailHandler(w http.ResponseWriter, r *http.Request)
-	ConfirmInvitationHandler(w http.ResponseWriter, r *http.Request)
-	ConfirmPasswordResetHandler(w http.ResponseWriter, r *http.Request)
+	GetUserFromQueryString(r *http.Request) (*User, error)
 }

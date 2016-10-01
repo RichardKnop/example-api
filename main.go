@@ -15,10 +15,8 @@ var (
 func init() {
 	// Initialise a CLI app
 	cliApp = cli.NewApp()
-	cliApp.Name = "example-api"
+	cliApp.Name = "Example API CLI"
 	cliApp.Usage = "example-api"
-	cliApp.Author = "Richard Knop"
-	cliApp.Email = "risoknop@gmail.com"
 	cliApp.Version = "0.0.0"
 }
 
@@ -27,35 +25,35 @@ func main() {
 	cliApp.Commands = []cli.Command{
 		{
 			Name:  "migrate",
-			Usage: "run migrations",
+			Usage: "Run database migrations",
 			Action: func(c *cli.Context) error {
 				return commands.Migrate()
 			},
 		},
 		{
 			Name:  "loaddata",
-			Usage: "load data from fixture",
+			Usage: "Load data from fixture into the database",
 			Action: func(c *cli.Context) error {
 				return commands.LoadData(c.Args())
 			},
 		},
 		{
 			Name:  "createaccount",
-			Usage: "create new account",
+			Usage: "Create a new account",
 			Action: func(c *cli.Context) error {
 				return commands.CreateAccount()
 			},
 		},
 		{
 			Name:  "createsuperuser",
-			Usage: "create new superuser",
+			Usage: "Create a new superuser",
 			Action: func(c *cli.Context) error {
 				return commands.CreateSuperuser()
 			},
 		},
 		{
 			Name:  "runserver",
-			Usage: "run web server",
+			Usage: "Run the web server on port 8080",
 			Action: func(c *cli.Context) error {
 				return commands.RunServer()
 			},

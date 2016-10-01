@@ -1,0 +1,11 @@
+Hi John,
+
+We have noticed even though you have created an account, you haven't completed the sign-up process.
+
+Please complete your registration by clicking the link bellow.
+
+https://example.com/continue-onboarding/some-reference
+
+Best,
+
+Example Ltd Team

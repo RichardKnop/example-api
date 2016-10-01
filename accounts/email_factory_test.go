@@ -18,12 +18,18 @@ func TestNewConfirmationEmail(t *testing.T) {
 			AppHost:   "example.com",
 		},
 		AppSpecific: config.AppSpecificConfig{
-			CompanyName:         "Your Company",
-			CompanyNoreplyEmail: "noreply@example.com",
+			CompanyName:                   "Example Ltd",
+			CompanyNoreplyEmail:           "noreply@example.com",
+			ConfirmationURLFormat:         "%s://%s/confirm-email/%s",
+			InvitationURLFormat:           "%s://%s/confirm-invitation/%s",
+			PasswordResetURLFormat:        "%s://%s/reset-password/%s",
+			OnboardingCheckpointURLFormat: "%s://%s/continue-onboarding/%s",
 		},
 	})
 	confirmation := &accounts.Confirmation{
-		Reference: "some-reference",
+		EmailTokenModel: accounts.EmailTokenModel{
+			Reference: "some-reference",
+		},
 		User: &accounts.User{
 			OauthUser: &oauth.User{
 				Username: "john@reese",
@@ -39,7 +45,7 @@ func TestNewConfirmationEmail(t *testing.T) {
 	assert.Equal(t, "john@reese", email.Recipients[0].Address)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
 	assert.Equal(t, "noreply@example.com", email.From.Address)
-	assert.Equal(t, "Your Company", email.From.Name)
+	assert.Equal(t, "Example Ltd", email.From.Name)
 
 	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/confirm_email.txt")
 	assert.NoError(t, err)
@@ -57,12 +63,18 @@ func TestNewPasswordResetEmail(t *testing.T) {
 			AppHost:   "example.com",
 		},
 		AppSpecific: config.AppSpecificConfig{
-			CompanyName:         "Your Company",
-			CompanyNoreplyEmail: "noreply@example.com",
+			CompanyName:                   "Example Ltd",
+			CompanyNoreplyEmail:           "noreply@example.com",
+			ConfirmationURLFormat:         "%s://%s/confirm-email/%s",
+			InvitationURLFormat:           "%s://%s/confirm-invitation/%s",
+			PasswordResetURLFormat:        "%s://%s/reset-password/%s",
+			OnboardingCheckpointURLFormat: "%s://%s/continue-onboarding/%s",
 		},
 	})
 	passwordReset := &accounts.PasswordReset{
-		Reference: "some-reference",
+		EmailTokenModel: accounts.EmailTokenModel{
+			Reference: "some-reference",
+		},
 		User: &accounts.User{
 			OauthUser: &oauth.User{
 				Username: "john@reese",
@@ -78,7 +90,7 @@ func TestNewPasswordResetEmail(t *testing.T) {
 	assert.Equal(t, "john@reese", email.Recipients[0].Address)
 	assert.Equal(t, "John Reese", email.Recipients[0].Name)
 	assert.Equal(t, "noreply@example.com", email.From.Address)
-	assert.Equal(t, "Your Company", email.From.Name)
+	assert.Equal(t, "Example Ltd", email.From.Name)
 
 	expectedPlain, err := ioutil.ReadFile("./accounts/test_templates/password_reset_email.txt")
 	assert.NoError(t, err)
@@ -96,12 +108,18 @@ func TestNewInvitationEmail(t *testing.T) {
 			AppHost:   "example.com",
 		},
 		AppSpecific: config.AppSpecificConfig{
-			CompanyName:         "Your Company",
-			CompanyNoreplyEmail: "noreply@example.com",
+			CompanyName:                   "Example Ltd",
+			CompanyNoreplyEmail:           "noreply@example.com",
+			ConfirmationURLFormat:         "%s://%s/confirm-email/%s",
+			InvitationURLFormat:           "%s://%s/confirm-invitation/%s",
+			PasswordResetURLFormat:        "%s://%s/reset-password/%s",
+			OnboardingCheckpointURLFormat: "%s://%s/continue-onboarding/%s",
 		},
 	})
 	invitation := &accounts.Invitation{
-		Reference: "some-reference",
+		EmailTokenModel: accounts.EmailTokenModel{
+			Reference: "some-reference",
+		},
 		InvitedUser: &accounts.User{
 			OauthUser: &oauth.User{
 				Username: "john@reese",

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/RichardKnop/example-api/accounts/roles"
-	"github.com/RichardKnop/example-api/response"
 	"github.com/gorilla/mux"
+	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/response"
 )
 
 var (
@@ -15,8 +15,9 @@ var (
 	ErrGetUserPermission = errors.New("Need permission to get user")
 )
 
-// GetUserHandler - requests to get a user (GET /v1/accounts/users/{id:[0-9]+})
-func (s *Service) GetUserHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to get a user
+// GET /v1/users/{id:[0-9]+}
+func (s *Service) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {
@@ -57,7 +58,7 @@ func (s *Service) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func checkGetUserPermissions(authenticatedUser, user *User) error {
 	// Superusers can get any users
-	if authenticatedUser.Role.Name == roles.Superuser {
+	if authenticatedUser.OauthUser.RoleID.String == roles.Superuser {
 		return nil
 	}
 

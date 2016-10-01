@@ -1,10 +1,10 @@
 package accounts
 
 import (
+	"github.com/jinzhu/gorm"
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/email"
 	"github.com/RichardKnop/example-api/oauth"
-	"github.com/jinzhu/gorm"
 )
 
 // Service struct keeps config and db objects to avoid passing them around

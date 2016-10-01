@@ -25,9 +25,17 @@ type FacebookConfig struct {
 	AppSecret string
 }
 
-// SendgridConfig stores sengrid configuration options
-type SendgridConfig struct {
-	APIKey string
+// MailgunConfig stores mailgun configuration options
+type MailgunConfig struct {
+	Domain       string
+	APIKey       string
+	PublicAPIKey string
+}
+
+// CurrencyCloudConfig stores currency cloud configuration options
+type CurrencyCloudConfig struct {
+	LoginID string
+	APIKey  string
 }
 
 // WebConfig stores web related config like scheme and host
@@ -40,9 +48,15 @@ type WebConfig struct {
 
 // AppSpecificConfig stores app specific config
 type AppSpecificConfig struct {
-	PasswordResetLifetime int
-	CompanyName           string
-	CompanyNoreplyEmail   string
+	ConfirmationLifetime          int
+	InvitationLifetime            int
+	PasswordResetLifetime         int
+	CompanyName                   string
+	CompanyNoreplyEmail           string
+	ConfirmationURLFormat         string
+	InvitationURLFormat           string
+	PasswordResetURLFormat        string
+	OnboardingCheckpointURLFormat string
 }
 
 // Config stores all configuration options
@@ -50,7 +64,7 @@ type Config struct {
 	Database      DatabaseConfig
 	Oauth         OauthConfig
 	Facebook      FacebookConfig
-	Sendgrid      SendgridConfig
+	Mailgun       MailgunConfig
 	Web           WebConfig
 	AppSpecific   AppSpecificConfig
 	IsDevelopment bool

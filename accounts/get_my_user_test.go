@@ -1,24 +1,23 @@
 package accounts_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 
-	"github.com/RichardKnop/jsonhal"
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestGetMyUserRequiresUserAuthentication() {
 	// Prepare a request
-	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/me", nil)
+	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/me", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
 	// And serve the request
@@ -30,7 +29,7 @@ func (suite *AccountsTestSuite) TestGetMyUserRequiresUserAuthentication() {
 
 func (suite *AccountsTestSuite) TestGetMyUser() {
 	// Prepare a request
-	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/me", nil)
+	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/me", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer test_user_token")
 
@@ -58,12 +57,12 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 	notFound := accounts.UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
-	// Check the response body
+	// Check the response
 	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
-					Href: fmt.Sprintf("/v1/accounts/users/%d", user.ID),
+					Href: fmt.Sprintf("/v1/users/%d", user.ID),
 				},
 			},
 		},
@@ -73,15 +72,8 @@ func (suite *AccountsTestSuite) TestGetMyUser() {
 		LastName:  user.LastName.String,
 		Role:      roles.User,
 		Confirmed: user.Confirmed,
-		CreatedAt: util.FormatTime(user.CreatedAt),
-		UpdatedAt: util.FormatTime(user.UpdatedAt),
+		CreatedAt: util.FormatTime(&user.CreatedAt),
+		UpdatedAt: util.FormatTime(&user.UpdatedAt),
 	}
-	expectedJSON, err := json.Marshal(expected)
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-		)
-	}
+	testutil.TestResponseObject(suite.T(), w, expected, 200)
 }

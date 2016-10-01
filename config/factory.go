@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/coreos/etcd/client"
@@ -14,7 +15,7 @@ import (
 )
 
 var (
-	etcdEndpoint                          = "http://localhost:2379"
+	etcdEndpoints                         = "http://localhost:2379"
 	etcdCertFile, etcdKeyFile, etcdCaFile string
 	etcdConfigPath                        = "/config/example_api.json"
 	configLoaded                          bool
@@ -42,8 +43,10 @@ var Cnf = &Config{
 		AppID:     "facebook_app_id",
 		AppSecret: "facebook_app_secret",
 	},
-	Sendgrid: SendgridConfig{
-		APIKey: "sendgrid_api_key",
+	Mailgun: MailgunConfig{
+		Domain:       "localhost:8000",
+		APIKey:       "mailgun_api_key",
+		PublicAPIKey: "mailgun_public_api_key",
 	},
 	Web: WebConfig{
 		Scheme:    "http",
@@ -52,17 +55,22 @@ var Cnf = &Config{
 		AppHost:   "localhost:8000",
 	},
 	AppSpecific: AppSpecificConfig{
-		PasswordResetLifetime: 604800, // 7 days
-		CompanyName:           "Your Company",
-		CompanyNoreplyEmail:   "noreply@example.com",
+		ConfirmationLifetime:   604800, // 7 days
+		InvitationLifetime:     604800, // 7 days
+		PasswordResetLifetime:  604800, // 7 days
+		CompanyName:            "Example Ltd",
+		CompanyNoreplyEmail:    "noreply@example.com",
+		ConfirmationURLFormat:  "%s://%s/confirm-email/%s",
+		InvitationURLFormat:    "%s://%s/confirm-invitation/%s",
+		PasswordResetURLFormat: "%s://%s/reset-password/%s",
 	},
 	IsDevelopment: true,
 }
 
 func init() {
 	// Overwrite default values with environment variables if they are set
-	if os.Getenv("ETCD_ENDPOINT") != "" {
-		etcdEndpoint = os.Getenv("ETCD_ENDPOINT")
+	if os.Getenv("ETCD_ENDPOINTS") != "" {
+		etcdEndpoints = os.Getenv("ETCD_ENDPOINTS")
 	}
 	if os.Getenv("ETCD_CERT_FILE") != "" {
 		etcdCertFile = os.Getenv("ETCD_CERT_FILE")
@@ -86,7 +94,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 	}
 
 	// Init ETCD client
-	etcdClient, err := newEtcdClient(etcdEndpoint, etcdCertFile, etcdKeyFile, etcdCaFile)
+	etcdClient, err := newEtcdClient(etcdEndpoints, etcdCertFile, etcdKeyFile, etcdCaFile)
 	if err != nil {
 		logger.Fatal(err)
 		os.Exit(1)
@@ -96,7 +104,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 	kapi := client.NewKeysAPI(*etcdClient)
 
 	// If the config must be loaded once successfully
-	if mustLoadOnce {
+	if mustLoadOnce && !configLoaded {
 		// Read from remote config the first time
 		newCnf, err := LoadConfig(kapi)
 		if err != nil {
@@ -161,9 +169,9 @@ func RefreshConfig(newCnf *Config) {
 	*Cnf = *newCnf
 }
 
-func newEtcdClient(theEndpoint, certFile, keyFile, caFile string) (*client.Client, error) {
+func newEtcdClient(theEndpoints, certFile, keyFile, caFile string) (*client.Client, error) {
 	// Log the etcd endpoint for debugging purposes
-	logger.Infof("ETCD Endpoint: %s", etcdEndpoint)
+	logger.Infof("ETCD Endpoints: %s", theEndpoints)
 
 	// Start with the default HTTP transport
 	var transport = client.DefaultTransport
@@ -195,10 +203,9 @@ func newEtcdClient(theEndpoint, certFile, keyFile, caFile string) (*client.Clien
 
 	// ETCD config
 	etcdClientConfig := client.Config{
-		Endpoints: []string{theEndpoint},
-		Transport: transport,
-		// set timeout per request to fail fast when the target endpoint is unavailable
-		HeaderTimeoutPerRequest: time.Second,
+		Endpoints:               strings.Split(theEndpoints, ","),
+		Transport:               transport,
+		HeaderTimeoutPerRequest: 3 * time.Second,
 	}
 
 	// ETCD client

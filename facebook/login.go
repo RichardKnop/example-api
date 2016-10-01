@@ -7,6 +7,7 @@ import (
 
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/tokentypes"
 	"github.com/RichardKnop/example-api/response"
 )
 
@@ -15,8 +16,9 @@ var (
 	ErrAccountMismatch = errors.New("Account mismatch")
 )
 
-// LoginHandler - requests to login with Facebook access token (POST /v1/facebook/login)
-func (s *Service) LoginHandler(w http.ResponseWriter, r *http.Request) {
+// Handlers requests to login with Facebook access token
+// (POST /v1/facebook/login)
+func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
 	authenticatedAccount, err := accounts.GetAuthenticatedAccount(r)
 	if err != nil {
@@ -104,7 +106,7 @@ func (s *Service) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		UserID:       user.ID,
 		AccessToken:  accessToken.Token,
 		ExpiresIn:    s.cnf.Oauth.AccessTokenLifetime,
-		TokenType:    oauth.TokenType,
+		TokenType:    tokentypes.Bearer,
 		Scope:        accessToken.Scope,
 		RefreshToken: refreshToken.Token,
 	}

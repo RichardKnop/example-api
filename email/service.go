@@ -1,9 +1,11 @@
 package email
 
 import (
+	"fmt"
+
 	"github.com/RichardKnop/example-api/config"
-	"github.com/sendgrid/sendgrid-go"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/aymerick/douceur/inliner"
+	"gopkg.in/mailgun/mailgun-go.v1"
 )
 
 // Service struct keeps config object to avoid passing it around
@@ -16,33 +18,47 @@ func NewService(cnf *config.Config) *Service {
 	return &Service{cnf: cnf}
 }
 
-// Send sends email using sendgrid
+// Send sends email message using mailgun
 func (s *Service) Send(m *Message) error {
-	// Construct the mail
-	message := new(mail.SGMailV3)
+	// Format recipients
+	var formattedRecipients []string
 	for _, recipient := range m.Recipients {
-		message.SetFrom(&mail.Email{Address: recipient.Address, Name: recipient.Name})
+		formattedAddress, err := recipient.Format()
+		if err != nil {
+			return err
+		}
+		formattedRecipients = append(formattedRecipients, formattedAddress)
 	}
-	message.Subject = m.Subject
-	p := mail.NewPersonalization()
-	for _, recipient := range m.Recipients {
-		p.AddTos(&mail.Email{Address: recipient.Address, Name: recipient.Name})
-	}
-	message.AddPersonalizations(p)
-	content := mail.NewContent("text/plain", m.Text)
-	message.AddContent(content)
 
-	// And send the mail
-	request := sendgrid.GetRequest(
-		s.cnf.Sendgrid.APIKey,
-		"/v3/mail/send",
-		"https://api.sendgrid.com",
-	)
-	request.Method = "POST"
-	request.Body = mail.GetRequestBody(message)
-	_, err := sendgrid.API(request)
+	// Format the sender
+	formattedSender, err := m.From.Format()
 	if err != nil {
 		return err
 	}
-	return nil
+
+	// Create email message
+	message := mailgun.NewMessage(
+		formattedSender,
+		m.Subject,
+		m.Text,
+		formattedRecipients...,
+	)
+
+	// Optionally set HTML body
+	if m.HTML != "" {
+		htmlWithInlineCSS, err := inliner.Inline(m.HTML)
+		if err != nil {
+			return fmt.Errorf("CSS inliner error: %s", err.Error())
+		}
+		message.SetHtml(htmlWithInlineCSS)
+	}
+
+	// TODO - do we need to return other values than error here?
+	mg := mailgun.NewMailgun(
+		s.cnf.Mailgun.Domain,
+		s.cnf.Mailgun.APIKey,
+		s.cnf.Mailgun.PublicAPIKey,
+	)
+	_, _, err = mg.Send(message)
+	return err
 }

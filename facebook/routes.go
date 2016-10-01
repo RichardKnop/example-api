@@ -7,22 +7,27 @@ import (
 	"github.com/urfave/negroni"
 )
 
-// RegisterRoutes registers route handlers for the accounts service
-func RegisterRoutes(router *mux.Router, service ServiceInterface) {
-	subRouter := router.PathPrefix("/v1/facebook").Subrouter()
-	routes.AddRoutes(newRoutes(service), subRouter)
+const (
+	loginResource = "login"
+	loginPath     = "/" + loginResource
+)
+
+// RegisterRoutes registers route handlers for the facebook service
+func (s *Service) RegisterRoutes(router *mux.Router, prefix string) {
+	subRouter := router.PathPrefix(prefix).Subrouter()
+	routes.AddRoutes(s.GetRoutes(), subRouter)
 }
 
-// newRoutes returns []routes.Route slice for the accounts service
-func newRoutes(service ServiceInterface) []routes.Route {
+// GetRoutes returns []routes.Route slice for the facebook service
+func (s *Service) GetRoutes() []routes.Route {
 	return []routes.Route{
 		routes.Route{
 			Name:        "facebook_login",
 			Method:      "POST",
-			Pattern:     "/login",
-			HandlerFunc: service.LoginHandler,
+			Pattern:     loginPath,
+			HandlerFunc: s.loginHandler,
 			Middlewares: []negroni.Handler{
-				accounts.NewAccountAuthMiddleware(service.GetAccountsService()),
+				accounts.NewAccountAuthMiddleware(s.GetAccountsService()),
 			},
 		},
 	}

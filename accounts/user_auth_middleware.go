@@ -3,9 +3,9 @@ package accounts
 import (
 	"net/http"
 
+	"github.com/gorilla/context"
 	"github.com/RichardKnop/example-api/response"
 	"github.com/RichardKnop/example-api/util"
-	"github.com/gorilla/context"
 )
 
 // NewUserAuthMiddleware creates a new UserAuthMiddleware instance
@@ -28,58 +28,48 @@ func (m *UserAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 		return
 	}
 
-	account, user, err := getCredentialsFromRequest(r, m.service)
-	if err != nil {
-		response.UnauthorizedError(w, err.Error())
-		return
-	}
-
-	if account != nil {
-		context.Set(r, AuthenticatedAccountKey, account)
-	}
-
-	if user != nil {
-		context.Set(r, AuthenticatedUserKey, user)
-	} else {
+	user, err := getUserCredentialsFromRequest(r, m.service)
+	if err != nil || user == nil {
+		// For security reasons, return a generic error message
 		response.UnauthorizedError(w, ErrUserAuthenticationRequired.Error())
 		return
 	}
 
+	context.Set(r, AuthenticatedUserKey, user)
 	next(w, r)
 }
 
-// NewOptionalUserAuthMiddleware creates a new OptionalUserAuthMiddleware instance
-func NewOptionalUserAuthMiddleware(service ServiceInterface) *OptionalUserAuthMiddleware {
-	return &OptionalUserAuthMiddleware{service: service}
+// NewOptionalAuthMiddleware creates a new OptionalAuthMiddleware instance
+func NewOptionalAuthMiddleware(service ServiceInterface) *OptionalAuthMiddleware {
+	return &OptionalAuthMiddleware{service: service}
 }
 
-// OptionalUserAuthMiddleware takes the bearer token from the Authorization header,
-// authenticates the user and sets the user object on the request context. If it
-// cannot find it, it just continues
-type OptionalUserAuthMiddleware struct {
+// OptionalAuthMiddleware takes the bearer token from the Authorization header,
+// authenticates the client and/or user and sets the client and/or user objects
+// on the request context. If it cannot find it, it just continues
+type OptionalAuthMiddleware struct {
 	service ServiceInterface
 }
 
 // ServeHTTP as per the negroni.Handler interface
-func (m *OptionalUserAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+func (m *OptionalAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	// HTTPS redirection
 	err := util.NewSecure(m.service.GetConfig().IsDevelopment).Process(w, r)
 	if err != nil {
 		return
 	}
 
-	account, user, err := getCredentialsFromRequest(r, m.service)
-	if err != nil {
-		response.UnauthorizedError(w, err.Error())
-		return
-	}
-
-	if account != nil {
-		context.Set(r, AuthenticatedAccountKey, account)
-	}
-
-	if user != nil {
+	// Optional user auth
+	user, err := getUserCredentialsFromRequest(r, m.service)
+	if err == nil && user != nil {
 		context.Set(r, AuthenticatedUserKey, user)
+		context.Set(r, AuthenticatedAccountKey, user.Account)
+	}
+
+	// Optional client auth
+	account, err := getClientCredentialsFromRequest(r, m.service)
+	if err == nil && account != nil {
+		context.Set(r, AuthenticatedAccountKey, account)
 	}
 
 	next(w, r)

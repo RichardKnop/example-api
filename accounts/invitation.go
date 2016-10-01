@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RichardKnop/example-api/accounts/roles"
 	"github.com/RichardKnop/example-api/oauth"
-	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/jinzhu/gorm"
 )
 
@@ -16,26 +15,13 @@ var (
 	ErrInvitationNotFound = errors.New("Invitation not found")
 )
 
-// FindInvitationByID looks up an invitation by ID and returns it
-func (s *Service) FindInvitationByID(id uint) (*Invitation, error) {
-	// Fetch from the database
-	invitation := new(Invitation)
-	notFound := InvitationPreload(s.db).First(invitation, id).RecordNotFound()
-
-	// Not found
-	if notFound {
-		return nil, ErrInvitationNotFound
-	}
-
-	return invitation, nil
-}
-
 // FindInvitationByReference looks up an invitation by a reference and returns it
+// only return the object if it's not expired
 func (s *Service) FindInvitationByReference(reference string) (*Invitation, error) {
 	// Fetch the invitation from the database
 	invitation := new(Invitation)
 	notFound := InvitationPreload(s.db).Where("reference = ?", reference).
-		First(invitation).RecordNotFound()
+		Where("expires_at > ?", time.Now().UTC()).First(invitation).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -47,14 +33,69 @@ func (s *Service) FindInvitationByReference(reference string) (*Invitation, erro
 
 // InviteUser invites a new user and sends an invitation email
 func (s *Service) InviteUser(invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error) {
+	// Check if oauth user exists
+	if s.GetOauthService().UserExists(invitationRequest.Email) {
+		return nil, oauth.ErrUsernameTaken
+	}
+
 	// Begin a transaction
 	tx := s.db.Begin()
 
-	invitation, err := s.inviteUserCommon(tx, invitedByUser, invitationRequest)
+	// Create a new oauth user without a password
+	oauthUser, err := s.GetOauthService().CreateUserTx(
+		tx,
+		roles.User,
+		invitationRequest.Email,
+		"", // password
+	)
 	if err != nil {
-		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
+
+	// Create a new user account
+	invitedUser, err := NewUser(
+		invitedByUser.Account,
+		oauthUser,
+		"",    // facebook ID
+		false, // confirmed
+		&UserRequest{
+			FirstName: invitationRequest.FirstName,
+			LastName:  invitationRequest.LastName,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Save the user to the database
+	if err = tx.Create(invitedUser).Error; err != nil {
+		return nil, err
+	}
+
+	// Assign related objects
+	invitedUser.Account = invitedByUser.Account
+	invitedUser.OauthUser = oauthUser
+
+	// Update the meta user ID field
+	err = tx.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: invitedUser.ID}).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a new invitation
+	invitation, err := NewInvitation(invitedUser, invitedByUser, s.cnf.AppSpecific.InvitationLifetime)
+	if err != nil {
+		return nil, err
+	}
+
+	// Save the invitation to the database
+	if err := tx.Create(invitation).Error; err != nil {
+		return nil, err
+	}
+
+	// Assign related objects
+	invitation.InvitedUser = invitedUser
+	invitation.InvitedByUser = invitedByUser
 
 	// Commit the transaction
 	if err := tx.Commit().Error; err != nil {
@@ -62,12 +103,14 @@ func (s *Service) InviteUser(invitedByUser *User, invitationRequest *InvitationR
 		return nil, err
 	}
 
-	return invitation, nil
-}
+	// Send invitation email
+	go func() {
+		if err := s.sendInvitationEmail(invitation); err != nil {
+			logger.Error(invitation)
+		}
+	}()
 
-// InviteUserTx invites a new user and sends an invitation email in a transaction
-func (s *Service) InviteUserTx(tx *gorm.DB, invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error) {
-	return s.inviteUserCommon(tx, invitedByUser, invitationRequest)
+	return invitation, nil
 }
 
 // ConfirmInvitation sets password on the oauth user object and deletes the invitation
@@ -76,7 +119,11 @@ func (s *Service) ConfirmInvitation(invitation *Invitation, password string) err
 	tx := s.db.Begin()
 
 	// Set the new password
-	err := s.oauthService.SetPasswordTx(tx, invitation.InvitedUser.OauthUser, password)
+	err := s.oauthService.SetPasswordTx(
+		tx,
+		invitation.InvitedUser.OauthUser,
+		password,
+	)
 	if err != nil {
 		tx.Rollback() // rollback the transaction
 		return err
@@ -97,77 +144,6 @@ func (s *Service) ConfirmInvitation(invitation *Invitation, password string) err
 	return nil
 }
 
-func (s *Service) inviteUserCommon(db *gorm.DB, invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error) {
-	// Check if oauth user exists
-	if s.GetOauthService().UserExists(invitationRequest.Email) {
-		return nil, oauth.ErrUsernameTaken
-	}
-
-	// Fetch the user from the database
-	role, err := s.FindRoleByID(roles.User)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a new oauth user without a password
-	oauthUser, err := s.GetOauthService().CreateUserTx(
-		db,
-		invitationRequest.Email,
-		"", // password
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a new user account
-	invitedUser := NewUser(
-		invitedByUser.Account,
-		oauthUser,
-		role,
-		"",    // facebook ID
-		false, // confirmed
-		&UserRequest{
-			FirstName: invitationRequest.FirstName,
-			LastName:  invitationRequest.LastName,
-		},
-	)
-
-	// Save the user to the database
-	if err = db.Create(invitedUser).Error; err != nil {
-		return nil, err
-	}
-
-	// Assign related objects
-	invitedUser.Account = invitedByUser.Account
-	invitedUser.OauthUser = oauthUser
-	invitedUser.Role = role
-
-	// Update the meta user ID field
-	err = db.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: invitedUser.ID}).Error
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a new invitation
-	invitation := NewInvitation(invitedUser, invitedByUser)
-	if err := db.Create(invitation).Error; err != nil {
-		return nil, err
-	}
-
-	// Assign related objects
-	invitation.InvitedUser = invitedUser
-	invitation.InvitedByUser = invitedByUser
-
-	// Send invitation email
-	go func() {
-		if err := s.sendInvitationEmail(invitation); err != nil {
-			logger.Error(invitation)
-		}
-	}()
-
-	return invitation, nil
-}
-
 func (s *Service) sendInvitationEmail(invitation *Invitation) error {
 	invitationEmail, err := s.emailFactory.NewInvitationEmail(invitation)
 	if err != nil {
@@ -180,10 +156,12 @@ func (s *Service) sendInvitationEmail(invitation *Invitation) error {
 	}
 
 	// If the email was sent successfully, update the email_sent flag
-	now := time.Now()
+	now := gorm.NowFunc()
 	return s.db.Model(invitation).UpdateColumns(Invitation{
-		EmailSent:   true,
-		EmailSentAt: util.TimeOrNull(&now),
-		Model:       gorm.Model{UpdatedAt: time.Now()},
+		EmailTokenModel: EmailTokenModel{
+			EmailSent:   true,
+			EmailSentAt: &now,
+			Model:       gorm.Model{UpdatedAt: time.Now().UTC()},
+		},
 	}).Error
 }

@@ -6,8 +6,9 @@ import (
 	"github.com/RichardKnop/example-api/response"
 )
 
-// GetMyUserHandler - requests to get own user data (GET /v1/accounts/me)
-func (s *Service) GetMyUserHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to get own user data
+// GET /v1/me
+func (s *Service) getMyUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated user from the request context
 	authenticatedUser, err := GetAuthenticatedUser(r)
 	if err != nil {

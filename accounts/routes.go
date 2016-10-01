@@ -6,94 +6,118 @@ import (
 	"github.com/urfave/negroni"
 )
 
+const (
+	usersResource                 = "users"
+	usersPath                     = "/" + usersResource
+	meResource                    = "me"
+	mePath                        = "/" + meResource
+	invitationsResource           = "invitations"
+	invitationsPath               = "/" + invitationsResource
+	confirmationsResource         = "confirmations"
+	confirmationsPath             = "/" + confirmationsResource
+	passwordResetsResource        = "password-resets"
+	passwordResetsPath            = "/" + passwordResetsResource
+	onboardingCheckpointsResource = "onboarding-checkpoints"
+	onboardingCheckpointsPath     = "/" + onboardingCheckpointsResource
+)
+
 // RegisterRoutes registers route handlers for the accounts service
-func RegisterRoutes(router *mux.Router, service ServiceInterface) {
-	subRouter := router.PathPrefix("/v1/accounts").Subrouter()
-	routes.AddRoutes(newRoutes(service), subRouter)
+func (s *Service) RegisterRoutes(router *mux.Router, prefix string) {
+	subRouter := router.PathPrefix(prefix).Subrouter()
+	routes.AddRoutes(s.GetRoutes(), subRouter)
 }
 
-// newRoutes returns []routes.Route slice for the accounts service
-func newRoutes(service ServiceInterface) []routes.Route {
+// GetRoutes returns []routes.Route slice for the accounts service
+func (s *Service) GetRoutes() []routes.Route {
 	return []routes.Route{
 		routes.Route{
 			Name:        "create_user",
 			Method:      "POST",
-			Pattern:     "/users",
-			HandlerFunc: service.CreateUserHandler,
+			Pattern:     usersPath,
+			HandlerFunc: s.createUserHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(service),
+				NewAccountAuthMiddleware(s),
 			},
 		},
 		routes.Route{
 			Name:        "get_my_user",
 			Method:      "GET",
-			Pattern:     "/me",
-			HandlerFunc: service.GetMyUserHandler,
+			Pattern:     mePath,
+			HandlerFunc: s.getMyUserHandler,
 			Middlewares: []negroni.Handler{
-				NewUserAuthMiddleware(service),
+				NewUserAuthMiddleware(s),
 			},
 		},
 		routes.Route{
 			Name:        "get_user",
 			Method:      "GET",
-			Pattern:     "/users/{id:[0-9]+}",
-			HandlerFunc: service.GetUserHandler,
+			Pattern:     usersPath + "/{id:[0-9]+}",
+			HandlerFunc: s.getUserHandler,
 			Middlewares: []negroni.Handler{
-				NewUserAuthMiddleware(service),
+				NewUserAuthMiddleware(s),
 			},
 		},
 		routes.Route{
 			Name:        "update_user",
 			Method:      "PUT",
-			Pattern:     "/users/{id:[0-9]+}",
-			HandlerFunc: service.UpdateUserHandler,
+			Pattern:     usersPath + "/{id:[0-9]+}",
+			HandlerFunc: s.updateUserHandler,
 			Middlewares: []negroni.Handler{
-				NewUserAuthMiddleware(service),
+				NewUserAuthMiddleware(s),
+			},
+		},
+		routes.Route{
+			Name:        "list_users",
+			Method:      "GET",
+			Pattern:     usersPath,
+			HandlerFunc: s.listUsersHandler,
+			Middlewares: []negroni.Handler{
+				NewUserAuthMiddleware(s),
 			},
 		},
 		routes.Route{
 			Name:        "invite_user",
 			Method:      "POST",
-			Pattern:     "/invitations",
-			HandlerFunc: service.InviteUserHandler,
+			Pattern:     invitationsPath,
+			HandlerFunc: s.inviteUserHandler,
 			Middlewares: []negroni.Handler{
-				NewUserAuthMiddleware(service),
-			},
-		},
-		routes.Route{
-			Name:        "create_password_reset",
-			Method:      "POST",
-			Pattern:     "/password-reset",
-			HandlerFunc: service.CreatePasswordResetHandler,
-			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(service),
+				NewUserAuthMiddleware(s),
 			},
 		},
 		routes.Route{
 			Name:        "confirm_email",
 			Method:      "GET",
-			Pattern:     "/confirmations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
-			HandlerFunc: service.ConfirmEmailHandler,
+			Pattern:     confirmationsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
+			HandlerFunc: s.confirmEmailHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(service),
+				NewAccountAuthMiddleware(s),
 			},
 		},
 		routes.Route{
 			Name:        "confirm_invitation",
 			Method:      "POST",
-			Pattern:     "/invitations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
-			HandlerFunc: service.ConfirmInvitationHandler,
+			Pattern:     invitationsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
+			HandlerFunc: s.confirmInvitationHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(service),
+				NewAccountAuthMiddleware(s),
+			},
+		},
+		routes.Route{
+			Name:        "create_password_reset",
+			Method:      "POST",
+			Pattern:     passwordResetsPath,
+			HandlerFunc: s.createPasswordResetHandler,
+			Middlewares: []negroni.Handler{
+				NewAccountAuthMiddleware(s),
 			},
 		},
 		routes.Route{
 			Name:        "confirm_password_reset",
 			Method:      "POST",
-			Pattern:     "/password-resets/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
-			HandlerFunc: service.ConfirmPasswordResetHandler,
+			Pattern:     passwordResetsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
+			HandlerFunc: s.confirmPasswordResetHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(service),
+				NewAccountAuthMiddleware(s),
 			},
 		},
 	}

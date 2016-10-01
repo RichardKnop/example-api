@@ -57,17 +57,11 @@ func RunServer() error {
 	// Create a router instance
 	router := mux.NewRouter()
 
-	// Add routes for the health service (healthcheck endpoint)
-	health.RegisterRoutes(router, healthService)
-
-	// Add routes for the oauth service (tokens endpoint)
-	oauth.RegisterRoutes(router, oauthService)
-
-	// Register routes for the accounts service
-	accounts.RegisterRoutes(router, accountsService)
-
-	// Register routes for the facebook service
-	facebook.RegisterRoutes(router, facebookService)
+	// Register routes
+	healthService.RegisterRoutes(router, "/v1")
+	oauthService.RegisterRoutes(router, "/v1/oauth")
+	accountsService.RegisterRoutes(router, "/v1")
+	facebookService.RegisterRoutes(router, "/v1/facebook")
 
 	// Set the router
 	app.UseHandler(router)

@@ -4,8 +4,9 @@ import (
 	"testing"
 
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/accounts/roles"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/pagination"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/stretchr/testify/assert"
 )
@@ -46,7 +47,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
-		assert.Equal(suite.T(), roles.User, user.Role.ID)
+		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
 }
 
@@ -77,7 +78,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
-		assert.Equal(suite.T(), roles.User, user.Role.ID)
+		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
 
 	// Test case insensitiviness
@@ -90,7 +91,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
-		assert.Equal(suite.T(), roles.User, user.Role.ID)
+		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
 }
 
@@ -121,7 +122,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
-		assert.Equal(suite.T(), roles.User, user.Role.ID)
+		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
 }
 
@@ -163,7 +164,7 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
-		assert.Equal(suite.T(), roles.User, user.Role.ID)
+		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
 }
 
@@ -301,9 +302,75 @@ func (suite *AccountsTestSuite) TestCreateSuperuser() {
 	if assert.NotNil(suite.T(), user) {
 		assert.Equal(suite.T(), user.ID, user.OauthUser.MetaUserID)
 		assert.Equal(suite.T(), "test@newsuperuser", user.OauthUser.Username)
-		assert.False(suite.T(), user.FacebookID.Valid)
 		assert.False(suite.T(), user.FirstName.Valid)
 		assert.False(suite.T(), user.LastName.Valid)
 		assert.True(suite.T(), user.Confirmed)
+	}
+}
+
+func (suite *AccountsTestSuite) TestPaginatedUsersCount() {
+	var (
+		count int
+		err   error
+	)
+
+	count, err = suite.service.PaginatedUsersCount()
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), 3, count)
+	}
+}
+
+func (suite *AccountsTestSuite) TestFindPaginatedUsers() {
+	var (
+		users []*accounts.User
+		err   error
+	)
+
+	// This should return all users
+	users, err = suite.service.FindPaginatedUsers(
+		0,                   // offset
+		25,                  // limit
+		map[string]string{}, // sorts
+	)
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), 3, len(users))
+		assert.Equal(suite.T(), suite.users[0].ID, users[0].ID)
+		assert.Equal(suite.T(), suite.users[1].ID, users[1].ID)
+		assert.Equal(suite.T(), suite.users[2].ID, users[2].ID)
+	}
+
+	// This should return all users ordered by ID desc
+	users, err = suite.service.FindPaginatedUsers(
+		0,  // offset
+		25, // limit
+		map[string]string{"id": pagination.Descending}, // sorts
+	)
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), 3, len(users))
+		assert.Equal(suite.T(), suite.users[2].ID, users[0].ID)
+		assert.Equal(suite.T(), suite.users[1].ID, users[1].ID)
+		assert.Equal(suite.T(), suite.users[0].ID, users[2].ID)
+	}
+
+	// Test offset
+	users, err = suite.service.FindPaginatedUsers(
+		2,                   // offset
+		25,                  // limit
+		map[string]string{}, // sorts
+	)
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), 1, len(users))
+		assert.Equal(suite.T(), suite.users[2].ID, users[0].ID)
+	}
+
+	// Test limit
+	users, err = suite.service.FindPaginatedUsers(
+		1,                   // offset
+		1,                   // limit
+		map[string]string{}, // sorts
+	)
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), 1, len(users))
+		assert.Equal(suite.T(), suite.users[1].ID, users[0].ID)
 	}
 }

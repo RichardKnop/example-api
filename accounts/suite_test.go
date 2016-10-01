@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/accounts/roles"
 	"github.com/RichardKnop/example-api/config"
-	"github.com/RichardKnop/example-api/database"
 	"github.com/RichardKnop/example-api/email"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/test-util"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/mock"
@@ -23,22 +23,22 @@ import (
 var (
 	testDbUser = "example_api"
 	testDbName = "example_api_accounts_test"
+
+	testFixtures = []string{
+		"./oauth/fixtures/scopes.yml",
+		"./oauth/fixtures/roles.yml",
+		"./oauth/fixtures/test_clients.yml",
+		"./oauth/fixtures/test_users.yml",
+		"./oauth/fixtures/test_access_tokens.yml",
+		"./accounts/fixtures/test_accounts.yml",
+		"./accounts/fixtures/test_users.yml",
+	}
+
+	testMigrations = []func(*gorm.DB) error{
+		oauth.MigrateAll,
+		accounts.MigrateAll,
+	}
 )
-
-var testFixtures = []string{
-	"./oauth/fixtures/test_clients.yml",
-	"./oauth/fixtures/test_users.yml",
-	"./oauth/fixtures/test_access_tokens.yml",
-	"./accounts/fixtures/roles.yml",
-	"./accounts/fixtures/test_accounts.yml",
-	"./accounts/fixtures/test_users.yml",
-}
-
-// db migrations needed for tests
-var testMigrations = []func(*gorm.DB) error{
-	oauth.MigrateAll,
-	accounts.MigrateAll,
-}
 
 func init() {
 	if err := os.Chdir("../"); err != nil {
@@ -49,27 +49,24 @@ func init() {
 // AccountsTestSuite needs to be exported so the tests run
 type AccountsTestSuite struct {
 	suite.Suite
-	cnf           *config.Config
-	db            *gorm.DB
-	emailService  *emailMocks.ServiceInterface
-	emailFactory  *accountsMocks.EmailFactoryInterface
-	service       *accounts.Service
-	accounts      []*accounts.Account
-	users         []*accounts.User
-	superuserRole *accounts.Role
-	userRole      *accounts.Role
-	router        *mux.Router
+	cnf          *config.Config
+	db           *gorm.DB
+	emailService *emailMocks.ServiceInterface
+	emailFactory *accountsMocks.EmailFactoryInterface
+	service      *accounts.Service
+	accounts     []*accounts.Account
+	users        []*accounts.User
+	router       *mux.Router
 }
 
 // The SetupSuite method will be run by testify once, at the very
 // start of the testing suite, before any tests are run.
 func (suite *AccountsTestSuite) SetupSuite() {
-
 	// Initialise the config
 	suite.cnf = config.NewConfig(false, false)
 
 	// Create the test database
-	db, err := database.CreateTestDatabasePostgres(
+	db, err := testutil.CreateTestDatabasePostgres(
 		testDbUser,
 		testDbName,
 		testMigrations,
@@ -94,18 +91,6 @@ func (suite *AccountsTestSuite) SetupSuite() {
 		log.Fatal(err)
 	}
 
-	// Fetch test roles
-	suite.superuserRole = new(accounts.Role)
-	err = suite.db.Where("id = ?", roles.Superuser).First(&suite.superuserRole).Error
-	if err != nil {
-		log.Fatal(err)
-	}
-	suite.userRole = new(accounts.Role)
-	err = suite.db.Where("id = ?", roles.User).First(&suite.userRole).Error
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Initialise mocks
 	suite.emailService = new(emailMocks.ServiceInterface)
 	suite.emailFactory = new(accountsMocks.EmailFactoryInterface)
@@ -121,7 +106,7 @@ func (suite *AccountsTestSuite) SetupSuite() {
 
 	// Register routes
 	suite.router = mux.NewRouter()
-	accounts.RegisterRoutes(suite.router, suite.service)
+	suite.service.RegisterRoutes(suite.router, "/v1")
 }
 
 // The TearDownSuite method will be run by testify once, at the very
@@ -135,19 +120,13 @@ func (suite *AccountsTestSuite) SetupTest() {
 	suite.db.Unscoped().Delete(new(accounts.Confirmation))
 	suite.db.Unscoped().Delete(new(accounts.Invitation))
 	suite.db.Unscoped().Delete(new(accounts.PasswordReset))
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(oauth.AccessToken))
-	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
-
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(accounts.User))
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(accounts.Account))
-
-	// Service.CreateUser also creates a new oauth.User instance
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(oauth.AccessToken))
+	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.User))
-
-	// Service.CreateAccount also creates a new oauth.Client instance
 	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.Client))
 
-	// Reset mocks
 	suite.resetMocks()
 }
 
@@ -181,30 +160,24 @@ func (suite *AccountsTestSuite) assertMockExpectations() {
 // Mock sending confirmation email
 func (suite *AccountsTestSuite) mockConfirmationEmail() {
 	messageMock := new(email.Message)
-	suite.emailFactory.On(
-		"NewConfirmationEmail",
-		mock.AnythingOfType("*accounts.Confirmation"),
-	).Return(messageMock, nil)
+	suite.emailFactory.On("NewConfirmationEmail", mock.AnythingOfType("*accounts.Confirmation")).
+		Return(messageMock, nil)
 	suite.emailService.On("Send", messageMock).Return(nil)
 }
 
 // Mock sending invitation email
 func (suite *AccountsTestSuite) mockInvitationEmail() {
 	messageMock := new(email.Message)
-	suite.emailFactory.On(
-		"NewInvitationEmail",
-		mock.AnythingOfType("*accounts.Invitation"),
-	).Return(messageMock, nil)
+	suite.emailFactory.On("NewInvitationEmail", mock.AnythingOfType("*accounts.Invitation")).
+		Return(messageMock, nil)
 	suite.emailService.On("Send", messageMock).Return(nil)
 }
 
 // Mock sending password reset email
 func (suite *AccountsTestSuite) mockPasswordResetEmail() {
 	messageMock := new(email.Message)
-	suite.emailFactory.On(
-		"NewPasswordResetEmail",
-		mock.AnythingOfType("*accounts.PasswordReset"),
-	).Return(messageMock, nil)
+	suite.emailFactory.On("NewPasswordResetEmail", mock.AnythingOfType("*accounts.PasswordReset")).
+		Return(messageMock, nil)
 	suite.emailService.On("Send", messageMock).Return(nil)
 }
 
@@ -217,26 +190,31 @@ func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastN
 	)
 
 	// Insert a test user
-	testOauthUser, err = suite.service.GetOauthService().CreateUser(email, password)
+	testOauthUser, err = suite.service.GetOauthService().CreateUser(
+		roles.User,
+		email,
+		password,
+	)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	testUser = accounts.NewUser(
+	testUser, err = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		suite.userRole,
-		"",    // facebook ID
+		"",    //facebook ID
 		false, // confirmed
 		&accounts.UserRequest{
 			FirstName: firstName,
 			LastName:  lastName,
 		},
 	)
+	if err != nil {
+		return nil, nil, err
+	}
 	err = suite.db.Create(testUser).Error
 	testUser.Account = suite.accounts[0]
 	testUser.OauthUser = testOauthUser
-	testUser.Role = suite.userRole
 	if err != nil {
 		return nil, nil, err
 	}

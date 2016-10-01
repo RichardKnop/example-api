@@ -10,8 +10,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// ConfirmInvitationHandler - requests to complete an invitation of a user by setting password
-func (s *Service) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
+// Handles requests to complete an invitation of a user by setting password
+// POST /v1/invitations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}
+func (s *Service) confirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated account from the request context
 	_, err := GetAuthenticatedAccount(r)
 	if err != nil {
@@ -44,7 +45,7 @@ func (s *Service) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	reference := vars["reference"]
 
-	// Fetch the invitation we want to get
+	// Fetch the invitation we want to work with (by reference from email link)
 	invitation, err := s.FindInvitationByReference(reference)
 	if err != nil {
 		response.Error(w, err.Error(), http.StatusNotFound)
@@ -52,7 +53,7 @@ func (s *Service) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Confirm the invitation
-	if err := s.ConfirmInvitation(
+	if err = s.ConfirmInvitation(
 		invitation,
 		confirmInvitationRequest.Password,
 	); err != nil {
@@ -60,6 +61,13 @@ func (s *Service) ConfirmInvitationHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// 204 no content response
-	response.NoContent(w)
+	// Create invitation response
+	invitationResponse, err := NewInvitationResponse(invitation)
+	if err != nil {
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Write the response
+	response.WriteJSON(w, invitationResponse, 200)
 }

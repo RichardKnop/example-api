@@ -1,24 +1,22 @@
 package accounts_test
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 
-	"github.com/RichardKnop/jsonhal"
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/accounts/roles"
+	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestGetUserRequiresUserAuthentication() {
 	// Prepare a request
-	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/accounts/users/12345", nil)
+	r, err := http.NewRequest("GET", "http://1.2.3.4/v1/users/12345", nil)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 
 	// And serve the request
@@ -29,52 +27,23 @@ func (suite *AccountsTestSuite) TestGetUserRequiresUserAuthentication() {
 }
 
 func (suite *AccountsTestSuite) TestGetUserFailsWithoutPermission() {
-	// Prepare a request
-	r, err := http.NewRequest(
-		"GET",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", suite.users[2].ID),
-		nil,
+	testutil.TestGetErrorExpectedResponse(
+		suite.T(),
+		suite.router,
+		fmt.Sprintf("http://1.2.3.4/v1/users/%d", suite.users[2].ID),
+		"get_user",
+		"test_user_token",
+		accounts.ErrGetUserPermission.Error(),
+		http.StatusForbidden,
+		suite.assertMockExpectations,
 	)
-	assert.NoError(suite.T(), err, "Request setup should not get an error")
-	r.Header.Set("Authorization", "Bearer test_user_token")
-
-	// Check the routing
-	match := new(mux.RouteMatch)
-	suite.router.Match(r, match)
-	if assert.NotNil(suite.T(), match.Route) {
-		assert.Equal(suite.T(), "get_user", match.Route.GetName())
-	}
-
-	// And serve the request
-	w := httptest.NewRecorder()
-	suite.router.ServeHTTP(w, r)
-
-	// Check that the mock object expectations were met
-	suite.assertMockExpectations()
-
-	// Check the status code
-	if !assert.Equal(suite.T(), 403, w.Code) {
-		log.Print(w.Body.String())
-	}
-
-	// Check the response body
-	expectedJSON, err := json.Marshal(
-		map[string]string{"error": accounts.ErrGetUserPermission.Error()})
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"),
-			"Body should contain JSON detailing the error",
-		)
-	}
 }
 
 func (suite *AccountsTestSuite) TestGetUser() {
 	// Prepare a request
 	r, err := http.NewRequest(
 		"GET",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/users/%d", suite.users[1].ID),
+		fmt.Sprintf("http://1.2.3.4/v1/users/%d", suite.users[1].ID),
 		nil,
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -94,22 +63,17 @@ func (suite *AccountsTestSuite) TestGetUser() {
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
 
-	// Check the status code
-	if !assert.Equal(suite.T(), 200, w.Code) {
-		log.Print(w.Body.String())
-	}
-
 	// Fetch the user
 	user := new(accounts.User)
 	notFound := accounts.UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
-	// Check the response body
+	// Check the response
 	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
 				"self": &jsonhal.Link{
-					Href: fmt.Sprintf("/v1/accounts/users/%d", user.ID),
+					Href: fmt.Sprintf("/v1/users/%d", user.ID),
 				},
 			},
 		},
@@ -119,15 +83,8 @@ func (suite *AccountsTestSuite) TestGetUser() {
 		LastName:  user.LastName.String,
 		Role:      roles.User,
 		Confirmed: user.Confirmed,
-		CreatedAt: util.FormatTime(user.CreatedAt),
-		UpdatedAt: util.FormatTime(user.UpdatedAt),
+		CreatedAt: util.FormatTime(&user.CreatedAt),
+		UpdatedAt: util.FormatTime(&user.UpdatedAt),
 	}
-	expectedJSON, err := json.Marshal(expected)
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-		)
-	}
+	testutil.TestResponseObject(suite.T(), w, expected, 200)
 }

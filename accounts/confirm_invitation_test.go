@@ -5,15 +5,16 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/roles"
 	pass "github.com/RichardKnop/example-api/password"
+	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/uuid"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +23,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitationFailsWithoutAccountAuthenti
 	bogusUUID := uuid.New()
 	r, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/invitations/%s", bogusUUID),
+		fmt.Sprintf("http://1.2.3.4/v1/invitations/%s", bogusUUID),
 		nil,
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -42,7 +43,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitationReferenceNotFound() {
 	})
 	r, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/invitations/%s", bogusUUID),
+		fmt.Sprintf("http://1.2.3.4/v1/invitations/%s", bogusUUID),
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -58,22 +59,8 @@ func (suite *AccountsTestSuite) TestConfirmInvitationReferenceNotFound() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
-	// Check the status code
-	if !assert.Equal(suite.T(), 404, w.Code) {
-		log.Print(w.Body.String())
-	}
-
-	// Check the response body
-	expectedJSON, err := json.Marshal(
-		map[string]string{"error": accounts.ErrInvitationNotFound.Error()})
-	if assert.NoError(suite.T(), err, "JSON marshalling failed") {
-		assert.Equal(
-			suite.T(),
-			string(expectedJSON),
-			strings.TrimRight(w.Body.String(), "\n"),
-			"Body should contain JSON detailing the error",
-		)
-	}
+	// Check the response
+	testutil.TestResponseForError(suite.T(), w, accounts.ErrInvitationNotFound.Error(), 404)
 }
 
 func (suite *AccountsTestSuite) TestConfirmInvitation() {
@@ -86,29 +73,34 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 
 	// Insert a test user
 	testOauthUser, err = suite.service.GetOauthService().CreateUser(
+		roles.User,
 		"harold@finch",
 		"", // blank password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser = accounts.NewUser(
+	testUser, err = accounts.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		suite.userRole,
-		"",    // facebook ID
+		"",    //facebook ID
 		false, // confirmed
 		&accounts.UserRequest{
 			FirstName: "Harold",
 			LastName:  "Finch",
 		},
 	)
+	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
 	testUser.Account = suite.accounts[0]
 	testUser.OauthUser = testOauthUser
-	testUser.Role = suite.userRole
 
 	// Insert a test invitation
-	testInvitation = accounts.NewInvitation(testUser, suite.users[0])
+	testInvitation, err = accounts.NewInvitation(
+		testUser,
+		suite.users[0],
+		suite.cnf.AppSpecific.InvitationLifetime,
+	)
+	assert.NoError(suite.T(), err, "Failed to create a new invitation object")
 	err = suite.db.Create(testInvitation).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test invitation")
 	testInvitation.InvitedUser = testUser
@@ -121,7 +113,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	assert.NoError(suite.T(), err, "JSON marshalling failed")
 	r, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http://1.2.3.4/v1/accounts/invitations/%s", testInvitation.Reference),
+		fmt.Sprintf("http://1.2.3.4/v1/invitations/%s", testInvitation.Reference),
 		bytes.NewBuffer(payload),
 	)
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
@@ -133,14 +125,25 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 		),
 	)
 
+	// Check the routing
+	match := new(mux.RouteMatch)
+	suite.router.Match(r, match)
+	if assert.NotNil(suite.T(), match.Route) {
+		assert.Equal(suite.T(), "confirm_invitation", match.Route.GetName())
+	}
+
+	// Count before
+	var countBefore int
+	suite.db.Model(new(accounts.Invitation)).Count(&countBefore)
+
 	// And serve the request
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
 
-	// Check the status code
-	if !assert.Equal(suite.T(), 204, w.Code) {
-		log.Print(w.Body.String())
-	}
+	// Count after
+	var countAfter int
+	suite.db.Model(new(accounts.Invitation)).Count(&countAfter)
+	assert.Equal(suite.T(), countBefore-1, countAfter)
 
 	// Fetch the updated user
 	user := new(accounts.User)
@@ -153,10 +156,8 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	// And correct data was saved
 	assert.Nil(suite.T(), pass.VerifyPassword(user.OauthUser.Password.String, "test_password"))
 
-	// Check the response body
-	assert.Equal(
-		suite.T(),
-		"", // empty string
-		strings.TrimRight(w.Body.String(), "\n"), // trim the trailing \n
-	)
+	// Check the response
+	expected, err := accounts.NewInvitationResponse(testInvitation)
+	assert.NoError(suite.T(), err, "Failed to create expected response object")
+	testutil.TestResponseObject(suite.T(), w, expected, 200)
 }

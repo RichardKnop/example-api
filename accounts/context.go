@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gorilla/context"
@@ -14,13 +13,6 @@ const (
 	AuthenticatedAccountKey contextKey = 0
 	// AuthenticatedUserKey ...
 	AuthenticatedUserKey contextKey = 1
-)
-
-var (
-	// ErrAccountAuthenticationRequired ...
-	ErrAccountAuthenticationRequired = errors.New("Account authentication required")
-	// ErrUserAuthenticationRequired ...
-	ErrUserAuthenticationRequired = errors.New("User authentication required")
 )
 
 // GetAuthenticatedAccount returns *Account from the request context

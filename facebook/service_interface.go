@@ -1,16 +1,15 @@
 package facebook
 
 import (
-	"net/http"
-
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/routes"
+	"github.com/gorilla/mux"
 )
 
 // ServiceInterface defines exported methods
 type ServiceInterface interface {
 	// Exported methods
 	GetAccountsService() accounts.ServiceInterface
-
-	// Needed for the NewRoutes to be able to register handlers
-	LoginHandler(w http.ResponseWriter, r *http.Request)
+	GetRoutes() []routes.Route
+	RegisterRoutes(router *mux.Router, prefix string)
 }

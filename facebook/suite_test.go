@@ -25,9 +25,9 @@ var (
 
 var testFixtures = []string{
 	"../oauth/fixtures/scopes.yml",
+	"../oauth/fixtures/roles.yml",
 	"../oauth/fixtures/test_clients.yml",
 	"../oauth/fixtures/test_users.yml",
-	"../accounts/fixtures/roles.yml",
 	"../accounts/fixtures/test_accounts.yml",
 	"../accounts/fixtures/test_users.yml",
 }
@@ -101,7 +101,7 @@ func (suite *FacebookTestSuite) SetupSuite() {
 
 	// Register routes
 	suite.router = mux.NewRouter()
-	facebook.RegisterRoutes(suite.router, suite.service)
+	suite.service.RegisterRoutes(suite.router, "/v1/facebook")
 }
 
 // The TearDownSuite method will be run by testify once, at the very

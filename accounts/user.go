@@ -3,10 +3,11 @@ package accounts
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/RichardKnop/example-api/accounts/roles"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/jinzhu/gorm"
 )
@@ -88,9 +89,9 @@ func (s *Service) FindUserByFacebookID(facebookID string) (*User, error) {
 }
 
 // CreateUser creates a new oauth user and a new account user
-func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User, error) {
+func (s *Service) CreateUser(account *Account, data *UserRequest) (*User, error) {
 	// Superusers can only be created manually
-	if userRequest.Role == roles.Superuser {
+	if data.Role == roles.Superuser {
 		return nil, ErrSuperuserOnlyManually
 	}
 
@@ -100,7 +101,7 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 	user, err := s.createUserCommon(
 		tx,
 		account,
-		userRequest,
+		data,
 		"",    // facebook ID
 		false, // confirmed
 	)
@@ -110,7 +111,12 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 	}
 
 	// Create a new confirmation
-	confirmation := NewConfirmation(user)
+	confirmation, err := NewConfirmation(user, s.cnf.AppSpecific.ConfirmationLifetime)
+	if err != nil {
+		return nil, err
+	}
+
+	// Save the confirmation to the database
 	if err := tx.Create(confirmation).Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
@@ -135,40 +141,24 @@ func (s *Service) CreateUser(account *Account, userRequest *UserRequest) (*User,
 	return user, nil
 }
 
-// CreateUserTx creates a new oauth user and a new account user in a transaction
-func (s *Service) CreateUserTx(tx *gorm.DB, account *Account, userRequest *UserRequest) (*User, error) {
-	// Superusers can only be created manually
-	if userRequest.Role == roles.Superuser {
-		return nil, ErrSuperuserOnlyManually
-	}
-
-	return s.createUserCommon(tx, account, userRequest, "", false)
-}
-
 // UpdateUser updates an existing user
-func (s *Service) UpdateUser(user *User, userRequest *UserRequest) error {
+func (s *Service) UpdateUser(user *User, data *UserRequest) error {
 	// Is this a request to change user password?
-	if userRequest.NewPassword != "" {
+	if data.NewPassword != "" {
 		// Verify the user submitted current password
-		_, err := s.oauthService.AuthUser(
-			user.OauthUser.Username,
-			userRequest.Password,
-		)
+		_, err := s.oauthService.AuthUser(user.OauthUser.Username, data.Password)
 		if err != nil {
 			return err
 		}
 
 		// Set the new password
-		return s.oauthService.SetPassword(
-			user.OauthUser,
-			userRequest.NewPassword,
-		)
+		return s.oauthService.SetPassword(user.OauthUser, data.NewPassword)
 	}
 
 	// Update user metadata
 	return s.db.Model(user).UpdateColumns(map[string]interface{}{
-		"first_name": util.StringOrNull(userRequest.FirstName),
-		"last_name":  util.StringOrNull(userRequest.LastName),
+		"first_name": util.StringOrNull(data.FirstName),
+		"last_name":  util.StringOrNull(data.LastName),
 		"updated_at": time.Now(),
 	}).Error
 }
@@ -267,7 +257,7 @@ func (s *Service) CreateSuperuser(account *Account, email, password string) (*Us
 	// Begin a transaction
 	tx := s.db.Begin()
 
-	userRequest := &UserRequest{
+	data := &UserRequest{
 		Email:    email,
 		Password: password,
 		Role:     roles.Superuser,
@@ -275,7 +265,7 @@ func (s *Service) CreateSuperuser(account *Account, email, password string) (*Us
 	user, err := s.createUserCommon(
 		tx,
 		account,
-		userRequest,
+		data,
 		"",   // facebook ID
 		true, // confirmed
 	)
@@ -293,47 +283,78 @@ func (s *Service) CreateSuperuser(account *Account, email, password string) (*Us
 	return user, nil
 }
 
-func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *UserRequest, facebookID string, confirmed bool) (*User, error) {
+// PaginatedUsersCount returns a total count of users
+func (s *Service) PaginatedUsersCount() (int, error) {
+	var count int
+	if err := s.paginatedUsersQuery().Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+// FindPaginatedUsers returns paginated user records
+func (s *Service) FindPaginatedUsers(offset, limit int, sorts map[string]string) ([]*User, error) {
+	var users []*User
+
+	// Get the pagination query
+	usersQuery := s.paginatedUsersQuery()
+
+	// Sort thre results
+	var orderBy []string
+	if len(sorts) == 0 {
+		orderBy = append(orderBy, "id") // order by ID by default
+	} else {
+		for field, direction := range sorts {
+			orderBy = append(orderBy, fmt.Sprintf("%s %s", field, direction))
+		}
+	}
+
+	// Retrieve paginated results from the database
+	err := UserPreload(usersQuery).Offset(offset).Limit(limit).
+		Order(strings.Join(orderBy, ",")).Find(&users).Error
+	if err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
+// paginatedUsersQuery returns a db query for paginated users
+func (s *Service) paginatedUsersQuery() *gorm.DB {
+	// Basic query
+	usersQuery := s.db.Model(new(User))
+
+	return usersQuery
+}
+
+func (s *Service) createUserCommon(db *gorm.DB, account *Account, data *UserRequest, facebookID string, confirmed bool) (*User, error) {
 	// Check if email is already taken
-	if s.GetOauthService().UserExists(userRequest.Email) {
+	if s.GetOauthService().UserExists(data.Email) {
 		return nil, oauth.ErrUsernameTaken
 	}
 
 	// If a role is not defined in the user request,
 	// fall back to the user role
-	if userRequest.Role == "" {
-		userRequest.Role = roles.User
-	}
-
-	// Fetch the role object
-	role, err := s.FindRoleByID(userRequest.Role)
-	if err != nil {
-		return nil, err
+	if data.Role == "" {
+		data.Role = roles.User
 	}
 
 	// Create a new oauth user
 	oauthUser, err := s.GetOauthService().CreateUserTx(
 		db,
-		userRequest.Email,
-		userRequest.Password,
+		data.Role,
+		data.Email,
+		data.Password,
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// Create a new user
-	user := NewUser(
-		account,
-		oauthUser,
-		role,
-		facebookID,
-		confirmed,
-		&UserRequest{
-			FirstName: userRequest.FirstName,
-			LastName:  userRequest.LastName,
-			Picture:   userRequest.Picture,
-		},
-	)
+	user, err := NewUser(account, oauthUser, facebookID, confirmed, data)
+	if err != nil {
+		return nil, err
+	}
 
 	// Save the user to the database
 	if err = db.Create(user).Error; err != nil {
@@ -343,7 +364,6 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 	// Assign related objects
 	user.Account = account
 	user.OauthUser = oauthUser
-	user.Role = role
 
 	// Update the meta user ID field
 	err = db.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: user.ID}).Error
@@ -352,24 +372,4 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, userRequest *U
 	}
 
 	return user, nil
-}
-
-func (s *Service) sendConfirmationEmail(confirmation *Confirmation) error {
-	confirmationEmail, err := s.emailFactory.NewConfirmationEmail(confirmation)
-	if err != nil {
-		return fmt.Errorf("New confirmation email error: %s", err)
-	}
-
-	// Try to send the confirmation email
-	if err := s.emailService.Send(confirmationEmail); err != nil {
-		return fmt.Errorf("Send email error: %s", err)
-	}
-
-	// If the email was sent successfully, update the email_sent flag
-	now := time.Now()
-	return s.db.Model(confirmation).UpdateColumns(Confirmation{
-		EmailSent:   true,
-		EmailSentAt: util.TimeOrNull(&now),
-		Model:       gorm.Model{UpdatedAt: now},
-	}).Error
 }
