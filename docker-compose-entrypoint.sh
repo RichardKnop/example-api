@@ -20,9 +20,9 @@ if [ "$1" = 'example-api' ] && [ "$2" = 'runserver' ]; then
       "AuthCodeLifetime": 3600
     },
     "Facebook": {
-  		"AppID": "facebook_app_id",
-  		"AppSecret": "facebook_app_secret"
-  	},
+      "AppID": "facebook_app_id",
+      "AppSecret": "facebook_app_secret"
+    },
     "Mailgun": {
       "Domain": "example.com",
       "APIKey": "mailgun_api_key",
