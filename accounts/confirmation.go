@@ -71,11 +71,17 @@ func (s *Service) sendConfirmationEmail(confirmation *Confirmation) error {
 
 	// If the email was sent successfully, update the email_sent flag
 	now := gorm.NowFunc()
-	return s.db.Model(confirmation).UpdateColumns(Confirmation{
+	if err := s.db.Model(confirmation).UpdateColumns(Confirmation{
 		EmailTokenModel: EmailTokenModel{
 			EmailSent:   true,
 			EmailSentAt: &now,
 			Model:       gorm.Model{UpdatedAt: now},
 		},
-	}).Error
+	}).Error; err != nil {
+		return err
+	}
+
+	s.Notify()
+
+	return nil
 }

@@ -5,13 +5,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestInviteUserRequiresUserAuthentication() {
@@ -42,6 +41,7 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 	assert.NoError(suite.T(), err, "Request setup should not get an error")
 	r.Header.Set("Authorization", "Bearer test_user_token")
 
+	suite.service.WaitForNotifications(1)
 	// Mock invitation email
 	suite.mockInvitationEmail()
 
@@ -91,8 +91,8 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 	assert.NoError(suite.T(), err, "Failed to create expected response object")
 	testutil.TestResponseObject(suite.T(), w, expected, 201)
 
-	// Wait for the email goroutine to finish
-	<-time.After(5 * time.Millisecond)
+	// block until email goroutine has finished
+	assert.True(suite.T(), <-suite.service.GetNotifications(), "The email goroutine should have run")
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()

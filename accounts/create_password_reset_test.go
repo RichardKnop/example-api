@@ -8,12 +8,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/test-util"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestCreatePasswordResetRequiresAccountAuthentication() {
@@ -50,6 +49,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 		),
 	)
 
+	suite.service.WaitForNotifications(1)
 	// Mock password reset email
 	suite.mockPasswordResetEmail()
 
@@ -83,8 +83,8 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 	assert.NoError(suite.T(), err, "Failed to create expected response object")
 	testutil.TestResponseObject(suite.T(), w, expected, 201)
 
-	// Wait for the email goroutine to finish
-	<-time.After(5 * time.Millisecond)
+	// block until email goroutine has finished
+	assert.True(suite.T(), <-suite.service.GetNotifications(), "The email goroutine should have run")
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
@@ -120,6 +120,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 		),
 	)
 
+	suite.service.WaitForNotifications(1)
 	// Mock password reset email
 	suite.mockPasswordResetEmail()
 
@@ -157,8 +158,8 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	assert.NoError(suite.T(), err, "Failed to create expected response object")
 	testutil.TestResponseObject(suite.T(), w, expected, 201)
 
-	// Wait for the email goroutine to finish
-	<-time.After(5 * time.Millisecond)
+	// block until email goroutine has finished
+	assert.True(suite.T(), <-suite.service.GetNotifications(), "The email goroutine should have run")
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()

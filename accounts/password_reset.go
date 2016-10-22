@@ -126,11 +126,17 @@ func (s *Service) sendPasswordResetEmail(passwordReset *PasswordReset) error {
 
 	// If the email was sent successfully, update the email_sent flag
 	now := gorm.NowFunc()
-	return s.db.Model(passwordReset).UpdateColumns(PasswordReset{
+	if err := s.db.Model(passwordReset).UpdateColumns(PasswordReset{
 		EmailTokenModel: EmailTokenModel{
 			EmailSent:   true,
 			EmailSentAt: &now,
 			Model:       gorm.Model{UpdatedAt: now},
 		},
-	}).Error
+	}).Error; err != nil {
+		return nil
+	}
+
+	s.Notify()
+
+	return nil
 }

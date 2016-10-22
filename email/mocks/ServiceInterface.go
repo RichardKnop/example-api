@@ -1,7 +1,11 @@
 package mocks
 
-import "github.com/RichardKnop/example-api/email"
-import "github.com/stretchr/testify/mock"
+import (
+	"time"
+
+	"github.com/RichardKnop/example-api/email"
+	"github.com/stretchr/testify/mock"
+)
 
 type ServiceInterface struct {
 	mock.Mock
@@ -16,6 +20,8 @@ func (_m *ServiceInterface) Send(m *email.Message) error {
 	} else {
 		r0 = ret.Error(0)
 	}
+
+	<-time.After(20 * time.Millisecond)
 
 	return r0
 }

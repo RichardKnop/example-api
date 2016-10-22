@@ -157,11 +157,17 @@ func (s *Service) sendInvitationEmail(invitation *Invitation) error {
 
 	// If the email was sent successfully, update the email_sent flag
 	now := gorm.NowFunc()
-	return s.db.Model(invitation).UpdateColumns(Invitation{
+	if err := s.db.Model(invitation).UpdateColumns(Invitation{
 		EmailTokenModel: EmailTokenModel{
 			EmailSent:   true,
 			EmailSentAt: &now,
 			Model:       gorm.Model{UpdatedAt: time.Now().UTC()},
 		},
-	}).Error
+	}).Error; err != nil {
+		return err
+	}
+
+	s.Notify()
+
+	return nil
 }

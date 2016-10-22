@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"time"
 
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/oauth/roles"
@@ -55,6 +54,7 @@ func (suite *AccountsTestSuite) TestCreateUserOnlyRequiredFields() {
 		),
 	)
 
+	suite.service.WaitForNotifications(1)
 	// Mock confirmation email
 	suite.mockConfirmationEmail()
 
@@ -76,6 +76,8 @@ func (suite *AccountsTestSuite) TestCreateUserOnlyRequiredFields() {
 	// And serve the request
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
+	// block until email goroutine has finished
+	assert.True(suite.T(), <-suite.service.GetNotifications(), "The email goroutine should have run")
 
 	// Count after
 	var (
@@ -131,9 +133,6 @@ func (suite *AccountsTestSuite) TestCreateUserOnlyRequiredFields() {
 	}
 	testutil.TestResponseObject(suite.T(), w, expected, 201)
 
-	// Wait for the email goroutine to finish
-	<-time.After(5 * time.Millisecond)
-
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
 }
@@ -161,6 +160,7 @@ func (suite *AccountsTestSuite) TestCreateUserWithOptionalFields() {
 		),
 	)
 
+	suite.service.WaitForNotifications(1)
 	// Mock confirmation email
 	suite.mockConfirmationEmail()
 
@@ -182,6 +182,8 @@ func (suite *AccountsTestSuite) TestCreateUserWithOptionalFields() {
 	// And serve the request
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, r)
+	// block until email goroutine has finished
+	assert.True(suite.T(), <-suite.service.GetNotifications(), "The email goroutine should have run")
 
 	// Count after
 	var (
@@ -238,9 +240,6 @@ func (suite *AccountsTestSuite) TestCreateUserWithOptionalFields() {
 		UpdatedAt: util.FormatTime(&user.UpdatedAt),
 	}
 	testutil.TestResponseObject(suite.T(), w, expected, 201)
-
-	// Wait for the email goroutine to finish
-	<-time.After(5 * time.Millisecond)
 
 	// Check that the mock object expectations were met
 	suite.assertMockExpectations()
