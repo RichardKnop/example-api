@@ -1,9 +1,10 @@
-package accounts
+package accounts_test
 
 import (
 	"net/http"
 	"testing"
 
+	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/gorilla/context"
 	"github.com/stretchr/testify/assert"
@@ -11,7 +12,7 @@ import (
 
 func TestGetAuthenticatedAccount(t *testing.T) {
 	var (
-		account *Account
+		account *accounts.Account
 		err     error
 	)
 
@@ -19,33 +20,33 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 	r, err := http.NewRequest("GET", "http://1.2.3.4/something", nil)
 	assert.NoError(t, err, "Request setup should not get an error")
 
-	account, err = GetAuthenticatedAccount(r)
+	account, err = accounts.GetAuthenticatedAccount(r)
 
 	// Account object should be nil
 	assert.Nil(t, account)
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, ErrAccountAuthenticationRequired, err)
+		assert.Equal(t, accounts.ErrAccountAuthenticationRequired, err)
 	}
 
 	// Set a context value of an invalid type
-	context.Set(r, AuthenticatedAccountKey, "bogus")
+	context.Set(r, accounts.AuthenticatedAccountKey, "bogus")
 
-	account, err = GetAuthenticatedAccount(r)
+	account, err = accounts.GetAuthenticatedAccount(r)
 
 	// Account object should be nil
 	assert.Nil(t, account)
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, ErrAccountAuthenticationRequired, err)
+		assert.Equal(t, accounts.ErrAccountAuthenticationRequired, err)
 	}
 
 	// Set a valid context value
-	context.Set(r, AuthenticatedAccountKey, &Account{Name: "Test Account"})
+	context.Set(r, accounts.AuthenticatedAccountKey, &accounts.Account{Name: "Test Account"})
 
-	account, err = GetAuthenticatedAccount(r)
+	account, err = accounts.GetAuthenticatedAccount(r)
 
 	// Error should be nil
 	assert.Nil(t, err)
@@ -58,7 +59,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 
 func TestGetAuthenticatedUser(t *testing.T) {
 	var (
-		user *User
+		user *accounts.User
 		err  error
 	)
 
@@ -66,33 +67,33 @@ func TestGetAuthenticatedUser(t *testing.T) {
 	r, err := http.NewRequest("GET", "http://1.2.3.4/something", nil)
 	assert.NoError(t, err, "Request setup should not get an error")
 
-	user, err = GetAuthenticatedUser(r)
+	user, err = accounts.GetAuthenticatedUser(r)
 
 	// User object should be nil
 	assert.Nil(t, user)
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, ErrUserAuthenticationRequired, err)
+		assert.Equal(t, accounts.ErrUserAuthenticationRequired, err)
 	}
 
 	// Set a context value of an invalid type
-	context.Set(r, AuthenticatedUserKey, "bogus")
+	context.Set(r, accounts.AuthenticatedUserKey, "bogus")
 
-	user, err = GetAuthenticatedUser(r)
+	user, err = accounts.GetAuthenticatedUser(r)
 
 	// User object should be nil
 	assert.Nil(t, user)
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, ErrUserAuthenticationRequired, err)
+		assert.Equal(t, accounts.ErrUserAuthenticationRequired, err)
 	}
 
 	// Set a valid context value
-	context.Set(r, AuthenticatedUserKey, &User{FirstName: util.StringOrNull("John Reese")})
+	context.Set(r, accounts.AuthenticatedUserKey, &accounts.User{FirstName: util.StringOrNull("John Reese")})
 
-	user, err = GetAuthenticatedUser(r)
+	user, err = accounts.GetAuthenticatedUser(r)
 
 	// Error should be nil
 	assert.Nil(t, err)
