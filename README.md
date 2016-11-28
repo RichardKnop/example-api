@@ -150,7 +150,7 @@ brew install etcd
 Load a development configuration into `etcd`:
 
 ```sh
-etcdctl set /config/example_api.json '{
+etcdctl put /config/example_api.json '{
   "Database": {
     "Type": "postgres",
     "Host": "localhost",
@@ -185,7 +185,7 @@ etcdctl set /config/example_api.json '{
     "CompanyNoreplyEmail": "noreply@example.com",
     "ConfirmationURLFormat": "%s://%s/confirm-email/%s",
     "InvitationURLFormat": "%s://%s/confirm-invitation/%s",
-    "PasswordResetURLFormat": "%s://%s/reset-password/%s",
+    "PasswordResetURLFormat": "%s://%s/reset-password/%s"
   },
   "IsDevelopment": true
 }'

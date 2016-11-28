@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/RichardKnop/example-api/commands"
+	"github.com/RichardKnop/example-api/cmd"
 	"github.com/urfave/cli"
 )
 
@@ -27,35 +27,35 @@ func main() {
 			Name:  "migrate",
 			Usage: "Run database migrations",
 			Action: func(c *cli.Context) error {
-				return commands.Migrate()
+				return cmd.Migrate()
 			},
 		},
 		{
 			Name:  "loaddata",
 			Usage: "Load data from fixture into the database",
 			Action: func(c *cli.Context) error {
-				return commands.LoadData(c.Args())
+				return cmd.LoadData(c.Args())
 			},
 		},
 		{
 			Name:  "createaccount",
 			Usage: "Create a new account",
 			Action: func(c *cli.Context) error {
-				return commands.CreateAccount()
+				return cmd.CreateAccount()
 			},
 		},
 		{
 			Name:  "createsuperuser",
 			Usage: "Create a new superuser",
 			Action: func(c *cli.Context) error {
-				return commands.CreateSuperuser()
+				return cmd.CreateSuperuser()
 			},
 		},
 		{
 			Name:  "runserver",
 			Usage: "Run the web server on port 8080",
 			Action: func(c *cli.Context) error {
-				return commands.RunServer()
+				return cmd.RunServer()
 			},
 		},
 	}

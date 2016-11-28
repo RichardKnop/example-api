@@ -5,7 +5,7 @@ set -e
 while ! ping -c1 etcd &>/dev/null; do :; done
 
 if [ "$1" = 'example-api' ] && [ "$2" = 'runserver' ]; then
-  curl -L http://etcd:2379/v2/keys/config/example_api.json -XPUT -d value='{
+  etcdctl --endpoints=etcd:2379 put /config/example_api.json '{
     "Database": {
       "Type": "postgres",
       "Host": "postgres",
