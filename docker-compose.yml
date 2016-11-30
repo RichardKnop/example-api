@@ -1,5 +1,25 @@
 version: "2"
 services:
+version: "2"
+services:
+  etcd:
+    image: quay.io/coreos/etcd
+    command: etcd --initial-cluster-state new --listen-client-urls http://0.0.0.0:2379 --advertise-client-urls http://127.0.0.1:2379
+    volumes:
+      - ./etcd-data:/default.etcd
+    environment:
+      - ETCDCTL_API=3
+  etcd-config:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-etcd-config
+    environment:
+      - ETCDCTL_API=3
+      - ETCDCTL_ENDPOINTS=etcd:2379
+    depends_on:
+      - etcd
+    links:
+      - etcd
   postgres:
     image: "postgres"
     volumes:
@@ -8,22 +28,16 @@ services:
       POSTGRES_USER: "example_api"
       POSTGRES_PASSWORD: ""
       POSTGRES_DB: "example_api"
-  etcd:
-    depends_on:
-      - postgres
-    image: "elcolio/etcd"
-    volumes:
-      - ./etcd-data:/data
   example-api:
     depends_on:
-      - etcd
+      - etcd-config
       - postgres
     links:
       - etcd
       - postgres
     build:
       context: .
-      dockerfile: ./Dockerfile-compose
+      dockerfile: ./Dockerfile
     image: example-api:latest
     container_name: example-api
     ports:
