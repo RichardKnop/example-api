@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/RichardKnop/example-api/routes"
+	"github.com/RichardKnop/example-api/util/routes"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/negroni"

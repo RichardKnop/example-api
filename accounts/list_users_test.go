@@ -3,9 +3,10 @@ package accounts_test
 import (
 	"net/http"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/test-util"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestListUsersRequiresUserAuthentication() {
@@ -35,8 +36,8 @@ func (suite *AccountsTestSuite) TestListUsersWithoutPermission() {
 }
 
 func (suite *AccountsTestSuite) TestListUsers() {
-	var users []*accounts.User
-	err := accounts.UserPreload(suite.db).Order("id").Find(&users).Error
+	var users []*models.User
+	err := models.UserPreload(suite.db).Order("id").Find(&users).Error
 	assert.NoError(suite.T(), err, "Fetching test users should not fail")
 
 	userResponses := make([]interface{}, len(users))

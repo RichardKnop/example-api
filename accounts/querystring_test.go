@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestGetUserFromQueryString() {
 	var (
 		r    *http.Request
-		user *accounts.User
+		user *models.User
 		err  error
 	)
 

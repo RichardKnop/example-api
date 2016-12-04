@@ -4,8 +4,9 @@ import (
 	"net/http"
 
 	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
-	"github.com/RichardKnop/example-api/routes"
+	"github.com/RichardKnop/example-api/util/routes"
 	"github.com/gorilla/mux"
 )
 
@@ -16,30 +17,30 @@ type ServiceInterface interface {
 	GetOauthService() oauth.ServiceInterface
 	GetRoutes() []routes.Route
 	RegisterRoutes(router *mux.Router, prefix string)
-	GetUserCredentialsFromToken(token string) (*User, error)
-	GetClientCredentialsFromBaseAuth(r *http.Request) (*Account, error)
-	GetClientCredentialsFromToken(token string) (*Account, error)
-	GetMixedCredentialsFromToken(token string) (*Account, *User, error)
-	FindAccountByOauthClientID(oauthClientID uint) (*Account, error)
-	FindAccountByID(accountID uint) (*Account, error)
-	FindAccountByName(name string) (*Account, error)
-	CreateAccount(name, description, key, secret, redirectURI string) (*Account, error)
-	FindUserByOauthUserID(oauthUserID uint) (*User, error)
-	FindUserByEmail(email string) (*User, error)
-	FindUserByID(userID uint) (*User, error)
-	FindUserByFacebookID(facebookID string) (*User, error)
-	CreateUser(account *Account, userRequest *UserRequest) (*User, error)
-	UpdateUser(user *User, userRequest *UserRequest) error
+	GetUserCredentialsFromToken(token string) (*models.User, error)
+	GetClientCredentialsFromBaseAuth(r *http.Request) (*models.Account, error)
+	GetClientCredentialsFromToken(token string) (*models.Account, error)
+	GetMixedCredentialsFromToken(token string) (*models.Account, *models.User, error)
+	FindAccountByOauthClientID(oauthClientID uint) (*models.Account, error)
+	FindAccountByID(accountID uint) (*models.Account, error)
+	FindAccountByName(name string) (*models.Account, error)
+	CreateAccount(name, description, key, secret, redirectURI string) (*models.Account, error)
+	FindUserByOauthUserID(oauthUserID uint) (*models.User, error)
+	FindUserByEmail(email string) (*models.User, error)
+	FindUserByID(userID uint) (*models.User, error)
+	FindUserByFacebookID(facebookID string) (*models.User, error)
+	CreateUser(account *models.Account, userRequest *UserRequest) (*models.User, error)
+	UpdateUser(user *models.User, userRequest *UserRequest) error
 	PaginatedUsersCount() (int, error)
-	FindPaginatedUsers(offset, limit int, sorts map[string]string) ([]*User, error)
-	FindConfirmationByReference(reference string) (*Confirmation, error)
-	ConfirmUser(confirmation *Confirmation) error
-	FindPasswordResetByReference(reference string) (*PasswordReset, error)
-	ResetPassword(passwordReset *PasswordReset, password string) error
-	GetOrCreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error)
-	CreateSuperuser(account *Account, email, password string) (*User, error)
-	FindInvitationByReference(reference string) (*Invitation, error)
-	InviteUser(invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error)
-	ConfirmInvitation(invitation *Invitation, password string) error
-	GetUserFromQueryString(r *http.Request) (*User, error)
+	FindPaginatedUsers(offset, limit int, sorts map[string]string) ([]*models.User, error)
+	FindConfirmationByReference(reference string) (*models.Confirmation, error)
+	ConfirmUser(confirmation *models.Confirmation) error
+	FindPasswordResetByReference(reference string) (*models.PasswordReset, error)
+	ResetPassword(passwordReset *models.PasswordReset, password string) error
+	GetOrCreateFacebookUser(account *models.Account, facebookID string, userRequest *UserRequest) (*models.User, error)
+	CreateSuperuser(account *models.Account, email, password string) (*models.User, error)
+	FindInvitationByReference(reference string) (*models.Invitation, error)
+	InviteUser(invitedByUser *models.User, invitationRequest *InvitationRequest) (*models.Invitation, error)
+	ConfirmInvitation(invitation *models.Invitation, password string) error
+	GetUserFromQueryString(r *http.Request) (*models.User, error)
 }

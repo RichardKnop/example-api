@@ -8,6 +8,7 @@ import (
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/email"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"
@@ -35,8 +36,7 @@ var (
 	}
 
 	testMigrations = []func(*gorm.DB) error{
-		oauth.MigrateAll,
-		accounts.MigrateAll,
+		models.MigrateAll,
 	}
 )
 
@@ -54,8 +54,8 @@ type AccountsTestSuite struct {
 	emailService *emailMocks.ServiceInterface
 	emailFactory *accountsMocks.EmailFactoryInterface
 	service      *accounts.Service
-	accounts     []*accounts.Account
-	users        []*accounts.User
+	accounts     []*models.Account
+	users        []*models.User
 	router       *mux.Router
 }
 
@@ -78,15 +78,15 @@ func (suite *AccountsTestSuite) SetupSuite() {
 	suite.db = db
 
 	// Fetch test accounts
-	suite.accounts = make([]*accounts.Account, 0)
-	err = accounts.AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
+	suite.accounts = make([]*models.Account, 0)
+	err = models.AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Fetch test users
-	suite.users = make([]*accounts.User, 0)
-	err = accounts.UserPreload(suite.db).Order("id").Find(&suite.users).Error
+	suite.users = make([]*models.User, 0)
+	err = models.UserPreload(suite.db).Order("id").Find(&suite.users).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -117,15 +117,15 @@ func (suite *AccountsTestSuite) TearDownSuite() {
 
 // The SetupTest method will be run before every test in the suite.
 func (suite *AccountsTestSuite) SetupTest() {
-	suite.db.Unscoped().Delete(new(accounts.Confirmation))
-	suite.db.Unscoped().Delete(new(accounts.Invitation))
-	suite.db.Unscoped().Delete(new(accounts.PasswordReset))
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(accounts.User))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(accounts.Account))
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(oauth.AccessToken))
-	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.User))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.Client))
+	suite.db.Unscoped().Delete(new(models.Confirmation))
+	suite.db.Unscoped().Delete(new(models.Invitation))
+	suite.db.Unscoped().Delete(new(models.PasswordReset))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(models.User))
+	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(models.Account))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(models.OauthAccessToken))
+	suite.db.Unscoped().Delete(new(models.OauthRefreshToken))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(models.OauthUser))
+	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(models.OauthClient))
 
 	suite.resetMocks()
 }
@@ -160,7 +160,7 @@ func (suite *AccountsTestSuite) assertMockExpectations() {
 // Mock sending confirmation email
 func (suite *AccountsTestSuite) mockConfirmationEmail() {
 	messageMock := new(email.Message)
-	suite.emailFactory.On("NewConfirmationEmail", mock.AnythingOfType("*accounts.Confirmation")).
+	suite.emailFactory.On("NewConfirmationEmail", mock.AnythingOfType("*models.Confirmation")).
 		Return(messageMock, nil)
 	suite.emailService.On("Send", messageMock).Return(nil)
 }
@@ -168,7 +168,7 @@ func (suite *AccountsTestSuite) mockConfirmationEmail() {
 // Mock sending invitation email
 func (suite *AccountsTestSuite) mockInvitationEmail() {
 	messageMock := new(email.Message)
-	suite.emailFactory.On("NewInvitationEmail", mock.AnythingOfType("*accounts.Invitation")).
+	suite.emailFactory.On("NewInvitationEmail", mock.AnythingOfType("*models.Invitation")).
 		Return(messageMock, nil)
 	suite.emailService.On("Send", messageMock).Return(nil)
 }
@@ -176,16 +176,16 @@ func (suite *AccountsTestSuite) mockInvitationEmail() {
 // Mock sending password reset email
 func (suite *AccountsTestSuite) mockPasswordResetEmail() {
 	messageMock := new(email.Message)
-	suite.emailFactory.On("NewPasswordResetEmail", mock.AnythingOfType("*accounts.PasswordReset")).
+	suite.emailFactory.On("NewPasswordResetEmail", mock.AnythingOfType("*models.PasswordReset")).
 		Return(messageMock, nil)
 	suite.emailService.On("Send", messageMock).Return(nil)
 }
 
-func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastName string) (*accounts.User, *oauth.AccessToken, error) {
+func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastName string) (*models.User, *models.OauthAccessToken, error) {
 	var (
-		testOauthUser   *oauth.User
-		testUser        *accounts.User
-		testAccessToken *oauth.AccessToken
+		testOauthUser   *models.OauthUser
+		testUser        *models.User
+		testAccessToken *models.OauthAccessToken
 		err             error
 	)
 
@@ -199,15 +199,14 @@ func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastN
 		return nil, nil, err
 	}
 
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
+		"", //facebook ID
+		firstName,
+		lastName,
+		"",    // picture
 		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: firstName,
-			LastName:  lastName,
-		},
 	)
 	if err != nil {
 		return nil, nil, err

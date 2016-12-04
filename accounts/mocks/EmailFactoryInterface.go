@@ -1,19 +1,19 @@
 package mocks
 
-import "github.com/RichardKnop/example-api/accounts"
 import "github.com/stretchr/testify/mock"
 
 import "github.com/RichardKnop/example-api/email"
+import "github.com/RichardKnop/example-api/models"
 
 type EmailFactoryInterface struct {
 	mock.Mock
 }
 
-func (_m *EmailFactoryInterface) NewConfirmationEmail(o *accounts.Confirmation) (*email.Message, error) {
+func (_m *EmailFactoryInterface) NewConfirmationEmail(o *models.Confirmation) (*email.Message, error) {
 	ret := _m.Called(o)
 
 	var r0 *email.Message
-	if rf, ok := ret.Get(0).(func(*accounts.Confirmation) *email.Message); ok {
+	if rf, ok := ret.Get(0).(func(*models.Confirmation) *email.Message); ok {
 		r0 = rf(o)
 	} else {
 		if ret.Get(0) != nil {
@@ -22,7 +22,7 @@ func (_m *EmailFactoryInterface) NewConfirmationEmail(o *accounts.Confirmation) 
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*accounts.Confirmation) error); ok {
+	if rf, ok := ret.Get(1).(func(*models.Confirmation) error); ok {
 		r1 = rf(o)
 	} else {
 		r1 = ret.Error(1)
@@ -30,11 +30,11 @@ func (_m *EmailFactoryInterface) NewConfirmationEmail(o *accounts.Confirmation) 
 
 	return r0, r1
 }
-func (_m *EmailFactoryInterface) NewInvitationEmail(o *accounts.Invitation) (*email.Message, error) {
+func (_m *EmailFactoryInterface) NewInvitationEmail(o *models.Invitation) (*email.Message, error) {
 	ret := _m.Called(o)
 
 	var r0 *email.Message
-	if rf, ok := ret.Get(0).(func(*accounts.Invitation) *email.Message); ok {
+	if rf, ok := ret.Get(0).(func(*models.Invitation) *email.Message); ok {
 		r0 = rf(o)
 	} else {
 		if ret.Get(0) != nil {
@@ -43,7 +43,7 @@ func (_m *EmailFactoryInterface) NewInvitationEmail(o *accounts.Invitation) (*em
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*accounts.Invitation) error); ok {
+	if rf, ok := ret.Get(1).(func(*models.Invitation) error); ok {
 		r1 = rf(o)
 	} else {
 		r1 = ret.Error(1)
@@ -51,11 +51,11 @@ func (_m *EmailFactoryInterface) NewInvitationEmail(o *accounts.Invitation) (*em
 
 	return r0, r1
 }
-func (_m *EmailFactoryInterface) NewPasswordResetEmail(o *accounts.PasswordReset) (*email.Message, error) {
+func (_m *EmailFactoryInterface) NewPasswordResetEmail(o *models.PasswordReset) (*email.Message, error) {
 	ret := _m.Called(o)
 
 	var r0 *email.Message
-	if rf, ok := ret.Get(0).(func(*accounts.PasswordReset) *email.Message); ok {
+	if rf, ok := ret.Get(0).(func(*models.PasswordReset) *email.Message); ok {
 		r0 = rf(o)
 	} else {
 		if ret.Get(0) != nil {
@@ -64,7 +64,7 @@ func (_m *EmailFactoryInterface) NewPasswordResetEmail(o *accounts.PasswordReset
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*accounts.PasswordReset) error); ok {
+	if rf, ok := ret.Get(1).(func(*models.PasswordReset) error); ok {
 		r1 = rf(o)
 	} else {
 		r1 = ret.Error(1)

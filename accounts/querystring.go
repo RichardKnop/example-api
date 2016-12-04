@@ -3,11 +3,13 @@ package accounts
 import (
 	"net/http"
 	"strconv"
+
+	"github.com/RichardKnop/example-api/models"
 )
 
 // GetUserFromQueryString parses user_id from the query string and
 // returns a matching *User instance or an error
-func (s *Service) GetUserFromQueryString(r *http.Request) (*User, error) {
+func (s *Service) GetUserFromQueryString(r *http.Request) (*models.User, error) {
 	// If no user_id query string parameter found, just return
 	if r.URL.Query().Get("user_id") == "" {
 		return nil, nil

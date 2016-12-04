@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util/response"
 	"github.com/gorilla/mux"
 )
 
@@ -88,7 +89,7 @@ func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, userResponse, http.StatusOK)
 }
 
-func checkUpdateUserPermissions(authenticatedUser, user *User, req *UserRequest) error {
+func checkUpdateUserPermissions(authenticatedUser, user *models.User, req *UserRequest) error {
 	// Superusers can update any users
 	if authenticatedUser.OauthUser.RoleID.String == roles.Superuser {
 		return nil

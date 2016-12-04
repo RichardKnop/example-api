@@ -9,10 +9,10 @@ import (
 	"net/http/httptest"
 
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	pass "github.com/RichardKnop/example-api/password"
 	"github.com/RichardKnop/example-api/test-util"
+	pass "github.com/RichardKnop/example-api/util/password"
 	"github.com/RichardKnop/uuid"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -65,9 +65,9 @@ func (suite *AccountsTestSuite) TestConfirmInvitationReferenceNotFound() {
 
 func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	var (
-		testOauthUser  *oauth.User
-		testUser       *accounts.User
-		testInvitation *accounts.Invitation
+		testOauthUser  *models.OauthUser
+		testUser       *models.User
+		testInvitation *models.Invitation
 		err            error
 	)
 
@@ -78,15 +78,14 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 		"", // blank password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
+		"", //facebook ID
+		"Harold",
+		"Finch",
+		"",    // picture
 		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-		},
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
@@ -95,7 +94,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	testUser.OauthUser = testOauthUser
 
 	// Insert a test invitation
-	testInvitation, err = accounts.NewInvitation(
+	testInvitation, err = models.NewInvitation(
 		testUser,
 		suite.users[0],
 		suite.cnf.AppSpecific.InvitationLifetime,
@@ -134,7 +133,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.Invitation)).Count(&countBefore)
+	suite.db.Model(new(models.Invitation)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -142,16 +141,16 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.Invitation)).Count(&countAfter)
+	suite.db.Model(new(models.Invitation)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore-1, countAfter)
 
 	// Fetch the updated user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Invitation should have been soft deleted
-	assert.True(suite.T(), suite.db.First(new(accounts.Invitation), testInvitation.ID).RecordNotFound())
+	assert.True(suite.T(), suite.db.First(new(models.Invitation), testInvitation.ID).RecordNotFound())
 
 	// And correct data was saved
 	assert.Nil(suite.T(), pass.VerifyPassword(user.OauthUser.Password.String, "test_password"))

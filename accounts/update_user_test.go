@@ -8,10 +8,11 @@ import (
 	"net/http/httptest"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	"github.com/RichardKnop/example-api/password"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/example-api/util/password"
 	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -58,7 +59,7 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -69,12 +70,12 @@ func (suite *AccountsTestSuite) TestUpdateUser() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the updated user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check that the password has NOT changed

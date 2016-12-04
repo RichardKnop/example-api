@@ -1,10 +1,10 @@
-package accounts
+package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
-	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/RichardKnop/uuid"
 	"github.com/jinzhu/gorm"
@@ -15,7 +15,7 @@ import (
 type Account struct {
 	gorm.Model
 	OauthClientID sql.NullInt64 `sql:"index;not null"`
-	OauthClient   *oauth.Client
+	OauthClient   *OauthClient
 	Name          string         `sql:"type:varchar(100);unique;not null"`
 	Description   sql.NullString `sql:"type:varchar(200)"`
 }
@@ -31,7 +31,7 @@ type User struct {
 	AccountID   sql.NullInt64 `sql:"index;not null"`
 	OauthUserID sql.NullInt64 `sql:"index;not null"`
 	Account     *Account
-	OauthUser   *oauth.User
+	OauthUser   *OauthUser
 	FacebookID  sql.NullString `sql:"type:varchar(60);unique"`
 	FirstName   sql.NullString `sql:"type:varchar(100)"`
 	LastName    sql.NullString `sql:"type:varchar(100)"`
@@ -44,14 +44,12 @@ func (u *User) TableName() string {
 	return "account_users"
 }
 
-// EmailTokenModel is an abstract model which can be used for objects from which
-// we derive redirect emails (email confirmation, password reset and such)
-type EmailTokenModel struct {
-	gorm.Model
-	Reference   string `sql:"type:varchar(40);unique;not null"`
-	EmailSent   bool   `sql:"index;not null"`
-	EmailSentAt *time.Time
-	ExpiresAt   time.Time `sql:"index;not null"`
+// GetName returns user's full name
+func (u *User) GetName() string {
+	if u.FirstName.Valid && u.LastName.Valid {
+		return fmt.Sprintf("%s %s", u.FirstName.String, u.LastName.String)
+	}
+	return ""
 }
 
 // Confirmation objects is created when we send user a confirmation email
@@ -98,7 +96,7 @@ func (p *PasswordReset) TableName() string {
 }
 
 // NewAccount creates new Account instance
-func NewAccount(oauthClient *oauth.Client, name, description string) (*Account, error) {
+func NewAccount(oauthClient *OauthClient, name, description string) (*Account, error) {
 	oauthClientID := util.PositiveIntOrNull(int64(oauthClient.ID))
 	account := &Account{
 		OauthClientID: oauthClientID,
@@ -109,16 +107,16 @@ func NewAccount(oauthClient *oauth.Client, name, description string) (*Account, 
 }
 
 // NewUser creates new User instance
-func NewUser(account *Account, oauthUser *oauth.User, facebookID string, confirmed bool, data *UserRequest) (*User, error) {
+func NewUser(account *Account, oauthUser *OauthUser, facebookID, firstName, lastName, picture string, confirmed bool) (*User, error) {
 	accountID := util.PositiveIntOrNull(int64(account.ID))
 	oauthUserID := util.PositiveIntOrNull(int64(oauthUser.ID))
 	user := &User{
 		AccountID:   accountID,
 		OauthUserID: oauthUserID,
 		FacebookID:  util.StringOrNull(facebookID),
-		FirstName:   util.StringOrNull(data.FirstName),
-		LastName:    util.StringOrNull(data.LastName),
-		Picture:     util.StringOrNull(data.Picture),
+		FirstName:   util.StringOrNull(firstName),
+		LastName:    util.StringOrNull(lastName),
+		Picture:     util.StringOrNull(picture),
 		Confirmed:   confirmed,
 	}
 	return user, nil
@@ -166,4 +164,60 @@ func NewPasswordReset(user *User, expiresIn int) (*PasswordReset, error) {
 		UserID: userID,
 	}
 	return passwordReset, nil
+}
+
+// AccountPreload sets up Gorm preloads for an account object
+func AccountPreload(db *gorm.DB) *gorm.DB {
+	return AccountPreloadWithPrefix(db, "")
+}
+
+// AccountPreloadWithPrefix sets up Gorm preloads for an account object, and prefixes with prefix for nested objects
+func AccountPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.Preload(prefix + "OauthClient")
+}
+
+// UserPreload sets up Gorm preloads for a user object
+func UserPreload(db *gorm.DB) *gorm.DB {
+	return UserPreloadWithPrefix(db, "")
+}
+
+// UserPreloadWithPrefix sets up Gorm preloads for a user object,
+// and prefixes with prefix for nested objects
+func UserPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.Preload(prefix + "Account.OauthClient").
+		Preload(prefix + "OauthUser")
+}
+
+// ConfirmationPreload sets up Gorm preloads for a confirmation object
+func ConfirmationPreload(db *gorm.DB) *gorm.DB {
+	return ConfirmationPreloadWithPrefix(db, "")
+}
+
+// ConfirmationPreloadWithPrefix sets up Gorm preloads for a confirmation object,
+// and prefixes with prefix for nested objects
+func ConfirmationPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.Preload(prefix + "User.OauthUser")
+}
+
+// InvitationPreload sets up Gorm preloads for an invitation object
+func InvitationPreload(db *gorm.DB) *gorm.DB {
+	return InvitationPreloadWithPrefix(db, "")
+}
+
+// InvitationPreloadWithPrefix sets up Gorm preloads for an invitation object,
+// and prefixes with prefix for nested objects
+func InvitationPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.Preload(prefix + "InvitedUser.OauthUser").
+		Preload(prefix + "InvitedByUser.OauthUser")
+}
+
+// PasswordResetPreload sets up Gorm preloads for a password reset object
+func PasswordResetPreload(db *gorm.DB) *gorm.DB {
+	return PasswordResetPreloadWithPrefix(db, "")
+}
+
+// PasswordResetPreloadWithPrefix sets up Gorm preloads for a password reset object,
+// and prefixes with prefix for nested objects
+func PasswordResetPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
+	return db.Preload(prefix + "User.OauthUser")
 }

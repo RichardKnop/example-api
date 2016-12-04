@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/util"
@@ -19,19 +20,11 @@ var (
 	ErrUserNotFound = errors.New("User not found")
 )
 
-// GetName returns user's full name
-func (u *User) GetName() string {
-	if u.FirstName.Valid && u.LastName.Valid {
-		return fmt.Sprintf("%s %s", u.FirstName.String, u.LastName.String)
-	}
-	return ""
-}
-
 // FindUserByOauthUserID looks up a user by oauth user ID and returns it
-func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*User, error) {
+func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*models.User, error) {
 	// Fetch the user from the database
-	user := new(User)
-	notFound := UserPreload(s.db).Where(User{
+	user := new(models.User)
+	notFound := models.UserPreload(s.db).Where(models.User{
 		OauthUserID: util.PositiveIntOrNull(int64(oauthUserID)),
 	}).First(user).RecordNotFound()
 
@@ -44,10 +37,10 @@ func (s *Service) FindUserByOauthUserID(oauthUserID uint) (*User, error) {
 }
 
 // FindUserByEmail looks up a user by email and returns it
-func (s *Service) FindUserByEmail(email string) (*User, error) {
+func (s *Service) FindUserByEmail(email string) (*models.User, error) {
 	// Fetch the user from the database
-	user := new(User)
-	notFound := UserPreload(s.db).
+	user := new(models.User)
+	notFound := models.UserPreload(s.db).
 		Joins("inner join oauth_users on oauth_users.id = account_users.oauth_user_id").
 		Where("oauth_users.username = LOWER(?)", email).First(user).RecordNotFound()
 
@@ -60,10 +53,10 @@ func (s *Service) FindUserByEmail(email string) (*User, error) {
 }
 
 // FindUserByID looks up a user by ID and returns it
-func (s *Service) FindUserByID(userID uint) (*User, error) {
+func (s *Service) FindUserByID(userID uint) (*models.User, error) {
 	// Fetch the user from the database
-	user := new(User)
-	notFound := UserPreload(s.db).First(user, userID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(s.db).First(user, userID).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -74,10 +67,10 @@ func (s *Service) FindUserByID(userID uint) (*User, error) {
 }
 
 // FindUserByFacebookID looks up a user by a Facebook ID and returns it
-func (s *Service) FindUserByFacebookID(facebookID string) (*User, error) {
+func (s *Service) FindUserByFacebookID(facebookID string) (*models.User, error) {
 	// Fetch the user from the database
-	user := new(User)
-	notFound := UserPreload(s.db).Where("facebook_id = ?", facebookID).
+	user := new(models.User)
+	notFound := models.UserPreload(s.db).Where("facebook_id = ?", facebookID).
 		First(user).RecordNotFound()
 
 	// Not found
@@ -89,7 +82,7 @@ func (s *Service) FindUserByFacebookID(facebookID string) (*User, error) {
 }
 
 // CreateUser creates a new oauth user and a new account user
-func (s *Service) CreateUser(account *Account, data *UserRequest) (*User, error) {
+func (s *Service) CreateUser(account *models.Account, data *UserRequest) (*models.User, error) {
 	// Superusers can only be created manually
 	if data.Role == roles.Superuser {
 		return nil, ErrSuperuserOnlyManually
@@ -111,7 +104,7 @@ func (s *Service) CreateUser(account *Account, data *UserRequest) (*User, error)
 	}
 
 	// Create a new confirmation
-	confirmation, err := NewConfirmation(user, s.cnf.AppSpecific.ConfirmationLifetime)
+	confirmation, err := models.NewConfirmation(user, s.cnf.AppSpecific.ConfirmationLifetime)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +135,7 @@ func (s *Service) CreateUser(account *Account, data *UserRequest) (*User, error)
 }
 
 // UpdateUser updates an existing user
-func (s *Service) UpdateUser(user *User, data *UserRequest) error {
+func (s *Service) UpdateUser(user *models.User, data *UserRequest) error {
 	// Is this a request to change user password?
 	if data.NewPassword != "" {
 		// Verify the user submitted current password
@@ -165,9 +158,9 @@ func (s *Service) UpdateUser(user *User, data *UserRequest) error {
 
 // GetOrCreateFacebookUser either returns an existing user
 // or updates an existing email user with facebook ID or creates a new user
-func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, userRequest *UserRequest) (*User, error) {
+func (s *Service) GetOrCreateFacebookUser(account *models.Account, facebookID string, userRequest *UserRequest) (*models.User, error) {
 	var (
-		user       *User
+		user       *models.User
 		err        error
 		userExists bool
 	)
@@ -195,7 +188,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 	if userExists {
 		if userRequest.Email != user.OauthUser.Username {
 			// Update the email if it changed (should not happen)
-			err = tx.Model(user.OauthUser).UpdateColumns(oauth.User{
+			err = tx.Model(user.OauthUser).UpdateColumns(models.OauthUser{
 				Username: userRequest.Email,
 				Model:    gorm.Model{UpdatedAt: time.Now()},
 			}).Error
@@ -206,7 +199,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 		}
 
 		// Set the facebook ID, first name, last name, picture
-		err = tx.Model(user).UpdateColumns(User{
+		err = tx.Model(user).UpdateColumns(models.User{
 			FacebookID: util.StringOrNull(facebookID),
 			FirstName:  util.StringOrNull(userRequest.FirstName),
 			LastName:   util.StringOrNull(userRequest.LastName),
@@ -253,7 +246,7 @@ func (s *Service) GetOrCreateFacebookUser(account *Account, facebookID string, u
 }
 
 // CreateSuperuser creates a new superuser account
-func (s *Service) CreateSuperuser(account *Account, email, password string) (*User, error) {
+func (s *Service) CreateSuperuser(account *models.Account, email, password string) (*models.User, error) {
 	// Begin a transaction
 	tx := s.db.Begin()
 
@@ -293,8 +286,8 @@ func (s *Service) PaginatedUsersCount() (int, error) {
 }
 
 // FindPaginatedUsers returns paginated user records
-func (s *Service) FindPaginatedUsers(offset, limit int, sorts map[string]string) ([]*User, error) {
-	var users []*User
+func (s *Service) FindPaginatedUsers(offset, limit int, sorts map[string]string) ([]*models.User, error) {
+	var users []*models.User
 
 	// Get the pagination query
 	usersQuery := s.paginatedUsersQuery()
@@ -310,7 +303,7 @@ func (s *Service) FindPaginatedUsers(offset, limit int, sorts map[string]string)
 	}
 
 	// Retrieve paginated results from the database
-	err := UserPreload(usersQuery).Offset(offset).Limit(limit).
+	err := models.UserPreload(usersQuery).Offset(offset).Limit(limit).
 		Order(strings.Join(orderBy, ",")).Find(&users).Error
 	if err != nil {
 		return users, err
@@ -322,12 +315,12 @@ func (s *Service) FindPaginatedUsers(offset, limit int, sorts map[string]string)
 // paginatedUsersQuery returns a db query for paginated users
 func (s *Service) paginatedUsersQuery() *gorm.DB {
 	// Basic query
-	usersQuery := s.db.Model(new(User))
+	usersQuery := s.db.Model(new(models.User))
 
 	return usersQuery
 }
 
-func (s *Service) createUserCommon(db *gorm.DB, account *Account, data *UserRequest, facebookID string, confirmed bool) (*User, error) {
+func (s *Service) createUserCommon(db *gorm.DB, account *models.Account, data *UserRequest, facebookID string, confirmed bool) (*models.User, error) {
 	// Check if email is already taken
 	if s.GetOauthService().UserExists(data.Email) {
 		return nil, oauth.ErrUsernameTaken
@@ -351,7 +344,15 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, data *UserRequ
 	}
 
 	// Create a new user
-	user, err := NewUser(account, oauthUser, facebookID, confirmed, data)
+	user, err := models.NewUser(
+		account,
+		oauthUser,
+		facebookID,
+		data.FirstName,
+		data.LastName,
+		data.Picture,
+		confirmed,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -366,7 +367,7 @@ func (s *Service) createUserCommon(db *gorm.DB, account *Account, data *UserRequ
 	user.OauthUser = oauthUser
 
 	// Update the meta user ID field
-	err = db.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: user.ID}).Error
+	err = db.Model(oauthUser).UpdateColumn(models.OauthUser{MetaUserID: user.ID}).Error
 	if err != nil {
 		return nil, err
 	}

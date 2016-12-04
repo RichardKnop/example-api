@@ -10,6 +10,7 @@ import (
 
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/email"
+	"github.com/RichardKnop/example-api/models"
 )
 
 var (
@@ -36,7 +37,7 @@ func NewEmailFactory(cnf *config.Config) *EmailFactory {
 }
 
 // NewConfirmationEmail returns a confirmation email
-func (f *EmailFactory) NewConfirmationEmail(o *Confirmation) (*email.Message, error) {
+func (f *EmailFactory) NewConfirmationEmail(o *models.Confirmation) (*email.Message, error) {
 	// Define a greetings name for the user
 	name := o.User.GetName()
 	if name == "" {
@@ -179,7 +180,7 @@ func newConfirmationEmailHTMLContent(title, inlineStyles, name, company, link st
 }
 
 // NewPasswordResetEmail returns a password reset email
-func (f *EmailFactory) NewPasswordResetEmail(o *PasswordReset) (*email.Message, error) {
+func (f *EmailFactory) NewPasswordResetEmail(o *models.PasswordReset) (*email.Message, error) {
 	// Define a greetings name for the user
 	name := o.User.GetName()
 	if name == "" {
@@ -322,7 +323,7 @@ func newPasswordResetEmailHTMLContent(title, inlineStyles, name, company, link s
 }
 
 // NewInvitationEmail returns a user invite email
-func (f *EmailFactory) NewInvitationEmail(o *Invitation) (*email.Message, error) {
+func (f *EmailFactory) NewInvitationEmail(o *models.Invitation) (*email.Message, error) {
 	// Define a greetings name for the invited user
 	name := o.InvitedUser.GetName()
 	if name == "" {

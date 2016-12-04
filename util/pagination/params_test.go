@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/RichardKnop/example-api/pagination"
+	"github.com/RichardKnop/example-api/util/pagination"
 )
 
 func TestGetParams(t *testing.T) {

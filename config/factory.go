@@ -131,7 +131,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 
 				// Set configLoaded to true
 				configLoaded = true
-				logger.Info("Successfully reloaded config")
+				// logger.Info("Successfully reloaded config")
 			}
 		}()
 	}

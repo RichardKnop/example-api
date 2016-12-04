@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/gorilla/context"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,7 @@ import (
 
 func TestGetAuthenticatedAccount(t *testing.T) {
 	var (
-		account *accounts.Account
+		account *models.Account
 		err     error
 	)
 
@@ -44,7 +45,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 	}
 
 	// Set a valid context value
-	context.Set(r, accounts.AuthenticatedAccountKey, &accounts.Account{Name: "Test Account"})
+	context.Set(r, accounts.AuthenticatedAccountKey, &models.Account{Name: "Test Account"})
 
 	account, err = accounts.GetAuthenticatedAccount(r)
 
@@ -59,7 +60,7 @@ func TestGetAuthenticatedAccount(t *testing.T) {
 
 func TestGetAuthenticatedUser(t *testing.T) {
 	var (
-		user *accounts.User
+		user *models.User
 		err  error
 	)
 
@@ -91,7 +92,7 @@ func TestGetAuthenticatedUser(t *testing.T) {
 	}
 
 	// Set a valid context value
-	context.Set(r, accounts.AuthenticatedUserKey, &accounts.User{FirstName: util.StringOrNull("John Reese")})
+	context.Set(r, accounts.AuthenticatedUserKey, &models.User{FirstName: util.StringOrNull("John Reese")})
 
 	user, err = accounts.GetAuthenticatedUser(r)
 

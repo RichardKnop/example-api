@@ -14,7 +14,7 @@ import (
 	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util/response"
 )
 
 // TestGetErrorExpectedResponse ...

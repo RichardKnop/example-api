@@ -2,7 +2,7 @@ package facebook
 
 import (
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/routes"
+	"github.com/RichardKnop/example-api/util/routes"
 	"github.com/gorilla/mux"
 )
 

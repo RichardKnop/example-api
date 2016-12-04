@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/test-util"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
@@ -14,7 +15,7 @@ func (suite *AccountsTestSuite) TestAccountAuthMiddleware() {
 		r                    *http.Request
 		w                    *httptest.ResponseRecorder
 		next                 http.HandlerFunc
-		authenticatedAccount *accounts.Account
+		authenticatedAccount *models.Account
 		err                  error
 	)
 

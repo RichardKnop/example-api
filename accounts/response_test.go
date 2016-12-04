@@ -5,14 +5,14 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewUserResponse(t *testing.T) {
-	testUser := &accounts.User{
-		OauthUser: new(oauth.User),
+	testUser := &models.User{
+		OauthUser: new(models.OauthUser),
 	}
 
 	// Create user response
@@ -29,10 +29,10 @@ func TestNewUserResponse(t *testing.T) {
 }
 
 func TestNewConfirmationResponse(t *testing.T) {
-	testUser := &accounts.User{
-		OauthUser: new(oauth.User),
+	testUser := &models.User{
+		OauthUser: new(models.OauthUser),
 	}
-	testConfirmation := &accounts.Confirmation{
+	testConfirmation := &models.Confirmation{
 		User: testUser,
 	}
 
@@ -50,13 +50,13 @@ func TestNewConfirmationResponse(t *testing.T) {
 }
 
 func TestNewInvitationResponse(t *testing.T) {
-	testInvitedUser := &accounts.User{
-		OauthUser: new(oauth.User),
+	testInvitedUser := &models.User{
+		OauthUser: new(models.OauthUser),
 	}
-	testInvitedByUser := &accounts.User{
-		OauthUser: new(oauth.User),
+	testInvitedByUser := &models.User{
+		OauthUser: new(models.OauthUser),
 	}
-	testInvitation := &accounts.Invitation{
+	testInvitation := &models.Invitation{
 		InvitedUser:   testInvitedUser,
 		InvitedByUser: testInvitedByUser,
 	}
@@ -75,10 +75,10 @@ func TestNewInvitationResponse(t *testing.T) {
 }
 
 func TestNewPasswordResetResponse(t *testing.T) {
-	testUser := &accounts.User{
-		OauthUser: new(oauth.User),
+	testUser := &models.User{
+		OauthUser: new(models.OauthUser),
 	}
-	testPasswordReset := &accounts.PasswordReset{
+	testPasswordReset := &models.PasswordReset{
 		User: testUser,
 	}
 
@@ -96,12 +96,12 @@ func TestNewPasswordResetResponse(t *testing.T) {
 }
 
 func TestNewListUsersResponse(t *testing.T) {
-	testUsers := []*accounts.User{
-		&accounts.User{
-			OauthUser: new(oauth.User),
+	testUsers := []*models.User{
+		&models.User{
+			OauthUser: new(models.OauthUser),
 		},
-		&accounts.User{
-			OauthUser: new(oauth.User),
+		&models.User{
+			OauthUser: new(models.OauthUser),
 		},
 	}
 

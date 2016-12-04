@@ -3,7 +3,7 @@ package password_test
 import (
 	"testing"
 
-	"github.com/RichardKnop/example-api/password"
+	"github.com/RichardKnop/example-api/util/password"
 	"github.com/stretchr/testify/assert"
 )
 

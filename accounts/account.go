@@ -3,6 +3,7 @@ package accounts
 import (
 	"errors"
 
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/util"
 )
@@ -15,10 +16,10 @@ var (
 )
 
 // FindAccountByOauthClientID looks up an account by oauth client ID and returns it
-func (s *Service) FindAccountByOauthClientID(oauthClientID uint) (*Account, error) {
+func (s *Service) FindAccountByOauthClientID(oauthClientID uint) (*models.Account, error) {
 	// Fetch the client from the database
-	account := new(Account)
-	notFound := AccountPreload(s.db).Where(Account{
+	account := new(models.Account)
+	notFound := models.AccountPreload(s.db).Where(models.Account{
 		OauthClientID: util.PositiveIntOrNull(int64(oauthClientID)),
 	}).First(account).RecordNotFound()
 
@@ -31,10 +32,10 @@ func (s *Service) FindAccountByOauthClientID(oauthClientID uint) (*Account, erro
 }
 
 // FindAccountByID looks up an account by ID and returns it
-func (s *Service) FindAccountByID(accountID uint) (*Account, error) {
+func (s *Service) FindAccountByID(accountID uint) (*models.Account, error) {
 	// Fetch the client from the database
-	account := new(Account)
-	notFound := AccountPreload(s.db).First(account, accountID).RecordNotFound()
+	account := new(models.Account)
+	notFound := models.AccountPreload(s.db).First(account, accountID).RecordNotFound()
 
 	// Not found
 	if notFound {
@@ -45,10 +46,10 @@ func (s *Service) FindAccountByID(accountID uint) (*Account, error) {
 }
 
 // FindAccountByName looks up an account by name and returns it
-func (s *Service) FindAccountByName(name string) (*Account, error) {
+func (s *Service) FindAccountByName(name string) (*models.Account, error) {
 	// Fetch the client from the database
-	account := new(Account)
-	notFound := AccountPreload(s.db).Where("name = ?", name).
+	account := new(models.Account)
+	notFound := models.AccountPreload(s.db).Where("name = ?", name).
 		First(account).RecordNotFound()
 
 	// Not found
@@ -60,7 +61,7 @@ func (s *Service) FindAccountByName(name string) (*Account, error) {
 }
 
 // CreateAccount creates a new account
-func (s *Service) CreateAccount(name, description, key, secret, redirectURI string) (*Account, error) {
+func (s *Service) CreateAccount(name, description, key, secret, redirectURI string) (*models.Account, error) {
 	// Check uniqueness of the name
 	_, err := s.FindAccountByName(name)
 	if err == nil {
@@ -88,7 +89,7 @@ func (s *Service) CreateAccount(name, description, key, secret, redirectURI stri
 	}
 
 	// Create a new account
-	account, err := NewAccount(oauthClient, name, description)
+	account, err := models.NewAccount(oauthClient, name, description)
 	if err != nil {
 		return nil, err
 	}

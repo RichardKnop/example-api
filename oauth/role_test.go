@@ -1,14 +1,15 @@
 package oauth_test
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *OauthTestSuite) TestFindRoleByID() {
 	var (
-		role *oauth.Role
+		role *models.OauthRole
 		err  error
 	)
 

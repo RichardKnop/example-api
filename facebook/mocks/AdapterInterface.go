@@ -1,18 +1,15 @@
-package facebook
+package mocks
 
-import (
-	fb "github.com/huandu/facebook"
-	"github.com/stretchr/testify/mock"
-	"golang.org/x/oauth2"
-)
+import "github.com/stretchr/testify/mock"
 
-// AdapterMock is a mocked object implementing AdapterInterface
-type AdapterMock struct {
+import fb "github.com/huandu/facebook"
+import "golang.org/x/oauth2"
+
+type AdapterInterface struct {
 	mock.Mock
 }
 
-// AuthCodeURL ...
-func (_m *AdapterMock) AuthCodeURL(state string) string {
+func (_m *AdapterInterface) AuthCodeURL(state string) string {
 	ret := _m.Called(state)
 
 	var r0 string
@@ -24,9 +21,7 @@ func (_m *AdapterMock) AuthCodeURL(state string) string {
 
 	return r0
 }
-
-// Exchange ...
-func (_m *AdapterMock) Exchange(code string) (*oauth2.Token, error) {
+func (_m *AdapterInterface) Exchange(code string) (*oauth2.Token, error) {
 	ret := _m.Called(code)
 
 	var r0 *oauth2.Token
@@ -47,9 +42,7 @@ func (_m *AdapterMock) Exchange(code string) (*oauth2.Token, error) {
 
 	return r0, r1
 }
-
-// GetMe ...
-func (_m *AdapterMock) GetMe(accessToken string) (fb.Result, error) {
+func (_m *AdapterInterface) GetMe(accessToken string) (fb.Result, error) {
 	ret := _m.Called(accessToken)
 
 	var r0 fb.Result

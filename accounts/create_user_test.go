@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/example-api/util"
@@ -70,8 +71,8 @@ func (suite *AccountsTestSuite) TestCreateUserOnlyRequiredFields() {
 		countBefore              int
 		confirmationsCountBefore int
 	)
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
-	suite.db.Model(new(accounts.Confirmation)).Count(&confirmationsCountBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
+	suite.db.Model(new(models.Confirmation)).Count(&confirmationsCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -84,18 +85,18 @@ func (suite *AccountsTestSuite) TestCreateUserOnlyRequiredFields() {
 		countAfter              int
 		confirmationsCountAfter int
 	)
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
-	suite.db.Model(new(accounts.Confirmation)).Count(&confirmationsCountAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
+	suite.db.Model(new(models.Confirmation)).Count(&confirmationsCountAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 	assert.Equal(suite.T(), confirmationsCountBefore+1, confirmationsCountAfter)
 
 	// Fetch the created user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).Last(user).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Fetch the created confirmation
-	confirmation := new(accounts.Confirmation)
+	confirmation := new(models.Confirmation)
 	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
 		Last(confirmation).RecordNotFound())
 
@@ -176,8 +177,8 @@ func (suite *AccountsTestSuite) TestCreateUserWithOptionalFields() {
 		countBefore              int
 		confirmationsCountBefore int
 	)
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
-	suite.db.Model(new(accounts.Confirmation)).Count(&confirmationsCountBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
+	suite.db.Model(new(models.Confirmation)).Count(&confirmationsCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -190,19 +191,19 @@ func (suite *AccountsTestSuite) TestCreateUserWithOptionalFields() {
 		countAfter              int
 		confirmationsCountAfter int
 	)
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
-	suite.db.Model(new(accounts.Confirmation)).Count(&confirmationsCountAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
+	suite.db.Model(new(models.Confirmation)).Count(&confirmationsCountAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 	assert.Equal(suite.T(), confirmationsCountBefore+1, confirmationsCountAfter)
 
 	// Fetch the created user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).Last(user).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Fetch the created confirmation
-	confirmation := new(accounts.Confirmation)
-	assert.False(suite.T(), suite.db.Preload("User.OauthUser").
+	confirmation := new(models.Confirmation)
+	assert.False(suite.T(), models.ConfirmationPreload(suite.db).
 		Last(confirmation).RecordNotFound())
 
 	// And correct data was saved

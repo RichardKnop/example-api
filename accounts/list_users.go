@@ -4,10 +4,11 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	"github.com/RichardKnop/example-api/pagination"
-	"github.com/RichardKnop/example-api/response"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/example-api/util/pagination"
+	"github.com/RichardKnop/example-api/util/response"
 )
 
 var (
@@ -78,7 +79,7 @@ func (s *Service) listUsersHandler(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, listUsersResponse, http.StatusOK)
 }
 
-func checkListUsersPermissions(authenticatedUser *User) error {
+func checkListUsersPermissions(authenticatedUser *models.User) error {
 	// Superusers can list users
 	if authenticatedUser.OauthUser.RoleID.String == roles.Superuser {
 		return nil

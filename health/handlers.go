@@ -3,7 +3,7 @@ package health
 import (
 	"net/http"
 
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util/response"
 )
 
 // Handles health check requests (GET /v1/health)

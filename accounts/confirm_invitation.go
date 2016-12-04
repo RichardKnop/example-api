@@ -5,8 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/response"
-
+	"github.com/RichardKnop/example-api/util/response"
 	"github.com/gorilla/mux"
 )
 

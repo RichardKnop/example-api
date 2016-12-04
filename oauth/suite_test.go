@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/RichardKnop/example-api/config"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/gorilla/mux"
@@ -25,7 +26,7 @@ var (
 	}
 
 	testMigrations = []func(*gorm.DB) error{
-		oauth.MigrateAll,
+		models.MigrateAll,
 	}
 )
 
@@ -41,8 +42,8 @@ type OauthTestSuite struct {
 	cnf     *config.Config
 	db      *gorm.DB
 	service *oauth.Service
-	clients []*oauth.Client
-	users   []*oauth.User
+	clients []*models.OauthClient
+	users   []*models.OauthUser
 	router  *mux.Router
 }
 
@@ -65,13 +66,13 @@ func (suite *OauthTestSuite) SetupSuite() {
 	suite.db = db
 
 	// Fetch test client
-	suite.clients = make([]*oauth.Client, 0)
+	suite.clients = make([]*models.OauthClient, 0)
 	if err := suite.db.Order("id").Find(&suite.clients).Error; err != nil {
 		log.Fatal(err)
 	}
 
 	// Fetch test users
-	suite.users = make([]*oauth.User, 0)
+	suite.users = make([]*models.OauthUser, 0)
 	if err := suite.db.Order("id").Find(&suite.users).Error; err != nil {
 		log.Fatal(err)
 	}
@@ -99,11 +100,11 @@ func (suite *OauthTestSuite) SetupTest() {
 func (suite *OauthTestSuite) TearDownTest() {
 	// Scopes are static, populated from fixtures,
 	// so there is no need to clear them after running a test
-	suite.db.Unscoped().Delete(new(oauth.AuthorizationCode))
-	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
-	suite.db.Unscoped().Delete(new(oauth.AccessToken))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(oauth.User))
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.Client))
+	suite.db.Unscoped().Delete(new(models.OauthAuthorizationCode))
+	suite.db.Unscoped().Delete(new(models.OauthRefreshToken))
+	suite.db.Unscoped().Delete(new(models.OauthAccessToken))
+	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(models.OauthUser))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(models.OauthClient))
 }
 
 // TestOauthTestSuite ...

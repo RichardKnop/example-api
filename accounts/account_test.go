@@ -2,13 +2,14 @@ package accounts_test
 
 import (
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindAccountByOauthClientID() {
 	var (
-		account *accounts.Account
+		account *models.Account
 		err     error
 	)
 
@@ -38,7 +39,7 @@ func (suite *AccountsTestSuite) TestFindAccountByOauthClientID() {
 
 func (suite *AccountsTestSuite) TestFindAccountByID() {
 	var (
-		account *accounts.Account
+		account *models.Account
 		err     error
 	)
 
@@ -68,7 +69,7 @@ func (suite *AccountsTestSuite) TestFindAccountByID() {
 
 func (suite *AccountsTestSuite) TestFindAccountByName() {
 	var (
-		account *accounts.Account
+		account *models.Account
 		err     error
 	)
 
@@ -98,7 +99,7 @@ func (suite *AccountsTestSuite) TestFindAccountByName() {
 
 func (suite *AccountsTestSuite) TestCreateAccount() {
 	var (
-		account *accounts.Account
+		account *models.Account
 		err     error
 	)
 

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/example-api/util"
@@ -64,8 +65,8 @@ func (suite *AccountsTestSuite) TestGetUser() {
 	suite.assertMockExpectations()
 
 	// Fetch the user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, suite.users[1].ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check the response

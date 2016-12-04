@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/RichardKnop/example-api/migrations"
+	"github.com/RichardKnop/example-api/util/migrations"
 	"github.com/RichardKnop/go-fixtures"
 	"github.com/jinzhu/gorm"
 	// sqlite driver

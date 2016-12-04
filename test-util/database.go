@@ -8,7 +8,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/RichardKnop/go-fixtures"
-	"github.com/RichardKnop/example-api/migrations"
+	"github.com/RichardKnop/example-api/util/migrations"
 	// Drivers
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"

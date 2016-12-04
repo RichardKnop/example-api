@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/facebook"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/oauth/tokentypes"
@@ -42,7 +42,7 @@ func (suite *FacebookTestSuite) TestLoginFacebookCallFails() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -58,7 +58,7 @@ func (suite *FacebookTestSuite) TestLoginFacebookCallFails() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Check the response body
@@ -99,7 +99,7 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -115,7 +115,7 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Check the response body
@@ -128,8 +128,8 @@ func (suite *FacebookTestSuite) TestLoginErrAccountMismatch() {
 
 func (suite *FacebookTestSuite) TestLoginExistingUser() {
 	var (
-		testOauthUser *oauth.User
-		testUser      *accounts.User
+		testOauthUser *models.OauthUser
+		testUser      *models.User
 		err           error
 	)
 
@@ -140,16 +140,14 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 		"", // empty password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		"some_facebook_id", // facebook ID
-		true,               // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-			Picture:   "some_picture",
-		},
+		"Harold",
+		"Finch",
+		"some_picture",
+		true, // confirmed
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new test account user object")
 	err = suite.db.Create(testUser).Error
@@ -188,7 +186,7 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -204,13 +202,12 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the logged in user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).
-		First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// The user should not have changed
@@ -221,11 +218,11 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 	assert.Equal(suite.T(), testUser.Picture.String, user.Picture.String)
 
 	// Fetch oauth tokens
-	accessToken := new(oauth.AccessToken)
-	assert.False(suite.T(), oauth.AccessTokenPreload(suite.db).
+	accessToken := new(models.OauthAccessToken)
+	assert.False(suite.T(), models.OauthAccessTokenPreload(suite.db).
 		First(accessToken).RecordNotFound())
-	refreshToken := new(oauth.RefreshToken)
-	assert.False(suite.T(), oauth.RefreshTokenPreload(suite.db).
+	refreshToken := new(models.OauthRefreshToken)
+	assert.False(suite.T(), models.OauthRefreshTokenPreload(suite.db).
 		First(refreshToken).RecordNotFound())
 
 	// Check the response body
@@ -244,8 +241,8 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 
 func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 	var (
-		testOauthUser *oauth.User
-		testUser      *accounts.User
+		testOauthUser *models.OauthUser
+		testUser      *models.User
 		err           error
 	)
 
@@ -256,16 +253,14 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 		"", // empty password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
 		"some_facebook_id", // facebook ID
-		true,               // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-			Picture:   "some_picture",
-		},
+		"Harold",
+		"Finch",
+		"some_picture",
+		true, // confirmed
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new test account user object")
 	err = suite.db.Create(testUser).Error
@@ -304,7 +299,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -320,13 +315,12 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the updated user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).
-		First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// And correct data was saved
@@ -338,11 +332,11 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 
 	// Fetch oauth tokens
-	accessToken := new(oauth.AccessToken)
-	assert.False(suite.T(), oauth.AccessTokenPreload(suite.db).
+	accessToken := new(models.OauthAccessToken)
+	assert.False(suite.T(), models.OauthAccessTokenPreload(suite.db).
 		First(accessToken).RecordNotFound())
-	refreshToken := new(oauth.RefreshToken)
-	assert.False(suite.T(), oauth.RefreshTokenPreload(suite.db).
+	refreshToken := new(models.OauthRefreshToken)
+	assert.False(suite.T(), models.OauthRefreshTokenPreload(suite.db).
 		First(refreshToken).RecordNotFound())
 
 	// Check the response body
@@ -392,7 +386,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -408,12 +402,12 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Fetch the created user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).Last(user).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// And correct data was saved
@@ -426,11 +420,11 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUser() {
 	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 
 	// Fetch oauth tokens
-	accessToken := new(oauth.AccessToken)
-	assert.False(suite.T(), oauth.AccessTokenPreload(suite.db).
+	accessToken := new(models.OauthAccessToken)
+	assert.False(suite.T(), models.OauthAccessTokenPreload(suite.db).
 		First(accessToken).RecordNotFound())
-	refreshToken := new(oauth.RefreshToken)
-	assert.False(suite.T(), oauth.RefreshTokenPreload(suite.db).
+	refreshToken := new(models.OauthRefreshToken)
+	assert.False(suite.T(), models.OauthRefreshTokenPreload(suite.db).
 		First(refreshToken).RecordNotFound())
 
 	// Check the response body
@@ -475,7 +469,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNilEmail() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -491,13 +485,12 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNilEmail() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Fetch the created user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).
-		Last(user).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// And correct data was saved
@@ -510,11 +503,11 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNilEmail() {
 	assert.True(suite.T(), user.Confirmed)
 
 	// Fetch oauth tokens
-	accessToken := new(oauth.AccessToken)
-	assert.False(suite.T(), oauth.AccessTokenPreload(suite.db).
+	accessToken := new(models.OauthAccessToken)
+	assert.False(suite.T(), models.OauthAccessTokenPreload(suite.db).
 		First(accessToken).RecordNotFound())
-	refreshToken := new(oauth.RefreshToken)
-	assert.False(suite.T(), oauth.RefreshTokenPreload(suite.db).
+	refreshToken := new(models.OauthRefreshToken)
+	assert.False(suite.T(), models.OauthRefreshTokenPreload(suite.db).
 		First(refreshToken).RecordNotFound())
 
 	// Check the response body
@@ -560,7 +553,7 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNoPicture() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -576,13 +569,12 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNoPicture() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Fetch the created user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).
-		Last(user).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).Last(user).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// And correct data was saved
@@ -595,11 +587,11 @@ func (suite *FacebookTestSuite) TestLoginCreatesNewUserNoPicture() {
 	assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 
 	// Fetch oauth tokens
-	accessToken := new(oauth.AccessToken)
-	assert.False(suite.T(), oauth.AccessTokenPreload(suite.db).
+	accessToken := new(models.OauthAccessToken)
+	assert.False(suite.T(), models.OauthAccessTokenPreload(suite.db).
 		First(accessToken).RecordNotFound())
-	refreshToken := new(oauth.RefreshToken)
-	assert.False(suite.T(), oauth.RefreshTokenPreload(suite.db).
+	refreshToken := new(models.OauthRefreshToken)
+	assert.False(suite.T(), models.OauthRefreshTokenPreload(suite.db).
 		First(refreshToken).RecordNotFound())
 
 	// Check the response body

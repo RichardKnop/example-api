@@ -1,8 +1,8 @@
 package oauth_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/oauth"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *OauthTestSuite) TestGetScope() {

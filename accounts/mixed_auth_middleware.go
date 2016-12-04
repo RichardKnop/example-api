@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/context"
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util/response"
 	"github.com/RichardKnop/example-api/util"
 )
 

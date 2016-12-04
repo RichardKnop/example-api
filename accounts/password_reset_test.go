@@ -1,19 +1,20 @@
 package accounts_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	var (
-		testExpiredPasswordReset, testPasswordReset, passwordReset *accounts.PasswordReset
+		testExpiredPasswordReset, testPasswordReset, passwordReset *models.PasswordReset
 		err                                                        error
 	)
 
 	// Insert test password resets
 
-	testExpiredPasswordReset, err = accounts.NewPasswordReset(
+	testExpiredPasswordReset, err = models.NewPasswordReset(
 		suite.users[1],
 		-10, // expires in
 	)
@@ -22,7 +23,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 	assert.NoError(suite.T(), err, "Inserting test expired password reset failed")
 	testExpiredPasswordReset.User = suite.users[1]
 
-	testPasswordReset, err = accounts.NewPasswordReset(
+	testPasswordReset, err = models.NewPasswordReset(
 		suite.users[1],
 		suite.cnf.AppSpecific.PasswordResetLifetime,
 	)
@@ -80,7 +81,7 @@ func (suite *AccountsTestSuite) TestFindPasswordResetByReference() {
 
 func (suite *AccountsTestSuite) TestResetPassword() {
 	// Insert a test password reset
-	testPasswordReset, err := accounts.NewPasswordReset(
+	testPasswordReset, err := models.NewPasswordReset(
 		suite.users[1],
 		suite.cnf.AppSpecific.PasswordResetLifetime,
 	)
@@ -98,6 +99,6 @@ func (suite *AccountsTestSuite) TestResetPassword() {
 	// The password reset object should have been deleted
 	assert.True(
 		suite.T(),
-		suite.db.Find(new(accounts.PasswordReset), testPasswordReset.ID).RecordNotFound(),
+		suite.db.Find(new(models.PasswordReset), testPasswordReset.ID).RecordNotFound(),
 	)
 }

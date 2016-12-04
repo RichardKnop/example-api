@@ -8,6 +8,7 @@ import (
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/database"
 	"github.com/RichardKnop/example-api/facebook"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"
@@ -16,6 +17,7 @@ import (
 
 	accountsMocks "github.com/RichardKnop/example-api/accounts/mocks"
 	emailMocks "github.com/RichardKnop/example-api/email/mocks"
+	facebookMocks "github.com/RichardKnop/example-api/facebook/mocks"
 )
 
 var (
@@ -34,8 +36,7 @@ var testFixtures = []string{
 
 // db migrations needed for tests
 var testMigrations = []func(*gorm.DB) error{
-	oauth.MigrateAll,
-	accounts.MigrateAll,
+	models.MigrateAll,
 }
 
 // FacebookTestSuite needs to be exported so the tests run
@@ -43,11 +44,11 @@ type FacebookTestSuite struct {
 	suite.Suite
 	cnf         *config.Config
 	db          *gorm.DB
-	adapterMock *facebook.AdapterMock
+	adapterMock *facebookMocks.AdapterInterface
 	service     *facebook.Service
 	router      *mux.Router
-	accounts    []*accounts.Account
-	users       []*accounts.User
+	accounts    []*models.Account
+	users       []*models.User
 }
 
 // The SetupSuite method will be run by testify once, at the very
@@ -69,21 +70,21 @@ func (suite *FacebookTestSuite) SetupSuite() {
 	suite.db = db
 
 	// Fetch test accounts
-	suite.accounts = make([]*accounts.Account, 0)
-	err = accounts.AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
+	suite.accounts = make([]*models.Account, 0)
+	err = models.AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Fetch test users
-	suite.users = make([]*accounts.User, 0)
-	err = accounts.UserPreload(suite.db).Order("id").Find(&suite.users).Error
+	suite.users = make([]*models.User, 0)
+	err = models.UserPreload(suite.db).Order("id").Find(&suite.users).Error
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Initialise mocks
-	suite.adapterMock = new(facebook.AdapterMock)
+	suite.adapterMock = new(facebookMocks.AdapterInterface)
 
 	// Initialise the service
 	suite.service = facebook.NewService(
@@ -113,10 +114,10 @@ func (suite *FacebookTestSuite) TearDownSuite() {
 // The SetupTest method will be run before every test in the suite.
 func (suite *FacebookTestSuite) SetupTest() {
 	// loginHandler also creates a new user and oauth tokens
-	suite.db.Unscoped().Delete(new(oauth.RefreshToken))
-	suite.db.Unscoped().Delete(new(oauth.AccessToken))
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(accounts.User))
-	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(oauth.User))
+	suite.db.Unscoped().Delete(new(models.OauthRefreshToken))
+	suite.db.Unscoped().Delete(new(models.OauthAccessToken))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(models.User))
+	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(models.OauthUser))
 
 	// Reset mocks
 	suite.adapterMock.ExpectedCalls = suite.adapterMock.ExpectedCalls[:0]

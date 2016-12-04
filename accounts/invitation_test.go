@@ -1,19 +1,20 @@
 package accounts_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindInvitationByReference() {
 	var (
-		testExpiredInvitation, testInvitation, invitation *accounts.Invitation
+		testExpiredInvitation, testInvitation, invitation *models.Invitation
 		err                                               error
 	)
 
 	// Insert test invitations
 
-	testExpiredInvitation, err = accounts.NewInvitation(
+	testExpiredInvitation, err = models.NewInvitation(
 		suite.users[0],
 		suite.users[1],
 		-10, // expires in
@@ -22,7 +23,7 @@ func (suite *AccountsTestSuite) TestFindInvitationByReference() {
 	err = suite.db.Create(testExpiredInvitation).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 
-	testInvitation, err = accounts.NewInvitation(
+	testInvitation, err = models.NewInvitation(
 		suite.users[0],
 		suite.users[1],
 		suite.cnf.AppSpecific.InvitationLifetime,

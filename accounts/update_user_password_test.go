@@ -8,11 +8,12 @@ import (
 	"net/http/httptest"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	"github.com/RichardKnop/example-api/password"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/example-api/util/password"
 	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -20,9 +21,9 @@ import (
 
 func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPassword() {
 	var (
-		testOauthUser   *oauth.User
-		testUser        *accounts.User
-		testAccessToken *oauth.AccessToken
+		testOauthUser   *models.OauthUser
+		testUser        *models.User
+		testAccessToken *models.OauthAccessToken
 		err             error
 	)
 
@@ -33,15 +34,14 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
+		"", //facebook ID
+		"Harold",
+		"Finch",
+		"",    // picture
 		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-		},
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
@@ -90,9 +90,9 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 
 func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser() {
 	var (
-		testOauthUser   *oauth.User
-		testUser        *accounts.User
-		testAccessToken *oauth.AccessToken
+		testOauthUser   *models.OauthUser
+		testUser        *models.User
+		testAccessToken *models.OauthAccessToken
 		err             error
 	)
 
@@ -103,15 +103,14 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 		"", // empty password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
+		"", //facebook ID
+		"Harold",
+		"Finch",
+		"",    // picture
 		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-		},
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
@@ -160,9 +159,9 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 
 func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 	var (
-		testOauthUser   *oauth.User
-		testUser        *accounts.User
-		testAccessToken *oauth.AccessToken
+		testOauthUser   *models.OauthUser
+		testUser        *models.User
+		testAccessToken *models.OauthAccessToken
 		err             error
 	)
 
@@ -173,15 +172,14 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
+		"", //facebook ID
+		"Harold",
+		"Finch",
+		"",    // picture
 		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-		},
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
@@ -219,7 +217,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -230,12 +228,12 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the updated user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check that the password has changed

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/jinzhu/gorm"
@@ -17,10 +18,10 @@ var (
 
 // FindInvitationByReference looks up an invitation by a reference and returns it
 // only return the object if it's not expired
-func (s *Service) FindInvitationByReference(reference string) (*Invitation, error) {
+func (s *Service) FindInvitationByReference(reference string) (*models.Invitation, error) {
 	// Fetch the invitation from the database
-	invitation := new(Invitation)
-	notFound := InvitationPreload(s.db).Where("reference = ?", reference).
+	invitation := new(models.Invitation)
+	notFound := models.InvitationPreload(s.db).Where("reference = ?", reference).
 		Where("expires_at > ?", time.Now().UTC()).First(invitation).RecordNotFound()
 
 	// Not found
@@ -32,7 +33,7 @@ func (s *Service) FindInvitationByReference(reference string) (*Invitation, erro
 }
 
 // InviteUser invites a new user and sends an invitation email
-func (s *Service) InviteUser(invitedByUser *User, invitationRequest *InvitationRequest) (*Invitation, error) {
+func (s *Service) InviteUser(invitedByUser *models.User, invitationRequest *InvitationRequest) (*models.Invitation, error) {
 	// Check if oauth user exists
 	if s.GetOauthService().UserExists(invitationRequest.Email) {
 		return nil, oauth.ErrUsernameTaken
@@ -53,15 +54,14 @@ func (s *Service) InviteUser(invitedByUser *User, invitationRequest *InvitationR
 	}
 
 	// Create a new user account
-	invitedUser, err := NewUser(
+	invitedUser, err := models.NewUser(
 		invitedByUser.Account,
 		oauthUser,
-		"",    // facebook ID
+		"", // facebook ID
+		invitationRequest.FirstName,
+		invitationRequest.LastName,
+		"",    // picture
 		false, // confirmed
-		&UserRequest{
-			FirstName: invitationRequest.FirstName,
-			LastName:  invitationRequest.LastName,
-		},
 	)
 	if err != nil {
 		return nil, err
@@ -77,13 +77,21 @@ func (s *Service) InviteUser(invitedByUser *User, invitationRequest *InvitationR
 	invitedUser.OauthUser = oauthUser
 
 	// Update the meta user ID field
-	err = tx.Model(oauthUser).UpdateColumn(oauth.User{MetaUserID: invitedUser.ID}).Error
+	err = tx.Model(oauthUser).UpdateColumn(
+		models.OauthUser{
+			MetaUserID: invitedUser.ID,
+		},
+	).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// Create a new invitation
-	invitation, err := NewInvitation(invitedUser, invitedByUser, s.cnf.AppSpecific.InvitationLifetime)
+	invitation, err := models.NewInvitation(
+		invitedUser,
+		invitedByUser,
+		s.cnf.AppSpecific.InvitationLifetime,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +122,7 @@ func (s *Service) InviteUser(invitedByUser *User, invitationRequest *InvitationR
 }
 
 // ConfirmInvitation sets password on the oauth user object and deletes the invitation
-func (s *Service) ConfirmInvitation(invitation *Invitation, password string) error {
+func (s *Service) ConfirmInvitation(invitation *models.Invitation, password string) error {
 	// Begin a transaction
 	tx := s.db.Begin()
 
@@ -144,7 +152,7 @@ func (s *Service) ConfirmInvitation(invitation *Invitation, password string) err
 	return nil
 }
 
-func (s *Service) sendInvitationEmail(invitation *Invitation) error {
+func (s *Service) sendInvitationEmail(invitation *models.Invitation) error {
 	invitationEmail, err := s.emailFactory.NewInvitationEmail(invitation)
 	if err != nil {
 		return fmt.Errorf("New invitation email error: %s", err)
@@ -157,8 +165,8 @@ func (s *Service) sendInvitationEmail(invitation *Invitation) error {
 
 	// If the email was sent successfully, update the email_sent flag
 	now := gorm.NowFunc()
-	if err := s.db.Model(invitation).UpdateColumns(Invitation{
-		EmailTokenModel: EmailTokenModel{
+	if err := s.db.Model(invitation).UpdateColumns(models.Invitation{
+		EmailTokenModel: models.EmailTokenModel{
 			EmailSent:   true,
 			EmailSentAt: &now,
 			Model:       gorm.Model{UpdatedAt: time.Now().UTC()},

@@ -1,7 +1,7 @@
 package accounts
 
 import (
-	"github.com/RichardKnop/example-api/routes"
+	"github.com/RichardKnop/example-api/util/routes"
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
 )

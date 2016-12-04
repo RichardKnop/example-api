@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/gorilla/mux"
@@ -57,8 +58,8 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 		countBefore            int
 		invitationsCountBefore int
 	)
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
-	suite.db.Model(new(accounts.Invitation)).Count(&invitationsCountBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
+	suite.db.Model(new(models.Invitation)).Count(&invitationsCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -69,14 +70,14 @@ func (suite *AccountsTestSuite) TestInviteUser() {
 		countAfter            int
 		invitationsCountAfter int
 	)
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
-	suite.db.Model(new(accounts.Invitation)).Count(&invitationsCountAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
+	suite.db.Model(new(models.Invitation)).Count(&invitationsCountAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 	assert.Equal(suite.T(), invitationsCountBefore+1, invitationsCountAfter)
 
 	// Fetch the created invitation
-	invitation := new(accounts.Invitation)
-	assert.False(suite.T(), accounts.InvitationPreload(suite.db).
+	invitation := new(models.Invitation)
+	assert.False(suite.T(), models.InvitationPreload(suite.db).
 		Last(invitation).RecordNotFound())
 
 	// And correct data was saved

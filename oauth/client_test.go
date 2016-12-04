@@ -1,13 +1,14 @@
 package oauth_test
 
 import (
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/stretchr/testify/assert"
 )
 
 func (suite *OauthTestSuite) TestFindClientByClientID() {
 	var (
-		client *oauth.Client
+		client *models.OauthClient
 		err    error
 	)
 
@@ -36,7 +37,7 @@ func (suite *OauthTestSuite) TestFindClientByClientID() {
 
 func (suite *OauthTestSuite) TestCreateClient() {
 	var (
-		client *oauth.Client
+		client *models.OauthClient
 		err    error
 	)
 
@@ -73,7 +74,7 @@ func (suite *OauthTestSuite) TestCreateClient() {
 
 func (suite *OauthTestSuite) TestAuthClient() {
 	var (
-		client *oauth.Client
+		client *models.OauthClient
 		err    error
 	)
 

@@ -3,6 +3,7 @@ package accounts
 import (
 	"net/http"
 
+	"github.com/RichardKnop/example-api/models"
 	"github.com/gorilla/context"
 )
 
@@ -16,13 +17,13 @@ const (
 )
 
 // GetAuthenticatedAccount returns *Account from the request context
-func GetAuthenticatedAccount(r *http.Request) (*Account, error) {
+func GetAuthenticatedAccount(r *http.Request) (*models.Account, error) {
 	val, ok := context.GetOk(r, AuthenticatedAccountKey)
 	if !ok {
 		return nil, ErrAccountAuthenticationRequired
 	}
 
-	authenticatedAccount, ok := val.(*Account)
+	authenticatedAccount, ok := val.(*models.Account)
 	if !ok {
 		return nil, ErrAccountAuthenticationRequired
 	}
@@ -31,13 +32,13 @@ func GetAuthenticatedAccount(r *http.Request) (*Account, error) {
 }
 
 // GetAuthenticatedUser returns *User from the request context
-func GetAuthenticatedUser(r *http.Request) (*User, error) {
+func GetAuthenticatedUser(r *http.Request) (*models.User, error) {
 	val, ok := context.GetOk(r, AuthenticatedUserKey)
 	if !ok {
 		return nil, ErrUserAuthenticationRequired
 	}
 
-	authenticatedUser, ok := val.(*User)
+	authenticatedUser, ok := val.(*models.User)
 	if !ok {
 		return nil, ErrUserAuthenticationRequired
 	}

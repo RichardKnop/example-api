@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/migrations"
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/util/migrations"
 )
 
 // Migrate runs database migrations
@@ -19,13 +18,8 @@ func Migrate() error {
 		return err
 	}
 
-	// Run migrations for the oauth service
-	if err := oauth.MigrateAll(db); err != nil {
-		return err
-	}
-
-	// Run migrations for the accounts service
-	if err := accounts.MigrateAll(db); err != nil {
+	// Run all migrations
+	if err := models.MigrateAll(db); err != nil {
 		return err
 	}
 

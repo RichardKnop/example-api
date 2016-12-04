@@ -6,7 +6,7 @@ import (
 
 	"github.com/RichardKnop/example-api/accounts"
 	"github.com/RichardKnop/example-api/config"
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,12 +26,12 @@ func TestNewConfirmationEmail(t *testing.T) {
 			OnboardingCheckpointURLFormat: "%s://%s/continue-onboarding/%s",
 		},
 	})
-	confirmation := &accounts.Confirmation{
-		EmailTokenModel: accounts.EmailTokenModel{
+	confirmation := &models.Confirmation{
+		EmailTokenModel: models.EmailTokenModel{
 			Reference: "some-reference",
 		},
-		User: &accounts.User{
-			OauthUser: &oauth.User{
+		User: &models.User{
+			OauthUser: &models.OauthUser{
 				Username: "john@reese",
 			},
 			FirstName: util.StringOrNull("John"),
@@ -71,12 +71,12 @@ func TestNewPasswordResetEmail(t *testing.T) {
 			OnboardingCheckpointURLFormat: "%s://%s/continue-onboarding/%s",
 		},
 	})
-	passwordReset := &accounts.PasswordReset{
-		EmailTokenModel: accounts.EmailTokenModel{
+	passwordReset := &models.PasswordReset{
+		EmailTokenModel: models.EmailTokenModel{
 			Reference: "some-reference",
 		},
-		User: &accounts.User{
-			OauthUser: &oauth.User{
+		User: &models.User{
+			OauthUser: &models.OauthUser{
 				Username: "john@reese",
 			},
 			FirstName: util.StringOrNull("John"),
@@ -116,19 +116,19 @@ func TestNewInvitationEmail(t *testing.T) {
 			OnboardingCheckpointURLFormat: "%s://%s/continue-onboarding/%s",
 		},
 	})
-	invitation := &accounts.Invitation{
-		EmailTokenModel: accounts.EmailTokenModel{
+	invitation := &models.Invitation{
+		EmailTokenModel: models.EmailTokenModel{
 			Reference: "some-reference",
 		},
-		InvitedUser: &accounts.User{
-			OauthUser: &oauth.User{
+		InvitedUser: &models.User{
+			OauthUser: &models.OauthUser{
 				Username: "john@reese",
 			},
 			FirstName: util.StringOrNull("John"),
 			LastName:  util.StringOrNull("Reese"),
 		},
-		InvitedByUser: &accounts.User{
-			OauthUser: &oauth.User{
+		InvitedByUser: &models.User{
+			OauthUser: &models.OauthUser{
 				Username: "harold@finch",
 			},
 			FirstName: util.StringOrNull("Harold"),

@@ -10,10 +10,10 @@ import (
 	"strings"
 
 	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	pass "github.com/RichardKnop/example-api/password"
 	"github.com/RichardKnop/example-api/test-util"
+	pass "github.com/RichardKnop/example-api/util/password"
 	"github.com/RichardKnop/uuid"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -51,9 +51,9 @@ func (suite *AccountsTestSuite) TestConfirmPasswordResetNotFound() {
 
 func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 	var (
-		testOauthUser     *oauth.User
-		testUser          *accounts.User
-		testPasswordReset *accounts.PasswordReset
+		testOauthUser     *models.OauthUser
+		testUser          *models.User
+		testPasswordReset *models.PasswordReset
 		err               error
 	)
 
@@ -64,15 +64,14 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 		"", // blank password
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
-		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-		},
+		"", //facebook ID
+		"Harold",
+		"Finch",
+		"picture", // picture
+		false,     // confirmed
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
@@ -81,7 +80,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 	testUser.OauthUser = testOauthUser
 
 	// Insert a test password reset
-	testPasswordReset, err = accounts.NewPasswordReset(
+	testPasswordReset, err = models.NewPasswordReset(
 		testUser,
 		suite.cnf.AppSpecific.PasswordResetLifetime,
 	)
@@ -118,7 +117,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.PasswordReset)).Count(&countBefore)
+	suite.db.Model(new(models.PasswordReset)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -126,16 +125,16 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.PasswordReset)).Count(&countAfter)
+	suite.db.Model(new(models.PasswordReset)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore-1, countAfter)
 
 	// Fetch the updated user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Password reset should have been soft deleted
-	assert.True(suite.T(), suite.db.First(new(accounts.PasswordReset), testPasswordReset.ID).RecordNotFound())
+	assert.True(suite.T(), suite.db.First(new(models.PasswordReset), testPasswordReset.ID).RecordNotFound())
 
 	// And correct data was saved
 	assert.Nil(suite.T(), pass.VerifyPassword(user.OauthUser.Password.String, "test_password"))

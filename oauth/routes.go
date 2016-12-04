@@ -2,7 +2,7 @@ package oauth
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/RichardKnop/example-api/routes"
+	"github.com/RichardKnop/example-api/util/routes"
 )
 
 const (

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
 	"github.com/RichardKnop/example-api/oauth/tokentypes"
@@ -47,9 +48,9 @@ func (suite *AccountsTestSuite) TestConfirmEmailNotFound() {
 
 func (suite *AccountsTestSuite) TestConfirmEmail() {
 	var (
-		testOauthUser    *oauth.User
-		testUser         *accounts.User
-		testConfirmation *accounts.Confirmation
+		testOauthUser    *models.OauthUser
+		testUser         *models.User
+		testConfirmation *models.Confirmation
 		err              error
 	)
 
@@ -60,15 +61,14 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
+		"", //facebook ID
+		"Harold",
+		"Finch",
+		"",    // picture
 		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-		},
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
@@ -77,7 +77,7 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 	testUser.OauthUser = testOauthUser
 
 	// Insert a test confirmation
-	testConfirmation, err = accounts.NewConfirmation(
+	testConfirmation, err = models.NewConfirmation(
 		testUser,
 		suite.cnf.AppSpecific.ConfirmationLifetime,
 	)
@@ -117,9 +117,9 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 		accessTokensCountBefore  int
 		refreshTokensCountBefore int
 	)
-	suite.db.Model(new(accounts.Confirmation)).Count(&countBefore)
-	suite.db.Model(new(oauth.AccessToken)).Count(&accessTokensCountBefore)
-	suite.db.Model(new(oauth.RefreshToken)).Count(&refreshTokensCountBefore)
+	suite.db.Model(new(models.Confirmation)).Count(&countBefore)
+	suite.db.Model(new(models.OauthAccessToken)).Count(&accessTokensCountBefore)
+	suite.db.Model(new(models.OauthRefreshToken)).Count(&refreshTokensCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -131,20 +131,20 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 		accessTokensCountAfter  int
 		refreshTokensCountAfter int
 	)
-	suite.db.Model(new(accounts.Confirmation)).Count(&countAfter)
-	suite.db.Model(new(oauth.AccessToken)).Count(&accessTokensCountAfter)
-	suite.db.Model(new(oauth.RefreshToken)).Count(&refreshTokensCountAfter)
+	suite.db.Model(new(models.Confirmation)).Count(&countAfter)
+	suite.db.Model(new(models.OauthAccessToken)).Count(&accessTokensCountAfter)
+	suite.db.Model(new(models.OauthRefreshToken)).Count(&refreshTokensCountAfter)
 	assert.Equal(suite.T(), countBefore-1, countAfter)
 	assert.Equal(suite.T(), accessTokensCountBefore, accessTokensCountAfter)
 	assert.Equal(suite.T(), refreshTokensCountBefore, refreshTokensCountAfter)
 
 	// Fetch the updated user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Confirmation should have been soft deleteted
-	assert.True(suite.T(), suite.db.Last(new(accounts.Confirmation)).RecordNotFound())
+	assert.True(suite.T(), suite.db.Last(new(models.Confirmation)).RecordNotFound())
 
 	// And correct data was saved
 	assert.True(suite.T(), user.Confirmed)
@@ -157,9 +157,9 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 
 func (suite *AccountsTestSuite) TestConfirmEmailWithAutologinFlag() {
 	var (
-		testOauthUser    *oauth.User
-		testUser         *accounts.User
-		testConfirmation *accounts.Confirmation
+		testOauthUser    *models.OauthUser
+		testUser         *models.User
+		testConfirmation *models.Confirmation
 		err              error
 	)
 
@@ -170,15 +170,14 @@ func (suite *AccountsTestSuite) TestConfirmEmailWithAutologinFlag() {
 		"test_password",
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
-	testUser, err = accounts.NewUser(
+	testUser, err = models.NewUser(
 		suite.accounts[0],
 		testOauthUser,
-		"",    //facebook ID
+		"", //facebook ID
+		"Harold",
+		"Finch",
+		"",    // picture
 		false, // confirmed
-		&accounts.UserRequest{
-			FirstName: "Harold",
-			LastName:  "Finch",
-		},
 	)
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
@@ -186,7 +185,7 @@ func (suite *AccountsTestSuite) TestConfirmEmailWithAutologinFlag() {
 	testUser.Account = suite.accounts[0]
 
 	// Insert a test confirmation
-	testConfirmation, err = accounts.NewConfirmation(
+	testConfirmation, err = models.NewConfirmation(
 		testUser,
 		suite.cnf.AppSpecific.ConfirmationLifetime,
 	)
@@ -226,9 +225,9 @@ func (suite *AccountsTestSuite) TestConfirmEmailWithAutologinFlag() {
 		accessTokensCountBefore  int
 		refreshTokensCountBefore int
 	)
-	suite.db.Model(new(accounts.Confirmation)).Count(&countBefore)
-	suite.db.Model(new(oauth.AccessToken)).Count(&accessTokensCountBefore)
-	suite.db.Model(new(oauth.RefreshToken)).Count(&refreshTokensCountBefore)
+	suite.db.Model(new(models.Confirmation)).Count(&countBefore)
+	suite.db.Model(new(models.OauthAccessToken)).Count(&accessTokensCountBefore)
+	suite.db.Model(new(models.OauthRefreshToken)).Count(&refreshTokensCountBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -240,29 +239,29 @@ func (suite *AccountsTestSuite) TestConfirmEmailWithAutologinFlag() {
 		accessTokensCountAfter  int
 		refreshTokensCountAfter int
 	)
-	suite.db.Model(new(accounts.Confirmation)).Count(&countAfter)
-	suite.db.Model(new(oauth.AccessToken)).Count(&accessTokensCountAfter)
-	suite.db.Model(new(oauth.RefreshToken)).Count(&refreshTokensCountAfter)
+	suite.db.Model(new(models.Confirmation)).Count(&countAfter)
+	suite.db.Model(new(models.OauthAccessToken)).Count(&accessTokensCountAfter)
+	suite.db.Model(new(models.OauthRefreshToken)).Count(&refreshTokensCountAfter)
 	assert.Equal(suite.T(), countBefore-1, countAfter)
 	assert.Equal(suite.T(), accessTokensCountBefore+1, accessTokensCountAfter)
 	assert.Equal(suite.T(), refreshTokensCountBefore+1, refreshTokensCountAfter)
 
 	// Fetch the updated user
-	user := new(accounts.User)
-	notFound := accounts.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
+	user := new(models.User)
+	notFound := models.UserPreload(suite.db).First(user, testUser.ID).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Confirmation should have been soft deleteted
-	assert.True(suite.T(), suite.db.Last(new(accounts.Confirmation)).RecordNotFound())
+	assert.True(suite.T(), suite.db.Last(new(models.Confirmation)).RecordNotFound())
 
 	// And correct data was saved
 	assert.True(suite.T(), user.Confirmed)
 
 	// Fetch login data
-	accessToken, refreshToken := new(oauth.AccessToken), new(oauth.RefreshToken)
-	assert.False(suite.T(), oauth.AccessTokenPreload(suite.db).
+	accessToken, refreshToken := new(models.OauthAccessToken), new(models.OauthRefreshToken)
+	assert.False(suite.T(), models.OauthAccessTokenPreload(suite.db).
 		Last(accessToken).RecordNotFound())
-	assert.False(suite.T(), oauth.RefreshTokenPreload(suite.db).
+	assert.False(suite.T(), models.OauthRefreshTokenPreload(suite.db).
 		Last(refreshToken).RecordNotFound())
 
 	// Check the response

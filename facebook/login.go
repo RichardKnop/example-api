@@ -6,9 +6,10 @@ import (
 	"net/http"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/tokentypes"
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util/response"
 )
 
 var (
@@ -49,7 +50,7 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 	// Initialise variables
 	var (
 		profile UserProfile
-		user    *accounts.User
+		user    *models.User
 	)
 
 	// Decode the response to struct

@@ -8,7 +8,7 @@ import (
 	"github.com/RichardKnop/jsonhal"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/tokentypes"
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util/response"
 )
 
 // Handles requests to confirm user's email

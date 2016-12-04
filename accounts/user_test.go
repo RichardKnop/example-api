@@ -4,15 +4,16 @@ import (
 	"testing"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	"github.com/RichardKnop/example-api/pagination"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/example-api/util/pagination"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestUserGetName(t *testing.T) {
-	user := new(accounts.User)
+	user := new(models.User)
 	assert.Equal(t, "", user.GetName())
 
 	user.FirstName = util.StringOrNull("John")
@@ -22,7 +23,7 @@ func TestUserGetName(t *testing.T) {
 
 func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 	var (
-		user *accounts.User
+		user *models.User
 		err  error
 	)
 
@@ -53,7 +54,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 
 func (suite *AccountsTestSuite) TestFindUserByEmail() {
 	var (
-		user *accounts.User
+		user *models.User
 		err  error
 	)
 
@@ -97,7 +98,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 
 func (suite *AccountsTestSuite) TestFindUserByID() {
 	var (
-		user *accounts.User
+		user *models.User
 		err  error
 	)
 
@@ -128,7 +129,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 
 func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 	var (
-		user *accounts.User
+		user *models.User
 		err  error
 	)
 
@@ -171,12 +172,12 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	var (
 		countBefore, countAfter int
-		user                    *accounts.User
+		user                    *models.User
 		err                     error
 	)
 
 	// Count before
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// Let's try passing an existing facebook ID
 	user, err = suite.service.GetOrCreateFacebookUser(
@@ -190,7 +191,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	)
 
 	// Count after
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Error should be nil
@@ -206,7 +207,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	}
 
 	// Count before
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// Let's try passing an existing email
 	user, err = suite.service.GetOrCreateFacebookUser(
@@ -220,7 +221,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	)
 
 	// Count after
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Error should be nil
@@ -236,7 +237,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	}
 
 	// Count before
-	suite.db.Model(new(accounts.User)).Count(&countBefore)
+	suite.db.Model(new(models.User)).Count(&countBefore)
 
 	// We pass new facebook ID and new email
 	user, err = suite.service.GetOrCreateFacebookUser(
@@ -250,7 +251,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	)
 
 	// Count after
-	suite.db.Model(new(accounts.User)).Count(&countAfter)
+	suite.db.Model(new(models.User)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Error should be nil
@@ -269,7 +270,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 func (suite *AccountsTestSuite) TestCreateSuperuser() {
 	var (
-		user *accounts.User
+		user *models.User
 		err  error
 	)
 
@@ -322,7 +323,7 @@ func (suite *AccountsTestSuite) TestPaginatedUsersCount() {
 
 func (suite *AccountsTestSuite) TestFindPaginatedUsers() {
 	var (
-		users []*accounts.User
+		users []*models.User
 		err   error
 	)
 

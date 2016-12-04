@@ -1,19 +1,20 @@
 package accounts_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func (suite *AccountsTestSuite) TestFindConfirmationByReference() {
 	var (
-		testExpiredConfirmation, testConfirmation, confirmation *accounts.Confirmation
+		testExpiredConfirmation, testConfirmation, confirmation *models.Confirmation
 		err                                                     error
 	)
 
 	// Insert test confirmations
 
-	testExpiredConfirmation, err = accounts.NewConfirmation(
+	testExpiredConfirmation, err = models.NewConfirmation(
 		suite.users[1],
 		-10, // expires in
 	)
@@ -21,7 +22,7 @@ func (suite *AccountsTestSuite) TestFindConfirmationByReference() {
 	err = suite.db.Create(testExpiredConfirmation).Error
 	assert.NoError(suite.T(), err, "Inserting test data failed")
 
-	testConfirmation, err = accounts.NewConfirmation(
+	testConfirmation, err = models.NewConfirmation(
 		suite.users[1],
 		suite.cnf.AppSpecific.ConfirmationLifetime,
 	)

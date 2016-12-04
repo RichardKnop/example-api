@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/util"
 )
 
@@ -20,7 +20,7 @@ var (
 )
 
 // GetUserCredentialsFromToken ...
-func (s *Service) GetUserCredentialsFromToken(token string) (*User, error) {
+func (s *Service) GetUserCredentialsFromToken(token string) (*models.User, error) {
 	// Authenticate
 	oauthAccessToken, err := s.GetOauthService().Authenticate(token)
 	if err != nil {
@@ -36,7 +36,7 @@ func (s *Service) GetUserCredentialsFromToken(token string) (*User, error) {
 }
 
 // GetClientCredentialsFromBaseAuth does base auth and returns account credential
-func (s *Service) GetClientCredentialsFromBaseAuth(r *http.Request) (*Account, error) {
+func (s *Service) GetClientCredentialsFromBaseAuth(r *http.Request) (*models.Account, error) {
 	// Try to get client credentials from basic auth
 	clientID, secret, ok := r.BasicAuth()
 	if !ok {
@@ -53,7 +53,7 @@ func (s *Service) GetClientCredentialsFromBaseAuth(r *http.Request) (*Account, e
 }
 
 // GetClientCredentialsFromToken ...
-func (s *Service) GetClientCredentialsFromToken(token string) (*Account, error) {
+func (s *Service) GetClientCredentialsFromToken(token string) (*models.Account, error) {
 	// Authenticate
 	oauthAccessToken, err := s.GetOauthService().Authenticate(token)
 	if err != nil {
@@ -74,7 +74,7 @@ func (s *Service) GetClientCredentialsFromToken(token string) (*Account, error) 
 }
 
 // GetMixedCredentialsFromToken ...
-func (s *Service) GetMixedCredentialsFromToken(token string) (*Account, *User, error) {
+func (s *Service) GetMixedCredentialsFromToken(token string) (*models.Account, *models.User, error) {
 	// Authenticate
 	oauthAccessToken, err := s.GetOauthService().Authenticate(token)
 	if err != nil {
@@ -92,7 +92,7 @@ func (s *Service) GetMixedCredentialsFromToken(token string) (*Account, *User, e
 // getClientCredentialsFromRequest is the common code used to parse client
 // credentials in the request object. It will return a client object based on
 // either base auth client ID and secret or a client only bearer token
-func getClientCredentialsFromRequest(r *http.Request, service ServiceInterface) (*Account, error) {
+func getClientCredentialsFromRequest(r *http.Request, service ServiceInterface) (*models.Account, error) {
 	token, err := util.ParseBearerToken(r)
 	if err != nil {
 		return service.GetClientCredentialsFromBaseAuth(r)
@@ -107,7 +107,7 @@ func getClientCredentialsFromRequest(r *http.Request, service ServiceInterface) 
 // getUserCredentialsFromRequest is the common code used to parse user
 // credentials in the request object. It will return a user object based on
 // a user specific bearer token
-func getUserCredentialsFromRequest(r *http.Request, service ServiceInterface) (*User, error) {
+func getUserCredentialsFromRequest(r *http.Request, service ServiceInterface) (*models.User, error) {
 	token, err := util.ParseBearerToken(r)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func getUserCredentialsFromRequest(r *http.Request, service ServiceInterface) (*
 // getMixedCredentialsFromRequest is the common code used to parse client or
 // user credentials in the request object. It will return a client object and/or
 // a user based on either base auth or bearer token
-func getMixedCredentialsFromRequest(r *http.Request, service ServiceInterface) (*Account, *User, error) {
+func getMixedCredentialsFromRequest(r *http.Request, service ServiceInterface) (*models.Account, *models.User, error) {
 	token, err := util.ParseBearerToken(r)
 	if err != nil {
 		account, err := service.GetClientCredentialsFromBaseAuth(r)
@@ -130,7 +130,7 @@ func getMixedCredentialsFromRequest(r *http.Request, service ServiceInterface) (
 	return service.GetMixedCredentialsFromToken(string(token))
 }
 
-func (s *Service) findAccountOrUserFromToken(oauthAccessToken *oauth.AccessToken) (*Account, *User, error) {
+func (s *Service) findAccountOrUserFromToken(oauthAccessToken *models.OauthAccessToken) (*models.Account, *models.User, error) {
 	// This is a user specific access token
 	if oauthAccessToken.UserID.Valid {
 		user, err := s.FindUserByOauthUserID(uint(oauthAccessToken.UserID.Int64))

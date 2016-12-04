@@ -3,8 +3,9 @@ package accounts
 import (
 	"fmt"
 
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/RichardKnop/example-api/util/response"
 	"github.com/RichardKnop/jsonhal"
 )
 
@@ -53,14 +54,8 @@ type PasswordResetResponse struct {
 	UserID uint `json:"user_id"`
 }
 
-// OnboardingCheckpointResponse ...
-type OnboardingCheckpointResponse struct {
-	EmailTokenResponse
-	UserID uint `json:"user_id"`
-}
-
 // NewUserResponse creates new UserResponse instance
-func NewUserResponse(o *User) (*UserResponse, error) {
+func NewUserResponse(o *models.User) (*UserResponse, error) {
 	response := &UserResponse{
 		ID:        o.ID,
 		Email:     o.OauthUser.Username,
@@ -83,7 +78,7 @@ func NewUserResponse(o *User) (*UserResponse, error) {
 }
 
 // NewConfirmationResponse creates new ConfirmationResponse instance
-func NewConfirmationResponse(o *Confirmation) (*ConfirmationResponse, error) {
+func NewConfirmationResponse(o *models.Confirmation) (*ConfirmationResponse, error) {
 	response := &ConfirmationResponse{
 		EmailTokenResponse: EmailTokenResponse{
 			ID:          o.ID,
@@ -108,7 +103,7 @@ func NewConfirmationResponse(o *Confirmation) (*ConfirmationResponse, error) {
 }
 
 // NewInvitationResponse creates new InvitationResponse instance
-func NewInvitationResponse(o *Invitation) (*InvitationResponse, error) {
+func NewInvitationResponse(o *models.Invitation) (*InvitationResponse, error) {
 	response := &InvitationResponse{
 		EmailTokenResponse: EmailTokenResponse{
 			ID:          o.ID,
@@ -134,7 +129,7 @@ func NewInvitationResponse(o *Invitation) (*InvitationResponse, error) {
 }
 
 // NewPasswordResetResponse creates new PasswordResetResponse instance
-func NewPasswordResetResponse(o *PasswordReset) (*PasswordResetResponse, error) {
+func NewPasswordResetResponse(o *models.PasswordReset) (*PasswordResetResponse, error) {
 	response := &PasswordResetResponse{
 		EmailTokenResponse: EmailTokenResponse{
 			ID:          o.ID,
@@ -159,7 +154,7 @@ func NewPasswordResetResponse(o *PasswordReset) (*PasswordResetResponse, error) 
 }
 
 // NewListUsersResponse creates new *response.ListResponse instance
-func NewListUsersResponse(count, page int, self, first, last, previous, next string, users []*User) (*response.ListResponse, error) {
+func NewListUsersResponse(count, page int, self, first, last, previous, next string, users []*models.User) (*response.ListResponse, error) {
 	userResponses := make([]*UserResponse, len(users))
 	for i, user := range users {
 		userResponse, err := NewUserResponse(user)

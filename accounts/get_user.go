@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	"github.com/RichardKnop/example-api/response"
+	"github.com/RichardKnop/example-api/util/response"
+	"github.com/gorilla/mux"
 )
 
 var (
@@ -56,7 +57,7 @@ func (s *Service) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, userResponse, http.StatusOK)
 }
 
-func checkGetUserPermissions(authenticatedUser, user *User) error {
+func checkGetUserPermissions(authenticatedUser, user *models.User) error {
 	// Superusers can get any users
 	if authenticatedUser.OauthUser.RoleID.String == roles.Superuser {
 		return nil

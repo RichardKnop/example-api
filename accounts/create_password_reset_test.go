@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/RichardKnop/example-api/accounts"
+	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -62,7 +63,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.PasswordReset)).Count(&countBefore)
+	suite.db.Model(new(models.PasswordReset)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -70,12 +71,12 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.PasswordReset)).Count(&countAfter)
+	suite.db.Model(new(models.PasswordReset)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore+1, countAfter)
 
 	// Fetch the created password reset
-	passwordReset := new(accounts.PasswordReset)
-	notFound := accounts.PasswordResetPreload(suite.db).Last(passwordReset).RecordNotFound()
+	passwordReset := new(models.PasswordReset)
+	notFound := models.PasswordResetPreload(suite.db).Last(passwordReset).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// Check the response
@@ -92,7 +93,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordReset() {
 
 func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 	// Insert a test password reset
-	testPasswordReset, err := accounts.NewPasswordReset(
+	testPasswordReset, err := models.NewPasswordReset(
 		suite.users[1],
 		suite.cnf.AppSpecific.PasswordResetLifetime,
 	)
@@ -133,7 +134,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 
 	// Count before
 	var countBefore int
-	suite.db.Model(new(accounts.PasswordReset)).Count(&countBefore)
+	suite.db.Model(new(models.PasswordReset)).Count(&countBefore)
 
 	// And serve the request
 	w := httptest.NewRecorder()
@@ -141,12 +142,12 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetSecondTime() {
 
 	// Count after
 	var countAfter int
-	suite.db.Model(new(accounts.PasswordReset)).Count(&countAfter)
+	suite.db.Model(new(models.PasswordReset)).Count(&countAfter)
 	assert.Equal(suite.T(), countBefore, countAfter)
 
 	// Fetch the created password reset
-	passwordReset := new(accounts.PasswordReset)
-	notFound := accounts.PasswordResetPreload(suite.db).Last(passwordReset).RecordNotFound()
+	passwordReset := new(models.PasswordReset)
+	notFound := models.PasswordResetPreload(suite.db).Last(passwordReset).RecordNotFound()
 	assert.False(suite.T(), notFound)
 
 	// And correct data was saved

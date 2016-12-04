@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RichardKnop/example-api/models"
 	"github.com/jinzhu/gorm"
 )
 
@@ -15,10 +16,10 @@ var (
 
 // FindPasswordResetByReference looks up a password reset by a reference
 // only return the object if it's not expired
-func (s *Service) FindPasswordResetByReference(reference string) (*PasswordReset, error) {
+func (s *Service) FindPasswordResetByReference(reference string) (*models.PasswordReset, error) {
 	// Fetch the password reset from the database
-	passwordReset := new(PasswordReset)
-	notFound := PasswordResetPreload(s.db).Where("reference = ?", reference).
+	passwordReset := new(models.PasswordReset)
+	notFound := models.PasswordResetPreload(s.db).Where("reference = ?", reference).
 		Where("expires_at > ?", time.Now().UTC()).First(passwordReset).RecordNotFound()
 
 	// Not found
@@ -30,7 +31,7 @@ func (s *Service) FindPasswordResetByReference(reference string) (*PasswordReset
 }
 
 // ResetPassword sets a new password and deletes the password reset record
-func (s *Service) ResetPassword(passwordReset *PasswordReset, password string) error {
+func (s *Service) ResetPassword(passwordReset *models.PasswordReset, password string) error {
 	// Begin a transaction
 	tx := s.db.Begin()
 
@@ -57,10 +58,10 @@ func (s *Service) ResetPassword(passwordReset *PasswordReset, password string) e
 }
 
 // findUserPasswordReset returns the first password reset for a user
-func (s *Service) findUserPasswordReset(user *User) (*PasswordReset, error) {
+func (s *Service) findUserPasswordReset(user *models.User) (*models.PasswordReset, error) {
 	// Fetch the password reset from the database
-	passwordReset := new(PasswordReset)
-	notFound := PasswordResetPreload(s.db).Where("user_id = ?", user.ID).
+	passwordReset := new(models.PasswordReset)
+	notFound := models.PasswordResetPreload(s.db).Where("user_id = ?", user.ID).
 		First(passwordReset).RecordNotFound()
 
 	// Not found
@@ -71,18 +72,18 @@ func (s *Service) findUserPasswordReset(user *User) (*PasswordReset, error) {
 	return passwordReset, nil
 }
 
-func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
+func (s *Service) createPasswordReset(user *models.User) (*models.PasswordReset, error) {
 	// Begin a transaction
 	tx := s.db.Begin()
 
 	// Soft delete old password resets
-	if err := tx.Where("user_id = ?", user.ID).Delete(new(PasswordReset)).Error; err != nil {
+	if err := tx.Where("user_id = ?", user.ID).Delete(new(models.PasswordReset)).Error; err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
 	}
 
 	// Create a new password reset
-	passwordReset, err := NewPasswordReset(user, s.cnf.AppSpecific.PasswordResetLifetime)
+	passwordReset, err := models.NewPasswordReset(user, s.cnf.AppSpecific.PasswordResetLifetime)
 	if err != nil {
 		tx.Rollback() // rollback the transaction
 		return nil, err
@@ -113,7 +114,7 @@ func (s *Service) createPasswordReset(user *User) (*PasswordReset, error) {
 	return passwordReset, nil
 }
 
-func (s *Service) sendPasswordResetEmail(passwordReset *PasswordReset) error {
+func (s *Service) sendPasswordResetEmail(passwordReset *models.PasswordReset) error {
 	passwordResetEmail, err := s.emailFactory.NewPasswordResetEmail(passwordReset)
 	if err != nil {
 		return fmt.Errorf("New password reset email error: %s", err)
@@ -126,8 +127,8 @@ func (s *Service) sendPasswordResetEmail(passwordReset *PasswordReset) error {
 
 	// If the email was sent successfully, update the email_sent flag
 	now := gorm.NowFunc()
-	if err := s.db.Model(passwordReset).UpdateColumns(PasswordReset{
-		EmailTokenModel: EmailTokenModel{
+	if err := s.db.Model(passwordReset).UpdateColumns(models.PasswordReset{
+		EmailTokenModel: models.EmailTokenModel{
 			EmailSent:   true,
 			EmailSentAt: &now,
 			Model:       gorm.Model{UpdatedAt: now},
