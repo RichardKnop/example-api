@@ -8,6 +8,7 @@ import (
 	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
+	"github.com/RichardKnop/example-api/logger"
 	"github.com/jinzhu/gorm"
 )
 
@@ -114,7 +115,7 @@ func (s *Service) InviteUser(invitedByUser *models.User, invitationRequest *Invi
 	// Send invitation email
 	go func() {
 		if err := s.sendInvitationEmail(invitation); err != nil {
-			logger.Error(invitation)
+			logger.ERROR.Print(invitation)
 		}
 	}()
 

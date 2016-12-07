@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RichardKnop/example-api/logger"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
 	"github.com/coreos/etcd/pkg/transport"
@@ -100,7 +101,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 		// Read from remote config the first time
 		newCnf, err := LoadConfig()
 		if err != nil {
-			logger.Fatal(err)
+			logger.FATAL.Fatal(err)
 			os.Exit(1)
 		}
 
@@ -109,7 +110,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 
 		// Set configLoaded to true
 		configLoaded = true
-		logger.Info("Successfully loaded config for the first time")
+		logger.INFO.Print("Successfully loaded config for the first time")
 	}
 
 	if keepReloading {
@@ -122,7 +123,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 				// Attempt to reload the config
 				newCnf, err := LoadConfig()
 				if err != nil {
-					logger.Error(err)
+					logger.ERROR.Print(err)
 					continue
 				}
 
@@ -185,7 +186,7 @@ func RefreshConfig(newCnf *Config) {
 
 func newEtcdClient(theEndpoints, certFile, keyFile, caFile string) (*clientv3.Client, error) {
 	// Log the etcd endpoint for debugging purposes
-	logger.Infof("ETCD Endpoints: %s", theEndpoints)
+	logger.INFO.Printf("ETCD Endpoints: %s", theEndpoints)
 
 	// ETCD config
 	etcdConfig := clientv3.Config{

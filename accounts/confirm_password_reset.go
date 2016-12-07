@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/RichardKnop/example-api/logger"
 	"github.com/RichardKnop/example-api/util/response"
 	"github.com/gorilla/mux"
 )
@@ -35,7 +36,7 @@ func (s *Service) confirmPasswordResetHandler(w http.ResponseWriter, r *http.Req
 	// Unmarshal the request body into the request prototype
 	confirmPasswordResetRequest := new(ConfirmPasswordResetRequest)
 	if err = json.Unmarshal(payload, confirmPasswordResetRequest); err != nil {
-		logger.Errorf("Failed to unmarshal confirm password reset request: %s", payload)
+		logger.ERROR.Printf("Failed to unmarshal confirm password reset request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

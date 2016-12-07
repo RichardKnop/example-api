@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/RichardKnop/example-api/logger"
 	"github.com/RichardKnop/example-api/util/response"
 )
 
@@ -34,7 +35,7 @@ func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Requ
 	// Unmarshal the request body into the request prototype
 	passwordResetRequest := new(PasswordResetRequest)
 	if err = json.Unmarshal(payload, passwordResetRequest); err != nil {
-		logger.Errorf("Failed to unmarshal password reset request: %s", payload)
+		logger.ERROR.Printf("Failed to unmarshal password reset request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -49,7 +50,7 @@ func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Requ
 	// Create a new password reset
 	passwordReset, err := s.createPasswordReset(user)
 	if err != nil {
-		logger.Errorf("Create password reset error: %s", err)
+		logger.ERROR.Printf("Create password reset error: %s", err)
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
