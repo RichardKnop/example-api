@@ -23,7 +23,7 @@ services:
   postgres:
     image: "postgres"
     volumes:
-      - ./postgres-data:/data
+      - ./postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: "example_api"
       POSTGRES_PASSWORD: ""
