@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/RichardKnop/example-api",
 	"GoVersion": "go1.8",
-	"GodepVersion": "v74",
+	"GodepVersion": "v79",
 	"Packages": [
 		"./..."
 	],
