@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/email"
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/services/accounts"
+	"github.com/RichardKnop/example-api/services/email"
+	"github.com/RichardKnop/example-api/services/oauth"
 )
 
 // CreateSuperuser creates a new superuser

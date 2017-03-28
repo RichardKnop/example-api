@@ -3,11 +3,11 @@ package cmd
 import (
 	"time"
 
-	"github.com/RichardKnop/example-api/accounts"
-	"github.com/RichardKnop/example-api/email"
-	"github.com/RichardKnop/example-api/facebook"
-	"github.com/RichardKnop/example-api/health"
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/services/accounts"
+	"github.com/RichardKnop/example-api/services/email"
+	"github.com/RichardKnop/example-api/services/facebook"
+	"github.com/RichardKnop/example-api/services/health"
+	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/gorilla/mux"
 	"github.com/phyber/negroni-gzip/gzip"
 	"github.com/urfave/negroni"

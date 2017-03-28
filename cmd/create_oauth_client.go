@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/RichardKnop/example-api/oauth"
+	"github.com/RichardKnop/example-api/services/oauth"
 )
 
 // CreateOauthClient creates a new OAuth client

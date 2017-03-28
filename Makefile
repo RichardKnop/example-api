@@ -15,13 +15,13 @@ fmt:
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go fmt'
 
 test-oauth:
-	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/oauth'
+	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/services/oauth'
 
 test-accounts:
-	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/accounts'
+	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/services/accounts'
 
 test-facebook:
-	bash -c 'go test -timeout=60s github.com/RichardKnop/example-api/facebook'
+	bash -c 'go test -timeout=60s github.com/RichardKnop/example-api/services/facebook'
 
 test:
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=60s'
