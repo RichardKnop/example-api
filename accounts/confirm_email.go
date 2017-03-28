@@ -4,18 +4,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
-	"github.com/RichardKnop/jsonhal"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/tokentypes"
 	"github.com/RichardKnop/example-api/util/response"
+	"github.com/RichardKnop/jsonhal"
+	"github.com/gorilla/mux"
 )
 
 // Handles requests to confirm user's email
 // GET /v1/confirmations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}
 func (s *Service) confirmEmailHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the authenticated account from the request context
-	authenticatedAccount, err := GetAuthenticatedAccount(r)
+	// Get the authenticated client from the request context
+	authenticatedClient, err := GetAuthenticatedClient(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
 		return
@@ -52,7 +52,7 @@ func (s *Service) confirmEmailHandler(w http.ResponseWriter, r *http.Request) {
 	if autoLogin {
 		// Login the user
 		accessToken, refreshToken, err := s.GetOauthService().Login(
-			authenticatedAccount.OauthClient,
+			authenticatedClient,
 			confirmation.User.OauthUser,
 			"read_write",
 		)

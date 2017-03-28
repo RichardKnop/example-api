@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/RichardKnop/example-api",
-	"GoVersion": "go1.7",
+	"GoVersion": "go1.8",
 	"GodepVersion": "v74",
 	"Packages": [
 		"./..."
@@ -17,7 +17,7 @@
 		},
 		{
 			"ImportPath": "github.com/RichardKnop/jsonhal",
-			"Rev": "09ba9b03974ae84d6687acdaa70712f47f685448"
+			"Rev": "51961047a401d68724b01ba49ae2c86da503de4f"
 		},
 		{
 			"ImportPath": "github.com/RichardKnop/logging",
@@ -52,42 +52,42 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/auth/authpb",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/mvcc/mvccpb",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/fileutil",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/transport",
-			"Comment": "v3.1.0-rc.1-34-gc31b1ab",
+			"Comment": "v3.1.0-rc.1-34-gc31b1ab8",
 			"Rev": "c31b1ab8d18ff7990a43bd258ca54f80c5a3c952"
 		},
 		{
@@ -186,6 +186,10 @@
 			"Rev": "c12348ce28de40eed0136aa2b644d0ee0650e56c"
 		},
 		{
+			"ImportPath": "github.com/mitchellh/mapstructure",
+			"Rev": "281073eb9eb092240d33ef253c404f1cca550309"
+		},
+		{
 			"ImportPath": "github.com/phyber/negroni-gzip/gzip",
 			"Rev": "13f05ed68248e012fcc773ecd829abcc0bb3abd8"
 		},
@@ -260,63 +264,63 @@
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
-			"Rev": "ede567c8e044a5913dad1d1af3696d9da953104c"
+			"Rev": "95cb608f365d51e0e69abc646ec90c0e26fb427f"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/blowfish",
-			"Rev": "ede567c8e044a5913dad1d1af3696d9da953104c"
+			"Rev": "95cb608f365d51e0e69abc646ec90c0e26fb427f"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/html",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/html/atom",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/http2",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/http2/hpack",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/idna",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/internal/timeseries",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/lex/httplex",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/netutil",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/trace",
-			"Rev": "4971afdc2f162e82d185353533d3cf16188a9f4e"
+			"Rev": "69d4b8aa71caaaa75c3dfc11211d1be495abec7c"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2",
-			"Rev": "33fa30fe45020622640e947917fd1fc4c81e3dce"
+			"Rev": "314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/facebook",
-			"Rev": "33fa30fe45020622640e947917fd1fc4c81e3dce"
+			"Rev": "314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/internal",
-			"Rev": "33fa30fe45020622640e947917fd1fc4c81e3dce"
+			"Rev": "314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc",

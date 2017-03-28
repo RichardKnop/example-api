@@ -18,18 +18,14 @@ type ServiceInterface interface {
 	GetRoutes() []routes.Route
 	RegisterRoutes(router *mux.Router, prefix string)
 	GetUserCredentialsFromToken(token string) (*models.User, error)
-	GetClientCredentialsFromBaseAuth(r *http.Request) (*models.Account, error)
-	GetClientCredentialsFromToken(token string) (*models.Account, error)
-	GetMixedCredentialsFromToken(token string) (*models.Account, *models.User, error)
-	FindAccountByOauthClientID(oauthClientID uint) (*models.Account, error)
-	FindAccountByID(accountID uint) (*models.Account, error)
-	FindAccountByName(name string) (*models.Account, error)
-	CreateAccount(name, description, key, secret, redirectURI string) (*models.Account, error)
+	GetClientCredentialsFromBaseAuth(r *http.Request) (*models.OauthClient, error)
+	GetClientCredentialsFromToken(token string) (*models.OauthClient, error)
+	GetMixedCredentialsFromToken(token string) (*models.OauthClient, *models.User, error)
 	FindUserByOauthUserID(oauthUserID uint) (*models.User, error)
 	FindUserByEmail(email string) (*models.User, error)
 	FindUserByID(userID uint) (*models.User, error)
 	FindUserByFacebookID(facebookID string) (*models.User, error)
-	CreateUser(account *models.Account, userRequest *UserRequest) (*models.User, error)
+	CreateUser(oauthClient *models.OauthClient, userRequest *UserRequest) (*models.User, error)
 	UpdateUser(user *models.User, userRequest *UserRequest) error
 	PaginatedUsersCount() (int, error)
 	FindPaginatedUsers(offset, limit int, sorts map[string]string) ([]*models.User, error)
@@ -37,8 +33,8 @@ type ServiceInterface interface {
 	ConfirmUser(confirmation *models.Confirmation) error
 	FindPasswordResetByReference(reference string) (*models.PasswordReset, error)
 	ResetPassword(passwordReset *models.PasswordReset, password string) error
-	GetOrCreateFacebookUser(account *models.Account, facebookID string, userRequest *UserRequest) (*models.User, error)
-	CreateSuperuser(account *models.Account, email, password string) (*models.User, error)
+	GetOrCreateFacebookUser(oauthClient *models.OauthClient, facebookID string, userRequest *UserRequest) (*models.User, error)
+	CreateSuperuser(oauthClient *models.OauthClient, email, password string) (*models.User, error)
 	FindInvitationByReference(reference string) (*models.Invitation, error)
 	InviteUser(invitedByUser *models.User, invitationRequest *InvitationRequest) (*models.Invitation, error)
 	ConfirmInvitation(invitation *models.Invitation, password string) error

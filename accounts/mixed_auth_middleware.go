@@ -1,11 +1,16 @@
 package accounts
 
 import (
+	"errors"
 	"net/http"
 
-	"github.com/gorilla/context"
 	"github.com/RichardKnop/example-api/util/response"
-	"github.com/RichardKnop/example-api/util"
+	"github.com/gorilla/context"
+)
+
+var (
+	// ErrClientOrUserAuthenticationRequired ...
+	ErrClientOrUserAuthenticationRequired = errors.New("Client or user authentication required")
 )
 
 // NewMixedAuthMiddleware creates a new MixedAuthMiddleware instance
@@ -20,22 +25,16 @@ type MixedAuthMiddleware struct {
 
 // ServeHTTP as per the negroni.Handler interface
 func (m *MixedAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	// HTTPS redirection
-	err := util.NewSecure(m.service.GetConfig().IsDevelopment).Process(w, r)
-	if err != nil {
-		return
-	}
-
-	account, user, err := getMixedCredentialsFromRequest(r, m.service)
+	client, user, err := getMixedCredentialsFromRequest(r, m.service)
 
 	if err != nil {
 		// For security reasons, return a generic error message
-		response.UnauthorizedError(w, ErrAccountOrUserAuthenticationRequired.Error())
+		response.UnauthorizedError(w, ErrClientOrUserAuthenticationRequired.Error())
 		return
 	}
 
-	if account != nil {
-		context.Set(r, AuthenticatedAccountKey, account)
+	if client != nil {
+		context.Set(r, AuthenticatedClientKey, client)
 	}
 
 	if user != nil {

@@ -141,7 +141,7 @@ func (suite *FacebookTestSuite) TestLoginExistingUser() {
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"some_facebook_id", // facebook ID
 		"Harold",
@@ -254,7 +254,7 @@ func (suite *FacebookTestSuite) TestLoginUpdatesExistingUser() {
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"some_facebook_id", // facebook ID
 		"Harold",

@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func (suite *AccountsTestSuite) TestConfirmPasswordResetRequiresAccountAuthentication() {
+func (suite *AccountsTestSuite) TestConfirmPasswordResetRequiresClientAuthentication() {
 	bogusUUID := uuid.New()
 	testutil.TestPostErrorExpectedResponse(
 		suite.T(),
@@ -28,7 +28,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordResetRequiresAccountAuthentic
 		"confirm_password_reset",
 		nil,
 		"", // no access token
-		accounts.ErrAccountAuthenticationRequired.Error(),
+		accounts.ErrClientAuthenticationRequired.Error(),
 		http.StatusUnauthorized,
 		suite.assertMockExpectations,
 	)
@@ -65,7 +65,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		"Harold",
@@ -76,7 +76,7 @@ func (suite *AccountsTestSuite) TestConfirmPasswordReset() {
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 	testUser.OauthUser = testOauthUser
 
 	// Insert a test password reset

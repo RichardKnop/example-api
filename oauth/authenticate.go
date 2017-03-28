@@ -19,7 +19,8 @@ var (
 func (s *Service) Authenticate(token string) (*models.OauthAccessToken, error) {
 	// Fetch the access token from the database
 	accessToken := new(models.OauthAccessToken)
-	notFound := s.db.Where("token = ?", token).First(accessToken).RecordNotFound()
+	notFound := models.OauthAccessTokenPreload(s.db).Where("token = ?", token).
+		First(accessToken).RecordNotFound()
 
 	// Not found
 	if notFound {

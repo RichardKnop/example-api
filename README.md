@@ -248,7 +248,6 @@ example-api loaddata \
   oauth/fixtures/roles.yml \
   oauth/fixtures/test_clients.yml \
   oauth/fixtures/test_users.yml \
-  accounts/fixtures/test_accounts.yml \
   accounts/fixtures/test_users.yml
 ```
 
@@ -283,7 +282,7 @@ docker exec <container_id> /go/bin/example-api loaddata \
 You can also execute interactive commands by passing `-i` flag:
 
 ```sh
-docker exec -i <container_id> /go/bin/example-api createaccount
+docker exec -i <container_id> /go/bin/example-api createoauthclient
 docker exec -i <container_id> /go/bin/example-api createsuperuser
 ```
 

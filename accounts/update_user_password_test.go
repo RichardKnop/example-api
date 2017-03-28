@@ -35,7 +35,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		"Harold",
@@ -46,12 +46,12 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithBadCurrentPasswor
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 	testUser.OauthUser = testOauthUser
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.GetOauthService().Login(
-		suite.accounts[0].OauthClient,
+		suite.clients[0],
 		testUser.OauthUser,
 		"read_write", // scope
 	)
@@ -104,7 +104,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		"Harold",
@@ -115,12 +115,12 @@ func (suite *AccountsTestSuite) TestUpdateUserPasswordFailsWithPaswordlessUser()
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 	testUser.OauthUser = testOauthUser
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.GetOauthService().Login(
-		suite.accounts[0].OauthClient,
+		suite.clients[0],
 		testUser.OauthUser,
 		"read_write", // scope
 	)
@@ -173,7 +173,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		"Harold",
@@ -184,12 +184,12 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 	testUser.OauthUser = testOauthUser
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.GetOauthService().Login(
-		suite.accounts[0].OauthClient,
+		suite.clients[0],
 		testUser.OauthUser,
 		"read_write", // scope
 	)

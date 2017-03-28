@@ -14,7 +14,7 @@ import (
 // POST /v1/users
 func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated client from the request context
-	authenticatedAccount, err := GetAuthenticatedAccount(r)
+	authenticatedClient, err := GetAuthenticatedClient(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
 		return
@@ -42,7 +42,7 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create a new user account
-	user, err := s.CreateUser(authenticatedAccount, userRequest)
+	user, err := s.CreateUser(authenticatedClient, userRequest)
 	if err != nil {
 		logger.ERROR.Printf("Create user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))

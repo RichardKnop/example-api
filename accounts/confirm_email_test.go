@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func (suite *AccountsTestSuite) TestConfirmEmailRequiresAccountAuthentication() {
+func (suite *AccountsTestSuite) TestConfirmEmailRequiresClientAuthentication() {
 	bogusUUID := uuid.New()
 	testutil.TestGetErrorExpectedResponse(
 		suite.T(),
@@ -26,7 +26,7 @@ func (suite *AccountsTestSuite) TestConfirmEmailRequiresAccountAuthentication() 
 		fmt.Sprintf("http://1.2.3.4/v1/confirmations/%s", bogusUUID),
 		"confirm_email",
 		"", // no access token
-		accounts.ErrAccountAuthenticationRequired.Error(),
+		accounts.ErrClientAuthenticationRequired.Error(),
 		http.StatusUnauthorized,
 		suite.assertMockExpectations,
 	)
@@ -62,7 +62,7 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		"Harold",
@@ -73,7 +73,7 @@ func (suite *AccountsTestSuite) TestConfirmEmail() {
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 	testUser.OauthUser = testOauthUser
 
 	// Insert a test confirmation
@@ -171,7 +171,7 @@ func (suite *AccountsTestSuite) TestConfirmEmailWithAutologinFlag() {
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		"Harold",
@@ -182,7 +182,7 @@ func (suite *AccountsTestSuite) TestConfirmEmailWithAutologinFlag() {
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 
 	// Insert a test confirmation
 	testConfirmation, err = models.NewConfirmation(

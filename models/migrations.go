@@ -110,9 +110,6 @@ func migrate0001(db *gorm.DB, name string) error {
 	//---------
 
 	// Create tables
-	if err = db.CreateTable(new(Account)).Error; err != nil {
-		return fmt.Errorf("Error creating accounts table: %s", err)
-	}
 	if err = db.CreateTable(new(User)).Error; err != nil {
 		return fmt.Errorf("Error creating users table: %s", err)
 	}
@@ -127,29 +124,21 @@ func migrate0001(db *gorm.DB, name string) error {
 	}
 
 	// Add foreign keys
-	err = db.Model(new(Account)).AddForeignKey(
+	err = db.Model(new(User)).AddForeignKey(
 		"oauth_client_id", "oauth_clients(id)",
 		"RESTRICT", "RESTRICT",
 	).Error
 	if err != nil {
 		return fmt.Errorf("Error creating foreign key on "+
-			"accounts.oauth_client_id for oauth_clients(id): %s", err)
+			"users.oauth_client_id for oauth_clients(id): %s", err)
 	}
 	err = db.Model(new(User)).AddForeignKey(
-		"account_id", "accounts(id)",
+		"oauth_user_id", "oauth_users(id)",
 		"RESTRICT", "RESTRICT",
 	).Error
 	if err != nil {
 		return fmt.Errorf("Error creating foreign key on "+
-			"users.account_id for accounts(id): %s", err)
-	}
-	err = db.Model(new(User)).AddForeignKey(
-		"oauth_user_id", "users(id)",
-		"RESTRICT", "RESTRICT",
-	).Error
-	if err != nil {
-		return fmt.Errorf("Error creating foreign key on "+
-			"users.oauth_user_id for users(id): %s", err)
+			"users.oauth_user_id for oauth_users(id): %s", err)
 	}
 	err = db.Model(new(Confirmation)).AddForeignKey(
 		"user_id", "users(id)",

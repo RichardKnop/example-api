@@ -12,12 +12,12 @@ import (
 
 func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	var (
-		r                    *http.Request
-		w                    *httptest.ResponseRecorder
-		next                 http.HandlerFunc
-		authenticatedAccount *models.Account
-		authenticatedUser    *models.User
-		err                  error
+		r                   *http.Request
+		w                   *httptest.ResponseRecorder
+		next                http.HandlerFunc
+		authenticatedClient *models.OauthClient
+		authenticatedUser   *models.User
+		err                 error
 	)
 
 	middleware := accounts.NewMixedAuthMiddleware(suite.service)
@@ -33,15 +33,15 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	testutil.TestResponseForError(
 		suite.T(),
 		w,
-		accounts.ErrAccountOrUserAuthenticationRequired.Error(),
+		accounts.ErrClientOrUserAuthenticationRequired.Error(),
 		401,
 	)
 
 	// Check the context variables have not been set
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
-	assert.Nil(suite.T(), authenticatedAccount)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
+	assert.Nil(suite.T(), authenticatedClient)
 	assert.Error(suite.T(), err)
-	assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
+	assert.Equal(suite.T(), accounts.ErrClientAuthenticationRequired, err)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	assert.Error(suite.T(), err)
@@ -59,15 +59,15 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	testutil.TestResponseForError(
 		suite.T(),
 		w,
-		accounts.ErrAccountOrUserAuthenticationRequired.Error(),
+		accounts.ErrClientOrUserAuthenticationRequired.Error(),
 		401,
 	)
 
 	// Check the context variables have not been set
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
-	assert.Nil(suite.T(), authenticatedAccount)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
+	assert.Nil(suite.T(), authenticatedClient)
 	assert.Error(suite.T(), err)
-	assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
+	assert.Equal(suite.T(), accounts.ErrClientAuthenticationRequired, err)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	assert.Error(suite.T(), err)
@@ -85,11 +85,10 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	assert.Equal(suite.T(), 200, w.Code)
 
 	// Check the context variables
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
 	assert.NoError(suite.T(), err)
-	assert.NotNil(suite.T(), authenticatedAccount)
-	assert.Equal(suite.T(), "Test Account 1", authenticatedAccount.Name)
-	assert.Equal(suite.T(), "test_client_1", authenticatedAccount.OauthClient.Key)
+	assert.NotNil(suite.T(), authenticatedClient)
+	assert.Equal(suite.T(), "test_client_1", authenticatedClient.Key)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	assert.Error(suite.T(), err)
@@ -107,11 +106,10 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	assert.Equal(suite.T(), 200, w.Code)
 
 	// Check the context variables
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
 	assert.NoError(suite.T(), err)
-	assert.NotNil(suite.T(), authenticatedAccount)
-	assert.Equal(suite.T(), "Test Account 1", authenticatedAccount.Name)
-	assert.Equal(suite.T(), "test_client_1", authenticatedAccount.OauthClient.Key)
+	assert.NotNil(suite.T(), authenticatedClient)
+	assert.Equal(suite.T(), "test_client_1", authenticatedClient.Key)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	assert.Error(suite.T(), err)
@@ -128,15 +126,15 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	testutil.TestResponseForError(
 		suite.T(),
 		w,
-		accounts.ErrAccountOrUserAuthenticationRequired.Error(),
+		accounts.ErrClientOrUserAuthenticationRequired.Error(),
 		401,
 	)
 
 	// Check the context variables have not been set
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
-	assert.Nil(suite.T(), authenticatedAccount)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
+	assert.Nil(suite.T(), authenticatedClient)
 	assert.Error(suite.T(), err)
-	assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
+	assert.Equal(suite.T(), accounts.ErrClientAuthenticationRequired, err)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	assert.Error(suite.T(), err)
@@ -154,15 +152,15 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	testutil.TestResponseForError(
 		suite.T(),
 		w,
-		accounts.ErrAccountOrUserAuthenticationRequired.Error(),
+		accounts.ErrClientOrUserAuthenticationRequired.Error(),
 		401,
 	)
 
 	// Check the context variables have not been set
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
-	assert.Nil(suite.T(), authenticatedAccount)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
+	assert.Nil(suite.T(), authenticatedClient)
 	assert.Error(suite.T(), err)
-	assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
+	assert.Equal(suite.T(), accounts.ErrClientAuthenticationRequired, err)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	assert.Error(suite.T(), err)
@@ -180,15 +178,15 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	testutil.TestResponseForError(
 		suite.T(),
 		w,
-		accounts.ErrAccountOrUserAuthenticationRequired.Error(),
+		accounts.ErrClientOrUserAuthenticationRequired.Error(),
 		401,
 	)
 
 	// Check the context variables have not been set
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
-	assert.Nil(suite.T(), authenticatedAccount)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
+	assert.Nil(suite.T(), authenticatedClient)
 	assert.Error(suite.T(), err)
-	assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
+	assert.Equal(suite.T(), accounts.ErrClientAuthenticationRequired, err)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.Nil(suite.T(), authenticatedUser)
 	assert.Error(suite.T(), err)
@@ -206,10 +204,10 @@ func (suite *AccountsTestSuite) TestMixedAuthMiddleware() {
 	assert.Equal(suite.T(), 200, w.Code)
 
 	// Check the context variables
-	authenticatedAccount, err = accounts.GetAuthenticatedAccount(r)
-	assert.Nil(suite.T(), authenticatedAccount)
+	authenticatedClient, err = accounts.GetAuthenticatedClient(r)
+	assert.Nil(suite.T(), authenticatedClient)
 	assert.Error(suite.T(), err)
-	assert.Equal(suite.T(), accounts.ErrAccountAuthenticationRequired, err)
+	assert.Equal(suite.T(), accounts.ErrClientAuthenticationRequired, err)
 	authenticatedUser, err = accounts.GetAuthenticatedUser(r)
 	assert.NoError(suite.T(), err)
 	assert.NotNil(suite.T(), authenticatedUser)

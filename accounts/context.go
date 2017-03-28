@@ -7,28 +7,28 @@ import (
 	"github.com/gorilla/context"
 )
 
-type contextKey int
+type contextKey string
 
 const (
-	// AuthenticatedAccountKey ...
-	AuthenticatedAccountKey contextKey = 0
+	// AuthenticatedClientKey ...
+	AuthenticatedClientKey contextKey = "authenticated_client"
 	// AuthenticatedUserKey ...
-	AuthenticatedUserKey contextKey = 1
+	AuthenticatedUserKey contextKey = "authenticated_user"
 )
 
-// GetAuthenticatedAccount returns *Account from the request context
-func GetAuthenticatedAccount(r *http.Request) (*models.Account, error) {
-	val, ok := context.GetOk(r, AuthenticatedAccountKey)
+// GetAuthenticatedClient returns *OauthClient from the request context
+func GetAuthenticatedClient(r *http.Request) (*models.OauthClient, error) {
+	val, ok := context.GetOk(r, AuthenticatedClientKey)
 	if !ok {
-		return nil, ErrAccountAuthenticationRequired
+		return nil, ErrClientAuthenticationRequired
 	}
 
-	authenticatedAccount, ok := val.(*models.Account)
+	authenticatedClient, ok := val.(*models.OauthClient)
 	if !ok {
-		return nil, ErrAccountAuthenticationRequired
+		return nil, ErrClientAuthenticationRequired
 	}
 
-	return authenticatedAccount, nil
+	return authenticatedClient, nil
 }
 
 // GetAuthenticatedUser returns *User from the request context

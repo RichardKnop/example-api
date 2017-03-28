@@ -31,7 +31,6 @@ var (
 		"./oauth/fixtures/test_clients.yml",
 		"./oauth/fixtures/test_users.yml",
 		"./oauth/fixtures/test_access_tokens.yml",
-		"./accounts/fixtures/test_accounts.yml",
 		"./accounts/fixtures/test_users.yml",
 	}
 
@@ -46,7 +45,7 @@ func init() {
 	}
 }
 
-// AccountsTestSuite needs to be exported so the tests run
+// oauth clientsTestSuite needs to be exported so the tests run
 type AccountsTestSuite struct {
 	suite.Suite
 	cnf          *config.Config
@@ -54,7 +53,7 @@ type AccountsTestSuite struct {
 	emailService *emailMocks.ServiceInterface
 	emailFactory *accountsMocks.EmailFactoryInterface
 	service      *accounts.Service
-	accounts     []*models.Account
+	clients      []*models.OauthClient
 	users        []*models.User
 	router       *mux.Router
 }
@@ -77,9 +76,9 @@ func (suite *AccountsTestSuite) SetupSuite() {
 	}
 	suite.db = db
 
-	// Fetch test accounts
-	suite.accounts = make([]*models.Account, 0)
-	err = models.AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
+	// Fetch test clients
+	suite.clients = make([]*models.OauthClient, 0)
+	err = suite.db.Order("id").Find(&suite.clients).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -121,7 +120,6 @@ func (suite *AccountsTestSuite) SetupTest() {
 	suite.db.Unscoped().Delete(new(models.Invitation))
 	suite.db.Unscoped().Delete(new(models.PasswordReset))
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(models.User))
-	suite.db.Unscoped().Not("id", []int64{1, 2}).Delete(new(models.Account))
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3, 4}).Delete(new(models.OauthAccessToken))
 	suite.db.Unscoped().Delete(new(models.OauthRefreshToken))
 	suite.db.Unscoped().Not("id", []int64{1, 2, 3}).Delete(new(models.OauthUser))
@@ -200,7 +198,7 @@ func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastN
 	}
 
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		firstName,
@@ -212,7 +210,7 @@ func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastN
 		return nil, nil, err
 	}
 	err = suite.db.Create(testUser).Error
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 	testUser.OauthUser = testOauthUser
 	if err != nil {
 		return nil, nil, err
@@ -220,7 +218,7 @@ func (suite *AccountsTestSuite) insertTestUser(email, password, firstName, lastN
 
 	// Login the test user
 	testAccessToken, _, err = suite.service.GetOauthService().Login(
-		suite.accounts[0].OauthClient,
+		suite.clients[0],
 		testUser.OauthUser,
 		"read_write", // scope
 	)

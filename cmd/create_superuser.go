@@ -34,13 +34,20 @@ func CreateSuperuser() error {
 		nil, // accounts.EmailFactory
 	)
 
-	// Fetch the account (assume all superusers belong to the first account)
-	account, err := accountsService.FindAccountByID(uint(1))
+	reader := bufio.NewReader(os.Stdin)
+
+	// OAuth client ID from a user input
+	fmt.Print("Client ID: ")
+	oauthClientID, err := reader.ReadString('\n')
 	if err != nil {
 		return err
 	}
 
-	reader := bufio.NewReader(os.Stdin)
+	// Fetch the oauth client
+	oauthClient, err := oauthService.FindClientByClientID(oauthClientID)
+	if err != nil {
+		return err
+	}
 
 	// Email from a user input
 	fmt.Print("Email: ")
@@ -58,7 +65,7 @@ func CreateSuperuser() error {
 
 	// Create a new user
 	_, err = accountsService.CreateSuperuser(
-		account,
+		oauthClient,
 		strings.TrimRight(email, "\n"),
 		strings.TrimRight(password, "\n"),
 	)

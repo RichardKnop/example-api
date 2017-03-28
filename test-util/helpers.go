@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/RichardKnop/example-api/util/response"
 	"github.com/RichardKnop/jsonhal"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"github.com/RichardKnop/example-api/util/response"
 )
 
 // TestGetErrorExpectedResponse ...

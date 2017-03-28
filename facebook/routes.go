@@ -27,7 +27,7 @@ func (s *Service) GetRoutes() []routes.Route {
 			Pattern:     loginPath,
 			HandlerFunc: s.loginHandler,
 			Middlewares: []negroni.Handler{
-				accounts.NewAccountAuthMiddleware(s.GetAccountsService()),
+				accounts.NewClientAuthMiddleware(s.GetAccountsService()),
 			},
 		},
 	}

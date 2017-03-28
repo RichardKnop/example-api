@@ -13,8 +13,8 @@ import (
 // Handles requests to complete an invitation of a user by setting password
 // POST /v1/invitations/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}
 func (s *Service) confirmInvitationHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the authenticated account from the request context
-	_, err := GetAuthenticatedAccount(r)
+	// Get the authenticated client from the request context
+	_, err := GetAuthenticatedClient(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
 		return

@@ -11,50 +11,50 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetAuthenticatedAccount(t *testing.T) {
+func TestGetAuthenticatedClient(t *testing.T) {
 	var (
-		account *models.Account
-		err     error
+		client *models.OauthClient
+		err    error
 	)
 
 	// A test request
 	r, err := http.NewRequest("GET", "http://1.2.3.4/something", nil)
 	assert.NoError(t, err, "Request setup should not get an error")
 
-	account, err = accounts.GetAuthenticatedAccount(r)
+	client, err = accounts.GetAuthenticatedClient(r)
 
-	// Account object should be nil
-	assert.Nil(t, account)
+	// Client object should be nil
+	assert.Nil(t, client)
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, accounts.ErrAccountAuthenticationRequired, err)
+		assert.Equal(t, accounts.ErrClientAuthenticationRequired, err)
 	}
 
 	// Set a context value of an invalid type
-	context.Set(r, accounts.AuthenticatedAccountKey, "bogus")
+	context.Set(r, accounts.AuthenticatedClientKey, "bogus")
 
-	account, err = accounts.GetAuthenticatedAccount(r)
+	client, err = accounts.GetAuthenticatedClient(r)
 
-	// Account object should be nil
-	assert.Nil(t, account)
+	// Client object should be nil
+	assert.Nil(t, client)
 
 	// Correct error should be returned
 	if assert.NotNil(t, err) {
-		assert.Equal(t, accounts.ErrAccountAuthenticationRequired, err)
+		assert.Equal(t, accounts.ErrClientAuthenticationRequired, err)
 	}
 
 	// Set a valid context value
-	context.Set(r, accounts.AuthenticatedAccountKey, &models.Account{Name: "Test Account"})
+	context.Set(r, accounts.AuthenticatedClientKey, &models.OauthClient{Key: "test_client_1"})
 
-	account, err = accounts.GetAuthenticatedAccount(r)
+	client, err = accounts.GetAuthenticatedClient(r)
 
 	// Error should be nil
 	assert.Nil(t, err)
 
-	// Correct account object should be returned
-	if assert.NotNil(t, account) {
-		assert.Equal(t, "Test Account", account.Name)
+	// Correct client object should be returned
+	if assert.NotNil(t, client) {
+		assert.Equal(t, "test_client_1", client.Key)
 	}
 }
 

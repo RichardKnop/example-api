@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func (suite *AccountsTestSuite) TestCreatePasswordResetRequiresAccountAuthentication() {
+func (suite *AccountsTestSuite) TestCreatePasswordResetRequiresClientAuthentication() {
 	testutil.TestPostErrorExpectedResponse(
 		suite.T(),
 		suite.router,
@@ -24,7 +24,7 @@ func (suite *AccountsTestSuite) TestCreatePasswordResetRequiresAccountAuthentica
 		"create_password_reset",
 		strings.NewReader("{}"), // data
 		"", // no access token
-		accounts.ErrAccountAuthenticationRequired.Error(),
+		accounts.ErrClientAuthenticationRequired.Error(),
 		http.StatusUnauthorized,
 		suite.assertMockExpectations,
 	)

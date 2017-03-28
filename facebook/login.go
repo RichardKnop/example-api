@@ -20,8 +20,8 @@ var (
 // Handlers requests to login with Facebook access token
 // (POST /v1/facebook/login)
 func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the authenticated account from the request context
-	authenticatedAccount, err := accounts.GetAuthenticatedAccount(r)
+	// Get the authenticated client from the request context
+	authenticatedClient, err := accounts.GetAuthenticatedClient(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
 		return
@@ -76,7 +76,7 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get or create a new user based on facebook ID and other details
 	user, err = s.GetAccountsService().GetOrCreateFacebookUser(
-		authenticatedAccount,
+		authenticatedClient,
 		profile.ID,
 		userRequest,
 	)
@@ -86,14 +86,14 @@ func (s *Service) loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that the same account is being used
-	if authenticatedAccount.ID != user.Account.ID {
+	if authenticatedClient.ID != user.OauthClient.ID {
 		response.UnauthorizedError(w, ErrAccountMismatch.Error())
 		return
 	}
 
 	// Log in the user
 	accessToken, refreshToken, err := s.GetAccountsService().GetOauthService().Login(
-		user.Account.OauthClient,
+		user.OauthClient,
 		user.OauthUser,
 		scope,
 	)

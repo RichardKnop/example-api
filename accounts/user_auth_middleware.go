@@ -1,11 +1,16 @@
 package accounts
 
 import (
+	"errors"
 	"net/http"
 
-	"github.com/gorilla/context"
 	"github.com/RichardKnop/example-api/util/response"
-	"github.com/RichardKnop/example-api/util"
+	"github.com/gorilla/context"
+)
+
+var (
+	// ErrUserAuthenticationRequired ...
+	ErrUserAuthenticationRequired = errors.New("User authentication required")
 )
 
 // NewUserAuthMiddleware creates a new UserAuthMiddleware instance
@@ -22,12 +27,6 @@ type UserAuthMiddleware struct {
 
 // ServeHTTP as per the negroni.Handler interface
 func (m *UserAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	// HTTPS redirection
-	err := util.NewSecure(m.service.GetConfig().IsDevelopment).Process(w, r)
-	if err != nil {
-		return
-	}
-
 	user, err := getUserCredentialsFromRequest(r, m.service)
 	if err != nil || user == nil {
 		// For security reasons, return a generic error message
@@ -53,23 +52,17 @@ type OptionalAuthMiddleware struct {
 
 // ServeHTTP as per the negroni.Handler interface
 func (m *OptionalAuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	// HTTPS redirection
-	err := util.NewSecure(m.service.GetConfig().IsDevelopment).Process(w, r)
-	if err != nil {
-		return
-	}
-
 	// Optional user auth
 	user, err := getUserCredentialsFromRequest(r, m.service)
 	if err == nil && user != nil {
 		context.Set(r, AuthenticatedUserKey, user)
-		context.Set(r, AuthenticatedAccountKey, user.Account)
+		context.Set(r, AuthenticatedClientKey, user.OauthClient)
 	}
 
 	// Optional client auth
-	account, err := getClientCredentialsFromRequest(r, m.service)
-	if err == nil && account != nil {
-		context.Set(r, AuthenticatedAccountKey, account)
+	client, err := getClientCredentialsFromRequest(r, m.service)
+	if err == nil && client != nil {
+		context.Set(r, AuthenticatedClientKey, client)
 	}
 
 	next(w, r)

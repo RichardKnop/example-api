@@ -78,15 +78,15 @@ func (_m *ServiceInterface) GetUserCredentialsFromToken(token string) (*models.U
 
 	return r0, r1
 }
-func (_m *ServiceInterface) GetClientCredentialsFromBaseAuth(r *http.Request) (*models.Account, error) {
+func (_m *ServiceInterface) GetClientCredentialsFromBaseAuth(r *http.Request) (*models.OauthClient, error) {
 	ret := _m.Called(r)
 
-	var r0 *models.Account
-	if rf, ok := ret.Get(0).(func(*http.Request) *models.Account); ok {
+	var r0 *models.OauthClient
+	if rf, ok := ret.Get(0).(func(*http.Request) *models.OauthClient); ok {
 		r0 = rf(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Account)
+			r0 = ret.Get(0).(*models.OauthClient)
 		}
 	}
 
@@ -99,15 +99,15 @@ func (_m *ServiceInterface) GetClientCredentialsFromBaseAuth(r *http.Request) (*
 
 	return r0, r1
 }
-func (_m *ServiceInterface) GetClientCredentialsFromToken(token string) (*models.Account, error) {
+func (_m *ServiceInterface) GetClientCredentialsFromToken(token string) (*models.OauthClient, error) {
 	ret := _m.Called(token)
 
-	var r0 *models.Account
-	if rf, ok := ret.Get(0).(func(string) *models.Account); ok {
+	var r0 *models.OauthClient
+	if rf, ok := ret.Get(0).(func(string) *models.OauthClient); ok {
 		r0 = rf(token)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Account)
+			r0 = ret.Get(0).(*models.OauthClient)
 		}
 	}
 
@@ -120,15 +120,15 @@ func (_m *ServiceInterface) GetClientCredentialsFromToken(token string) (*models
 
 	return r0, r1
 }
-func (_m *ServiceInterface) GetMixedCredentialsFromToken(token string) (*models.Account, *models.User, error) {
+func (_m *ServiceInterface) GetMixedCredentialsFromToken(token string) (*models.OauthClient, *models.User, error) {
 	ret := _m.Called(token)
 
-	var r0 *models.Account
-	if rf, ok := ret.Get(0).(func(string) *models.Account); ok {
+	var r0 *models.OauthClient
+	if rf, ok := ret.Get(0).(func(string) *models.OauthClient); ok {
 		r0 = rf(token)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Account)
+			r0 = ret.Get(0).(*models.OauthClient)
 		}
 	}
 
@@ -149,90 +149,6 @@ func (_m *ServiceInterface) GetMixedCredentialsFromToken(token string) (*models.
 	}
 
 	return r0, r1, r2
-}
-func (_m *ServiceInterface) FindAccountByOauthClientID(oauthClientID uint) (*models.Account, error) {
-	ret := _m.Called(oauthClientID)
-
-	var r0 *models.Account
-	if rf, ok := ret.Get(0).(func(uint) *models.Account); ok {
-		r0 = rf(oauthClientID)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Account)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(uint) error); ok {
-		r1 = rf(oauthClientID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-func (_m *ServiceInterface) FindAccountByID(accountID uint) (*models.Account, error) {
-	ret := _m.Called(accountID)
-
-	var r0 *models.Account
-	if rf, ok := ret.Get(0).(func(uint) *models.Account); ok {
-		r0 = rf(accountID)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Account)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(uint) error); ok {
-		r1 = rf(accountID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-func (_m *ServiceInterface) FindAccountByName(name string) (*models.Account, error) {
-	ret := _m.Called(name)
-
-	var r0 *models.Account
-	if rf, ok := ret.Get(0).(func(string) *models.Account); ok {
-		r0 = rf(name)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Account)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(name)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-func (_m *ServiceInterface) CreateAccount(name string, description string, key string, secret string, redirectURI string) (*models.Account, error) {
-	ret := _m.Called(name, description, key, secret, redirectURI)
-
-	var r0 *models.Account
-	if rf, ok := ret.Get(0).(func(string, string, string, string, string) *models.Account); ok {
-		r0 = rf(name, description, key, secret, redirectURI)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*models.Account)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, string, string, string) error); ok {
-		r1 = rf(name, description, key, secret, redirectURI)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
 }
 func (_m *ServiceInterface) FindUserByOauthUserID(oauthUserID uint) (*models.User, error) {
 	ret := _m.Called(oauthUserID)
@@ -318,12 +234,12 @@ func (_m *ServiceInterface) FindUserByFacebookID(facebookID string) (*models.Use
 
 	return r0, r1
 }
-func (_m *ServiceInterface) CreateUser(account *models.Account, userRequest *accounts.UserRequest) (*models.User, error) {
-	ret := _m.Called(account, userRequest)
+func (_m *ServiceInterface) CreateUser(oauthClient *models.OauthClient, userRequest *accounts.UserRequest) (*models.User, error) {
+	ret := _m.Called(oauthClient, userRequest)
 
 	var r0 *models.User
-	if rf, ok := ret.Get(0).(func(*models.Account, *accounts.UserRequest) *models.User); ok {
-		r0 = rf(account, userRequest)
+	if rf, ok := ret.Get(0).(func(*models.OauthClient, *accounts.UserRequest) *models.User); ok {
+		r0 = rf(oauthClient, userRequest)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*models.User)
@@ -331,8 +247,8 @@ func (_m *ServiceInterface) CreateUser(account *models.Account, userRequest *acc
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*models.Account, *accounts.UserRequest) error); ok {
-		r1 = rf(account, userRequest)
+	if rf, ok := ret.Get(1).(func(*models.OauthClient, *accounts.UserRequest) error); ok {
+		r1 = rf(oauthClient, userRequest)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -457,12 +373,12 @@ func (_m *ServiceInterface) ResetPassword(passwordReset *models.PasswordReset, p
 
 	return r0
 }
-func (_m *ServiceInterface) GetOrCreateFacebookUser(account *models.Account, facebookID string, userRequest *accounts.UserRequest) (*models.User, error) {
-	ret := _m.Called(account, facebookID, userRequest)
+func (_m *ServiceInterface) GetOrCreateFacebookUser(oauthClient *models.OauthClient, facebookID string, userRequest *accounts.UserRequest) (*models.User, error) {
+	ret := _m.Called(oauthClient, facebookID, userRequest)
 
 	var r0 *models.User
-	if rf, ok := ret.Get(0).(func(*models.Account, string, *accounts.UserRequest) *models.User); ok {
-		r0 = rf(account, facebookID, userRequest)
+	if rf, ok := ret.Get(0).(func(*models.OauthClient, string, *accounts.UserRequest) *models.User); ok {
+		r0 = rf(oauthClient, facebookID, userRequest)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*models.User)
@@ -470,20 +386,20 @@ func (_m *ServiceInterface) GetOrCreateFacebookUser(account *models.Account, fac
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*models.Account, string, *accounts.UserRequest) error); ok {
-		r1 = rf(account, facebookID, userRequest)
+	if rf, ok := ret.Get(1).(func(*models.OauthClient, string, *accounts.UserRequest) error); ok {
+		r1 = rf(oauthClient, facebookID, userRequest)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
 }
-func (_m *ServiceInterface) CreateSuperuser(account *models.Account, email string, password string) (*models.User, error) {
-	ret := _m.Called(account, email, password)
+func (_m *ServiceInterface) CreateSuperuser(oauthClient *models.OauthClient, email string, password string) (*models.User, error) {
+	ret := _m.Called(oauthClient, email, password)
 
 	var r0 *models.User
-	if rf, ok := ret.Get(0).(func(*models.Account, string, string) *models.User); ok {
-		r0 = rf(account, email, password)
+	if rf, ok := ret.Get(0).(func(*models.OauthClient, string, string) *models.User); ok {
+		r0 = rf(oauthClient, email, password)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*models.User)
@@ -491,8 +407,8 @@ func (_m *ServiceInterface) CreateSuperuser(account *models.Account, email strin
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*models.Account, string, string) error); ok {
-		r1 = rf(account, email, password)
+	if rf, ok := ret.Get(1).(func(*models.OauthClient, string, string) error); ok {
+		r1 = rf(oauthClient, email, password)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -42,7 +42,7 @@ func (s *Service) FindUserByEmail(email string) (*models.User, error) {
 	// Fetch the user from the database
 	user := new(models.User)
 	notFound := models.UserPreload(s.db).
-		Joins("inner join oauth_users on oauth_users.id = account_users.oauth_user_id").
+		Joins("inner join oauth_users on oauth_users.id = users.oauth_user_id").
 		Where("oauth_users.username = LOWER(?)", email).First(user).RecordNotFound()
 
 	// Not found
@@ -82,8 +82,8 @@ func (s *Service) FindUserByFacebookID(facebookID string) (*models.User, error) 
 	return user, nil
 }
 
-// CreateUser creates a new oauth user and a new account user
-func (s *Service) CreateUser(account *models.Account, data *UserRequest) (*models.User, error) {
+// CreateUser creates a new user account
+func (s *Service) CreateUser(oauthClient *models.OauthClient, data *UserRequest) (*models.User, error) {
 	// Superusers can only be created manually
 	if data.Role == roles.Superuser {
 		return nil, ErrSuperuserOnlyManually
@@ -94,7 +94,7 @@ func (s *Service) CreateUser(account *models.Account, data *UserRequest) (*model
 
 	user, err := s.createUserCommon(
 		tx,
-		account,
+		oauthClient,
 		data,
 		"",    // facebook ID
 		false, // confirmed
@@ -159,7 +159,7 @@ func (s *Service) UpdateUser(user *models.User, data *UserRequest) error {
 
 // GetOrCreateFacebookUser either returns an existing user
 // or updates an existing email user with facebook ID or creates a new user
-func (s *Service) GetOrCreateFacebookUser(account *models.Account, facebookID string, userRequest *UserRequest) (*models.User, error) {
+func (s *Service) GetOrCreateFacebookUser(oauthClient *models.OauthClient, facebookID string, userRequest *UserRequest) (*models.User, error) {
 	var (
 		user       *models.User
 		err        error
@@ -227,7 +227,7 @@ func (s *Service) GetOrCreateFacebookUser(account *models.Account, facebookID st
 
 	user, err = s.createUserCommon(
 		tx,
-		account,
+		oauthClient,
 		userRequest,
 		facebookID, // facebook ID
 		true,       // confirmed
@@ -247,7 +247,7 @@ func (s *Service) GetOrCreateFacebookUser(account *models.Account, facebookID st
 }
 
 // CreateSuperuser creates a new superuser account
-func (s *Service) CreateSuperuser(account *models.Account, email, password string) (*models.User, error) {
+func (s *Service) CreateSuperuser(oauthClient *models.OauthClient, email, password string) (*models.User, error) {
 	// Begin a transaction
 	tx := s.db.Begin()
 
@@ -258,7 +258,7 @@ func (s *Service) CreateSuperuser(account *models.Account, email, password strin
 	}
 	user, err := s.createUserCommon(
 		tx,
-		account,
+		oauthClient,
 		data,
 		"",   // facebook ID
 		true, // confirmed
@@ -321,7 +321,7 @@ func (s *Service) paginatedUsersQuery() *gorm.DB {
 	return usersQuery
 }
 
-func (s *Service) createUserCommon(db *gorm.DB, account *models.Account, data *UserRequest, facebookID string, confirmed bool) (*models.User, error) {
+func (s *Service) createUserCommon(db *gorm.DB, oauthClient *models.OauthClient, data *UserRequest, facebookID string, confirmed bool) (*models.User, error) {
 	// Check if email is already taken
 	if s.GetOauthService().UserExists(data.Email) {
 		return nil, oauth.ErrUsernameTaken
@@ -346,7 +346,7 @@ func (s *Service) createUserCommon(db *gorm.DB, account *models.Account, data *U
 
 	// Create a new user
 	user, err := models.NewUser(
-		account,
+		oauthClient,
 		oauthUser,
 		facebookID,
 		data.FirstName,
@@ -364,7 +364,7 @@ func (s *Service) createUserCommon(db *gorm.DB, account *models.Account, data *U
 	}
 
 	// Assign related objects
-	user.Account = account
+	user.OauthClient = oauthClient
 	user.OauthUser = oauthUser
 
 	// Update the meta user ID field

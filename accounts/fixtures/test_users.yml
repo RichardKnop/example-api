@@ -4,11 +4,11 @@
 # Users #
 #-------#
 
-- table: 'account_users'
+- table: 'users'
   pk:
     id: 1
   fields:
-    account_id: 1
+    oauth_client_id: 1
     oauth_user_id: 1
     first_name: 'test_first_name_1'
     last_name: 'test_last_name_1'
@@ -16,11 +16,11 @@
     created_at: 'ON_INSERT_NOW()'
     updated_at: 'ON_UPDATE_NOW()'
 
-- table: 'account_users'
+- table: 'users'
   pk:
     id: 2
   fields:
-    account_id: 1
+    oauth_client_id: 1
     oauth_user_id: 2
     facebook_id: 'facebook_id_2'
     first_name: 'test_first_name_2'
@@ -29,11 +29,11 @@
     created_at: 'ON_INSERT_NOW()'
     updated_at: 'ON_UPDATE_NOW()'
 
-- table: 'account_users'
+- table: 'users'
   pk:
     id: 3
   fields:
-    account_id: 1
+    oauth_client_id: 1
     oauth_user_id: 3
     facebook_id: 'facebook_id_3'
     first_name: 'test_first_name_3'

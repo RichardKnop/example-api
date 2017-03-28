@@ -30,7 +30,6 @@ var testFixtures = []string{
 	"../oauth/fixtures/roles.yml",
 	"../oauth/fixtures/test_clients.yml",
 	"../oauth/fixtures/test_users.yml",
-	"../accounts/fixtures/test_accounts.yml",
 	"../accounts/fixtures/test_users.yml",
 }
 
@@ -47,7 +46,7 @@ type FacebookTestSuite struct {
 	adapterMock *facebookMocks.AdapterInterface
 	service     *facebook.Service
 	router      *mux.Router
-	accounts    []*models.Account
+	clients     []*models.OauthClient
 	users       []*models.User
 }
 
@@ -69,9 +68,9 @@ func (suite *FacebookTestSuite) SetupSuite() {
 	}
 	suite.db = db
 
-	// Fetch test accounts
-	suite.accounts = make([]*models.Account, 0)
-	err = models.AccountPreload(suite.db).Order("id").Find(&suite.accounts).Error
+	// Fetch test clients
+	suite.clients = make([]*models.OauthClient, 0)
+	err = suite.db.Order("id").Find(&suite.clients).Error
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -46,7 +46,7 @@ func (suite *AccountsTestSuite) TestFindUserByOauthUserID() {
 
 	// Correct user should be returned
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test_client_1", user.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
@@ -77,7 +77,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 
 	// Correct user should be returned
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test_client_1", user.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
@@ -90,7 +90,7 @@ func (suite *AccountsTestSuite) TestFindUserByEmail() {
 
 	// Correct user should be returned
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test_client_1", user.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
@@ -121,7 +121,7 @@ func (suite *AccountsTestSuite) TestFindUserByID() {
 
 	// Correct user should be returned with preloaded data
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test_client_1", user.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
@@ -163,7 +163,7 @@ func (suite *AccountsTestSuite) TestFindUserByFacebookID() {
 
 	// Correct user should be returned with preloaded data
 	if assert.NotNil(suite.T(), user) {
-		assert.Equal(suite.T(), "test_client_1", user.Account.OauthClient.Key)
+		assert.Equal(suite.T(), "test_client_1", user.OauthClient.Key)
 		assert.Equal(suite.T(), "test@user", user.OauthUser.Username)
 		assert.Equal(suite.T(), roles.User, user.OauthUser.RoleID.String)
 	}
@@ -181,7 +181,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// Let's try passing an existing facebook ID
 	user, err = suite.service.GetOrCreateFacebookUser(
-		suite.accounts[0], // account
+		suite.clients[0], // oauth client
 		"facebook_id_2",   // facebook ID
 		&accounts.UserRequest{
 			Email:     "test@user",
@@ -211,7 +211,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// Let's try passing an existing email
 	user, err = suite.service.GetOrCreateFacebookUser(
-		suite.accounts[0],   // account
+		suite.clients[0],   // oauth client
 		"finch_facebook_id", // facebook ID
 		&accounts.UserRequest{
 			Email:     "test@user",
@@ -241,7 +241,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// We pass new facebook ID and new email
 	user, err = suite.service.GetOrCreateFacebookUser(
-		suite.accounts[0],   // account
+		suite.clients[0],   // oauth client
 		"reese_facebook_id", // facebook ID
 		&accounts.UserRequest{
 			Email:     "john@reese",
@@ -276,7 +276,7 @@ func (suite *AccountsTestSuite) TestCreateSuperuser() {
 
 	// We try to insert a user with a non unique oauth user
 	user, err = suite.service.CreateSuperuser(
-		suite.accounts[0], // account
+		suite.clients[0], // oauth client
 		"test@superuser",  // email
 		"test_password",   // password
 	)
@@ -291,7 +291,7 @@ func (suite *AccountsTestSuite) TestCreateSuperuser() {
 
 	// We try to insert a unique superuser
 	user, err = suite.service.CreateSuperuser(
-		suite.accounts[0],   // account
+		suite.clients[0],   // oauth client
 		"test@newsuperuser", // email
 		"test_password",     // password
 	)

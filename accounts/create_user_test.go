@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func (suite *AccountsTestSuite) TestCreateUserRequiresAccountAuthentication() {
+func (suite *AccountsTestSuite) TestCreateUserRequiresClientAuthentication() {
 	// Prepare a request
 	r, err := http.NewRequest(
 		"POST",

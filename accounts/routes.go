@@ -36,7 +36,7 @@ func (s *Service) GetRoutes() []routes.Route {
 			Pattern:     usersPath,
 			HandlerFunc: s.createUserHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(s),
+				NewClientAuthMiddleware(s),
 			},
 		},
 		routes.Route{
@@ -90,7 +90,7 @@ func (s *Service) GetRoutes() []routes.Route {
 			Pattern:     confirmationsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
 			HandlerFunc: s.confirmEmailHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(s),
+				NewClientAuthMiddleware(s),
 			},
 		},
 		routes.Route{
@@ -99,7 +99,7 @@ func (s *Service) GetRoutes() []routes.Route {
 			Pattern:     invitationsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
 			HandlerFunc: s.confirmInvitationHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(s),
+				NewClientAuthMiddleware(s),
 			},
 		},
 		routes.Route{
@@ -108,7 +108,7 @@ func (s *Service) GetRoutes() []routes.Route {
 			Pattern:     passwordResetsPath,
 			HandlerFunc: s.createPasswordResetHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(s),
+				NewClientAuthMiddleware(s),
 			},
 		},
 		routes.Route{
@@ -117,7 +117,7 @@ func (s *Service) GetRoutes() []routes.Route {
 			Pattern:     passwordResetsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
 			HandlerFunc: s.confirmPasswordResetHandler,
 			Middlewares: []negroni.Handler{
-				NewAccountAuthMiddleware(s),
+				NewClientAuthMiddleware(s),
 			},
 		},
 	}

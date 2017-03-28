@@ -10,38 +10,23 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// Account represents an extension of Oauth 2.0 client,
-// can be used to group users together
-type Account struct {
-	gorm.Model
-	OauthClientID sql.NullInt64 `sql:"index;not null"`
-	OauthClient   *OauthClient
-	Name          string         `sql:"type:varchar(100);unique;not null"`
-	Description   sql.NullString `sql:"type:varchar(200)"`
-}
-
-// TableName specifies table name
-func (p *Account) TableName() string {
-	return "account_accounts"
-}
-
 // User represents a platform user
 type User struct {
 	gorm.Model
-	AccountID   sql.NullInt64 `sql:"index;not null"`
-	OauthUserID sql.NullInt64 `sql:"index;not null"`
-	Account     *Account
-	OauthUser   *OauthUser
-	FacebookID  sql.NullString `sql:"type:varchar(60);unique"`
-	FirstName   sql.NullString `sql:"type:varchar(100)"`
-	LastName    sql.NullString `sql:"type:varchar(100)"`
-	Picture     sql.NullString `sql:"type:varchar(255)"`
-	Confirmed   bool           `sql:"index;not null"`
+	OauthClientID sql.NullInt64 `sql:"index;not null"`
+	OauthUserID   sql.NullInt64 `sql:"index;not null"`
+	OauthClient   *OauthClient
+	OauthUser     *OauthUser
+	FacebookID    sql.NullString `sql:"type:varchar(60);unique"`
+	FirstName     sql.NullString `sql:"type:varchar(100)"`
+	LastName      sql.NullString `sql:"type:varchar(100)"`
+	Picture       sql.NullString `sql:"type:varchar(255)"`
+	Confirmed     bool           `sql:"index;not null"`
 }
 
 // TableName specifies table name
 func (u *User) TableName() string {
-	return "account_users"
+	return "users"
 }
 
 // GetName returns user's full name
@@ -63,7 +48,7 @@ type Confirmation struct {
 
 // TableName specifies table name
 func (c *Confirmation) TableName() string {
-	return "account_confirmations"
+	return "confirmations"
 }
 
 // Invitation is created when user invites another user to the platform.
@@ -79,7 +64,7 @@ type Invitation struct {
 
 // TableName specifies table name
 func (i *Invitation) TableName() string {
-	return "account_invitations"
+	return "invitations"
 }
 
 // PasswordReset is created when user forgets his/her password and requests
@@ -92,32 +77,21 @@ type PasswordReset struct {
 
 // TableName specifies table name
 func (p *PasswordReset) TableName() string {
-	return "account_password_resets"
-}
-
-// NewAccount creates new Account instance
-func NewAccount(oauthClient *OauthClient, name, description string) (*Account, error) {
-	oauthClientID := util.PositiveIntOrNull(int64(oauthClient.ID))
-	account := &Account{
-		OauthClientID: oauthClientID,
-		Name:          name,
-		Description:   util.StringOrNull(description),
-	}
-	return account, nil
+	return "password_resets"
 }
 
 // NewUser creates new User instance
-func NewUser(account *Account, oauthUser *OauthUser, facebookID, firstName, lastName, picture string, confirmed bool) (*User, error) {
-	accountID := util.PositiveIntOrNull(int64(account.ID))
+func NewUser(oauthClient *OauthClient, oauthUser *OauthUser, facebookID, firstName, lastName, picture string, confirmed bool) (*User, error) {
+	oauthClientID := util.PositiveIntOrNull(int64(oauthClient.ID))
 	oauthUserID := util.PositiveIntOrNull(int64(oauthUser.ID))
 	user := &User{
-		AccountID:   accountID,
-		OauthUserID: oauthUserID,
-		FacebookID:  util.StringOrNull(facebookID),
-		FirstName:   util.StringOrNull(firstName),
-		LastName:    util.StringOrNull(lastName),
-		Picture:     util.StringOrNull(picture),
-		Confirmed:   confirmed,
+		OauthClientID: oauthClientID,
+		OauthUserID:   oauthUserID,
+		FacebookID:    util.StringOrNull(facebookID),
+		FirstName:     util.StringOrNull(firstName),
+		LastName:      util.StringOrNull(lastName),
+		Picture:       util.StringOrNull(picture),
+		Confirmed:     confirmed,
 	}
 	return user, nil
 }
@@ -166,16 +140,6 @@ func NewPasswordReset(user *User, expiresIn int) (*PasswordReset, error) {
 	return passwordReset, nil
 }
 
-// AccountPreload sets up Gorm preloads for an account object
-func AccountPreload(db *gorm.DB) *gorm.DB {
-	return AccountPreloadWithPrefix(db, "")
-}
-
-// AccountPreloadWithPrefix sets up Gorm preloads for an account object, and prefixes with prefix for nested objects
-func AccountPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
-	return db.Preload(prefix + "OauthClient")
-}
-
 // UserPreload sets up Gorm preloads for a user object
 func UserPreload(db *gorm.DB) *gorm.DB {
 	return UserPreloadWithPrefix(db, "")
@@ -184,7 +148,7 @@ func UserPreload(db *gorm.DB) *gorm.DB {
 // UserPreloadWithPrefix sets up Gorm preloads for a user object,
 // and prefixes with prefix for nested objects
 func UserPreloadWithPrefix(db *gorm.DB, prefix string) *gorm.DB {
-	return db.Preload(prefix + "Account.OauthClient").
+	return db.Preload(prefix + "OauthClient").
 		Preload(prefix + "OauthUser")
 }
 

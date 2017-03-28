@@ -79,7 +79,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	)
 	assert.NoError(suite.T(), err, "Failed to insert a test oauth user")
 	testUser, err = models.NewUser(
-		suite.accounts[0],
+		suite.clients[0],
 		testOauthUser,
 		"", //facebook ID
 		"Harold",
@@ -90,7 +90,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitation() {
 	assert.NoError(suite.T(), err, "Failed to create a new user object")
 	err = suite.db.Create(testUser).Error
 	assert.NoError(suite.T(), err, "Failed to insert a test user")
-	testUser.Account = suite.accounts[0]
+	testUser.OauthClient = suite.clients[0]
 	testUser.OauthUser = testOauthUser
 
 	// Insert a test invitation

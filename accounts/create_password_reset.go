@@ -13,7 +13,7 @@ import (
 // POST /v1/password-resets
 func (s *Service) createPasswordResetHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the authenticated client from the request context
-	_, err := GetAuthenticatedAccount(r)
+	_, err := GetAuthenticatedClient(r)
 	if err != nil {
 		response.UnauthorizedError(w, err.Error())
 		return

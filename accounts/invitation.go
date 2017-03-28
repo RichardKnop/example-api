@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/RichardKnop/example-api/logger"
 	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/oauth"
 	"github.com/RichardKnop/example-api/oauth/roles"
-	"github.com/RichardKnop/example-api/logger"
 	"github.com/jinzhu/gorm"
 )
 
@@ -56,7 +56,7 @@ func (s *Service) InviteUser(invitedByUser *models.User, invitationRequest *Invi
 
 	// Create a new user account
 	invitedUser, err := models.NewUser(
-		invitedByUser.Account,
+		invitedByUser.OauthClient,
 		oauthUser,
 		"", // facebook ID
 		invitationRequest.FirstName,
@@ -74,7 +74,7 @@ func (s *Service) InviteUser(invitedByUser *models.User, invitationRequest *Invi
 	}
 
 	// Assign related objects
-	invitedUser.Account = invitedByUser.Account
+	invitedUser.OauthClient = invitedByUser.OauthClient
 	invitedUser.OauthUser = oauthUser
 
 	// Update the meta user ID field
