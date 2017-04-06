@@ -244,11 +244,11 @@ You might want to insert some test data if you are testing locally using `curl` 
 
 ```sh
 example-api loaddata \
-  oauth/fixtures/scopes.yml \
-  oauth/fixtures/roles.yml \
-  oauth/fixtures/test_clients.yml \
-  oauth/fixtures/test_users.yml \
-  accounts/fixtures/test_users.yml
+  services/oauth/fixtures/scopes.yml \
+  services/oauth/fixtures/roles.yml \
+  services/oauth/fixtures/test_clients.yml \
+  services/oauth/fixtures/test_users.yml \
+  services/accounts/fixtures/test_users.yml
 ```
 
 # Testing
@@ -274,9 +274,9 @@ You can load fixtures with `docker exec` command:
 
 ```sh
 docker exec <container_id> /go/bin/example-api loaddata \
-  oauth/fixtures/scopes.yml \
-  oauth/fixtures/roles.yml \
-  oauth/fixtures/test_clients.yml
+  services/oauth/fixtures/scopes.yml \
+  services/oauth/fixtures/roles.yml \
+  services/oauth/fixtures/test_clients.yml
 ```
 
 You can also execute interactive commands by passing `-i` flag:
