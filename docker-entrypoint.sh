@@ -1,10 +1,15 @@
 #!/bin/bash
 set -e
 
-if [ "$1" = 'example-api' ] && [ "$2" = 'runserver' ]; then
+last=$({
+  shift $(($#-1))
+  echo $1
+})
+
+if [ "$last" = 'runserver' ]; then
   $1 migrate
-  $1 loaddata oauth/fixtures/scopes.yml
-  $1 loaddata oauth/fixtures/roles.yml
+  $1 loaddata services/oauth/fixtures/scopes.yml
+  $1 loaddata services/oauth/fixtures/roles.yml
 fi
 
 exec "$@"
