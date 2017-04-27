@@ -78,7 +78,7 @@ if err != nil {
     // err can be an facebook API error.
     // if so, the Error struct contains error details.
     if e, ok := err.(*Error); ok {
-        fmt.Logf("facebook error. [message:%v] [type:%v] [code:%v] [subcode:%v]",
+        fmt.Printf("facebook error. [message:%v] [type:%v] [code:%v] [subcode:%v]",
             e.Message, e.Type, e.Code, e.ErrorSubcode)
         return
     }
@@ -104,7 +104,7 @@ var items []fb.Result
 err := res.DecodeField("data", &items)
 
 if err != nil {
-    fmt.Logf("An error has happened %v", err)
+    fmt.Printf("An error has happened %v", err)
     return
 }
 
@@ -237,6 +237,8 @@ contentType := batchResult1.Header.Get("Content-Type")
 
 ### Send FQL query ###
 
+*FQL is deprecated by facebook right now.*
+
 ```go
 results, _ := fb.FQL("SELECT username FROM page WHERE page_id = 20531316728")
 fmt.Println(results[0]["username"]) // print "facebook"
@@ -249,6 +251,8 @@ fmt.Println(results[0]["username"]) // print "facebook"
 ```
 
 ### Make multi-FQL ###
+
+*FQL is deprecated by facebook right now.*
 
 ```go
 res, _ := fb.MultiFQL(Params{
