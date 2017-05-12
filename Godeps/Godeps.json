@@ -146,6 +146,11 @@
 			"Rev": "8118ae63850fee22b2fe43cea81d3bc149774503"
 		},
 		{
+			"ImportPath": "github.com/pkg/errors",
+			"Comment": "v0.8.0-5-gc605e28",
+			"Rev": "c605e284fe17294bda444b34710735b29d1a9d90"
+		},
+		{
 			"ImportPath": "github.com/pmezard/go-difflib/difflib",
 			"Comment": "v1.0.0",
 			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -180,13 +185,13 @@
 		},
 		{
 			"ImportPath": "github.com/urfave/cli",
-			"Comment": "v1.19.1-34-gab403a5",
-			"Rev": "ab403a54a148f2d857920810291539e1f817ee7b"
+			"Comment": "v1.19.1-36-gd70f47e",
+			"Rev": "d70f47eeca3afd795160003bc6e28b001d60c67c"
 		},
 		{
 			"ImportPath": "github.com/urfave/negroni",
-			"Comment": "v0.2.0-106-g490e6a5",
-			"Rev": "490e6a555d47ca891a89a150d0c1ef3922dfffe9"
+			"Comment": "v0.2.0-115-g1d8981a",
+			"Rev": "1d8981a52d6bda4467a9faacf3fdddd38222dfc4"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
@@ -234,15 +239,15 @@
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2",
-			"Rev": "314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd"
+			"Rev": "ad516a297a9f2a74ecc244861b298c94bdd28b9d"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/facebook",
-			"Rev": "314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd"
+			"Rev": "ad516a297a9f2a74ecc244861b298c94bdd28b9d"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/internal",
-			"Rev": "314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd"
+			"Rev": "ad516a297a9f2a74ecc244861b298c94bdd28b9d"
 		},
 		{
 			"ImportPath": "golang.org/x/text/secure/bidirule",
@@ -336,8 +341,8 @@
 		},
 		{
 			"ImportPath": "gopkg.in/mailgun/mailgun-go.v1",
-			"Comment": "v1.0.2",
-			"Rev": "369a1fa57ce6fb314e627087b9fff0db5c266c0f"
+			"Comment": "v1.1.0",
+			"Rev": "a4002e2df2e8ca2da6a6fbb4a72871b504e49f50"
 		},
 		{
 			"ImportPath": "gopkg.in/tylerb/graceful.v1",
