@@ -2,6 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/example-api)
 [![Travis Status for RichardKnop/example-api](https://travis-ci.org/RichardKnop/example-api.svg?branch=master)](https://travis-ci.org/RichardKnop/example-api)
+[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://richardknop.github.io/donate/)
 
 # example-api
 
