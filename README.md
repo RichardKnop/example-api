@@ -1,19 +1,20 @@
-[![Codeship Status for RichardKnop/example-api](https://codeship.com/projects/eb1ee0d0-ac8c-0133-aaf6-0af8633f2b2a/status?branch=master)](https://codeship.com/projects/131678)
-
-[![GoDoc](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/example-api)
-[![Travis Status for RichardKnop/example-api](https://travis-ci.org/RichardKnop/example-api.svg?branch=master)](https://travis-ci.org/RichardKnop/example-api)
-[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://richardknop.github.io/donate/)
-
-# example-api
+## Example API
 
 This is a base project to bootstrap and prototype quickly. It is useful as a starting point for REST APIs and includes full OAuth 2.0 implementation as well as basic endpoints to create and update a user, health check endpoint, Facebook integration, migrations and a ready to rumble Dockerfile.
 
 It relies on `Postgres` for database and `etcd` for configuration but both are easily customizable. An [ORM library](https://github.com/jinzhu/gorm) is used for database communication.
 
-# Index
+[![Travis Status for RichardKnop/example-api](https://travis-ci.org/RichardKnop/example-api.svg?branch=master&label=linux+build)](https://travis-ci.org/RichardKnop/example-api)
+[![godoc for RichardKnop/example-api](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/example-api)
+[![goreportcard for RichardKnop/example-api](https://goreportcard.com/badge/github.com/RichardKnop/example-api)](https://goreportcard.com/report/RichardKnop/example-api)
+[![codecov for RichardKnop/example-api](https://codecov.io/gh/RichardKnop/example-api/branch/master/graph/badge.svg)](https://codecov.io/gh/RichardKnop/example-api)
+[![Codeship Status for RichardKnop/example-api](https://codeship.com/projects/eb1ee0d0-ac8c-0133-aaf6-0af8633f2b2a/status?branch=master)](https://codeship.com/projects/131678)
 
-* [example-api](#example-api)
-* [Index](#index)
+[![Sourcegraph for RichardKnop/example-api](https://sourcegraph.com/github.com/RichardKnop/example-api/-/badge.svg)](https://sourcegraph.com/github.com/RichardKnop/example-api?badge)
+[![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://richardknop.github.io/donate/)
+
+---
+
 * [API Design](#api-design)
 * [API Docs](../../../example-api/blob/master/docs/)
 * [Dependencies](#dependencies)
@@ -22,9 +23,8 @@ It relies on `Postgres` for database and `etcd` for configuration but both are e
 * [Testing](#testing)
 * [Docker](#docker)
 * [Docker Compose](#docker-compose)
-* [Building](../../../example-api/blob/master/BUILDING.md)
 
-# API Design
+## API Design
 
 The API is using REST architectural style which means resources are access and modified via HTTP methods:
 
@@ -123,7 +123,7 @@ Pagination example:
 }
 ```
 
-# Dependencies
+## Dependencies
 
 According to [Go 1.5 Vendor experiment](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo), all dependencies are stored in the vendor directory. This approach is called `vendoring` and is the best practice for Go projects to lock versions of dependencies in order to achieve reproducible builds.
 
@@ -139,11 +139,11 @@ To install dependencies:
 make install-deps
 ```
 
-# Setup
+## Setup
 
-If you are developing on OSX, install `etcd` and `Postgres``:
+If you are developing on OSX, install `etcd` and `Postgres`:
 
-## etcd
+### etcd
 
 ```sh
 brew install etcd
@@ -199,7 +199,7 @@ Check the config was loaded properly:
 etcdctl get /config/example_api.json
 ```
 
-## Postgres
+### Postgres
 
 ```sh
 brew install postgres
@@ -212,7 +212,7 @@ createuser --createdb example_api
 createdb -U example_api example_api
 ```
 
-## Compile & Run
+### Compile & Run
 
 Compile the app:
 
@@ -240,7 +240,7 @@ When deploying, you can set etcd related environment variables:
 * `ETCD_CA_FILE`
 * `ETCD_CONFIG_PATH`
 
-# Test Data
+## Test Data
 
 You might want to insert some test data if you are testing locally using `curl` examples from this README:
 
@@ -253,7 +253,7 @@ example-api loaddata \
   services/accounts/fixtures/test_users.yml
 ```
 
-# Testing
+## Testing
 
 I have used a mix of unit and functional tests so you need to have `sqlite` installed in order for the tests to run successfully as the suite creates an in-memory database.
 
@@ -263,7 +263,7 @@ To run tests:
 make test
 ```
 
-# Docker
+## Docker
 
 Build a Docker image and run the app in a container:
 
@@ -288,7 +288,7 @@ docker exec -i <container_id> /go/bin/example-api createoauthclient
 docker exec -i <container_id> /go/bin/example-api createsuperuser
 ```
 
-# Docker Compose
+## Docker Compose
 
 You can use [docker-compose](https://docs.docker.com/compose/) to start the app, postgres, etcd in separate linked containers:
 
