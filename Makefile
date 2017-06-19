@@ -25,3 +25,6 @@ test-facebook:
 
 test:
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=60s'
+
+test-with-coverage:
+	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=60s -coverprofile=coverage.txt -covermode=set'
