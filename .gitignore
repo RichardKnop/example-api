@@ -2,3 +2,4 @@ example-api
 .bash_profile
 etcd-data
 postgres-data
+coverage.txt
