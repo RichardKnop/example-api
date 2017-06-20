@@ -14,9 +14,6 @@ install-deps:
 fmt:
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go fmt'
 
-fmt:
-	bash -c 'go list ./... | grep -v vendor | xargs -n1 go fmt'
-
 lint:
 	bash -c 'gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --tests --vendor ./...'
 
