@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/stretchr/testify/assert"
 )
 

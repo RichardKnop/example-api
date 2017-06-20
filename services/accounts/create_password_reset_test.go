@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"

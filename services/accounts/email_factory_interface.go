@@ -1,8 +1,8 @@
 package accounts
 
 import (
-	"github.com/RichardKnop/example-api/services/email"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/email"
 )
 
 // EmailFactoryInterface defines exported methods

@@ -3,8 +3,8 @@ package util_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRegexExtractMatch(t *testing.T) {

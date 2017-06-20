@@ -4,9 +4,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/util"
 	"github.com/stretchr/testify/assert"
 )

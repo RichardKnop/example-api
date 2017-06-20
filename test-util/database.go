@@ -6,9 +6,9 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/jinzhu/gorm"
-	"github.com/RichardKnop/go-fixtures"
 	"github.com/RichardKnop/example-api/util/migrations"
+	"github.com/RichardKnop/go-fixtures"
+	"github.com/jinzhu/gorm"
 	// Drivers
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"

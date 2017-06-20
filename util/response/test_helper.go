@@ -139,6 +139,7 @@ func TestListValidResponse(t *testing.T, router *mux.Router, entity string, item
 // TestListValidResponseWithParams tests a list endpoint for a valid response with default settings
 func TestListValidResponseWithParams(t *testing.T, router *mux.Router, entity string, items []interface{}, assertExpectations func(), params map[string]string) {
 	u, err := url.Parse(fmt.Sprintf("http://1.2.3.4/v1/%s", entity))
+	assert.NoError(t, err, "URL parsing failed")
 
 	// add any params
 	for k, v := range params {
@@ -177,13 +178,13 @@ func TestListValidResponseWithParams(t *testing.T, router *mux.Router, entity st
 	expected := &ListResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
-				"self": &jsonhal.Link{
+				"self": {
 					Href: baseURI,
 				},
-				"first": &jsonhal.Link{
+				"first": {
 					Href: pagedURI,
 				},
-				"last": &jsonhal.Link{
+				"last": {
 					Href: pagedURI,
 				},
 				"prev": new(jsonhal.Link),

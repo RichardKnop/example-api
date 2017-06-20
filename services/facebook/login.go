@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/RichardKnop/example-api/services/oauth/tokentypes"
 	"github.com/RichardKnop/example-api/util/response"

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/stretchr/testify/assert"
 )

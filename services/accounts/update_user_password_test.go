@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"
@@ -257,7 +257,7 @@ func (suite *AccountsTestSuite) TestUpdateUserPassword() {
 	expected := &accounts.UserResponse{
 		Hal: jsonhal.Hal{
 			Links: map[string]*jsonhal.Link{
-				"self": &jsonhal.Link{
+				"self": {
 					Href: fmt.Sprintf("/v1/users/%d", user.ID),
 				},
 			},

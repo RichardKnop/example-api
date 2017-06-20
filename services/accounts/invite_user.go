@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/util/response"
 	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/util/response"
 )
 
 // Handles requests to invite a new user

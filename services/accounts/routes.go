@@ -7,18 +7,16 @@ import (
 )
 
 const (
-	usersResource                 = "users"
-	usersPath                     = "/" + usersResource
-	meResource                    = "me"
-	mePath                        = "/" + meResource
-	invitationsResource           = "invitations"
-	invitationsPath               = "/" + invitationsResource
-	confirmationsResource         = "confirmations"
-	confirmationsPath             = "/" + confirmationsResource
-	passwordResetsResource        = "password-resets"
-	passwordResetsPath            = "/" + passwordResetsResource
-	onboardingCheckpointsResource = "onboarding-checkpoints"
-	onboardingCheckpointsPath     = "/" + onboardingCheckpointsResource
+	usersResource          = "users"
+	usersPath              = "/" + usersResource
+	meResource             = "me"
+	mePath                 = "/" + meResource
+	invitationsResource    = "invitations"
+	invitationsPath        = "/" + invitationsResource
+	confirmationsResource  = "confirmations"
+	confirmationsPath      = "/" + confirmationsResource
+	passwordResetsResource = "password-resets"
+	passwordResetsPath     = "/" + passwordResetsResource
 )
 
 // RegisterRoutes registers route handlers for the accounts service
@@ -30,7 +28,7 @@ func (s *Service) RegisterRoutes(router *mux.Router, prefix string) {
 // GetRoutes returns []routes.Route slice for the accounts service
 func (s *Service) GetRoutes() []routes.Route {
 	return []routes.Route{
-		routes.Route{
+		{
 			Name:        "create_user",
 			Method:      "POST",
 			Pattern:     usersPath,
@@ -39,7 +37,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewClientAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "get_my_user",
 			Method:      "GET",
 			Pattern:     mePath,
@@ -48,7 +46,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewUserAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "get_user",
 			Method:      "GET",
 			Pattern:     usersPath + "/{id:[0-9]+}",
@@ -57,7 +55,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewUserAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "update_user",
 			Method:      "PUT",
 			Pattern:     usersPath + "/{id:[0-9]+}",
@@ -66,7 +64,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewUserAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "list_users",
 			Method:      "GET",
 			Pattern:     usersPath,
@@ -75,7 +73,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewUserAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "invite_user",
 			Method:      "POST",
 			Pattern:     invitationsPath,
@@ -84,7 +82,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewUserAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "confirm_email",
 			Method:      "GET",
 			Pattern:     confirmationsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
@@ -93,7 +91,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewClientAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "confirm_invitation",
 			Method:      "POST",
 			Pattern:     invitationsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",
@@ -102,7 +100,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewClientAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "create_password_reset",
 			Method:      "POST",
 			Pattern:     passwordResetsPath,
@@ -111,7 +109,7 @@ func (s *Service) GetRoutes() []routes.Route {
 				NewClientAuthMiddleware(s),
 			},
 		},
-		routes.Route{
+		{
 			Name:        "confirm_password_reset",
 			Method:      "POST",
 			Pattern:     passwordResetsPath + "/{reference:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}",

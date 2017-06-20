@@ -3,8 +3,8 @@ package pagination_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/util/pagination"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetSort(t *testing.T) {

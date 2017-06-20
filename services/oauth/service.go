@@ -1,9 +1,9 @@
 package oauth
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
+	"github.com/jinzhu/gorm"
 )
 
 // Service struct keeps objects to avoid passing them around

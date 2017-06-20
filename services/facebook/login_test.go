@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/RichardKnop/example-api/services/facebook"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/facebook"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
 	"github.com/RichardKnop/example-api/services/oauth/tokentypes"

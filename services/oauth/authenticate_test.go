@@ -18,20 +18,20 @@ func (suite *OauthTestSuite) TestAuthenticate() {
 	// Insert some test access tokens
 	testAccessTokens := []*models.OauthAccessToken{
 		// Expired access token
-		&models.OauthAccessToken{
+		{
 			Token:     "test_expired_token",
 			ExpiresAt: time.Now().UTC().Add(-10 * time.Second),
 			Client:    suite.clients[0],
 			User:      suite.users[0],
 		},
 		// Access token without a user
-		&models.OauthAccessToken{
+		{
 			Token:     "test_client_token",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],
 		},
 		// Access token with a user
-		&models.OauthAccessToken{
+		{
 			Token:     "test_user_token",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],
@@ -114,18 +114,18 @@ func (suite *OauthTestSuite) TestAuthenticateRollingRefreshToken() {
 
 	// Insert some test access tokens
 	testAccessTokens = []*models.OauthAccessToken{
-		&models.OauthAccessToken{
+		{
 			Token:     "test_token_1",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],
 			User:      suite.users[0],
 		},
-		&models.OauthAccessToken{
+		{
 			Token:     "test_token_2",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],
 		},
-		&models.OauthAccessToken{
+		{
 			Token:     "test_token_3",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],
@@ -139,18 +139,18 @@ func (suite *OauthTestSuite) TestAuthenticateRollingRefreshToken() {
 
 	// Insert some test access tokens
 	testRefreshTokens = []*models.OauthRefreshToken{
-		&models.OauthRefreshToken{
+		{
 			Token:     "test_token_1",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],
 			User:      suite.users[0],
 		},
-		&models.OauthRefreshToken{
+		{
 			Token:     "test_token_2",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],
 		},
-		&models.OauthRefreshToken{
+		{
 			Token:     "test_token_3",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],

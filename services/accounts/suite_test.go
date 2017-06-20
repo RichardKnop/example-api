@@ -5,10 +5,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/config"
-	"github.com/RichardKnop/example-api/services/email"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
+	"github.com/RichardKnop/example-api/services/email"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"

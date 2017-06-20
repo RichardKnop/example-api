@@ -4,11 +4,11 @@ import (
 	"log"
 	"testing"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/config"
 	"github.com/RichardKnop/example-api/database"
-	"github.com/RichardKnop/example-api/services/facebook"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
+	"github.com/RichardKnop/example-api/services/facebook"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/gorilla/mux"
 	fb "github.com/huandu/facebook"

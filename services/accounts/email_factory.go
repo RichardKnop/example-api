@@ -9,21 +9,19 @@ import (
 	textTemplate "text/template"
 
 	"github.com/RichardKnop/example-api/config"
-	"github.com/RichardKnop/example-api/services/email"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/email"
 )
 
 var (
-	htmlEmailLayout                       = "./accounts/templates/email_layout.html"
-	htmlEmailStyles                       = "./accounts/templates/styles.css"
-	confirmEmailTemplateHTML              = "./accounts/templates/confirm_email.html"
-	confirmEmailTemplateTxt               = "./accounts/templates/confirm_email.txt"
-	passwordResetEmailTemplateHTML        = "./accounts/templates/password_reset_email.html"
-	passwordResetEmailTemplateTxt         = "./accounts/templates/password_reset_email.txt"
-	invitationEmailTemplateHTML           = "./accounts/templates/invitation_email.html"
-	invitationEmailTemplateTxt            = "./accounts/templates/invitation_email.txt"
-	onboardingCheckpointEmailTemplateHTML = "./accounts/templates/onboarding_checkpoint_email.html"
-	onboardingCheckpointEmailTemplateTxt  = "./accounts/templates/onboarding_checkpoint_email.txt"
+	htmlEmailLayout                = "./accounts/templates/email_layout.html"
+	htmlEmailStyles                = "./accounts/templates/styles.css"
+	confirmEmailTemplateHTML       = "./accounts/templates/confirm_email.html"
+	confirmEmailTemplateTxt        = "./accounts/templates/confirm_email.txt"
+	passwordResetEmailTemplateHTML = "./accounts/templates/password_reset_email.html"
+	passwordResetEmailTemplateTxt  = "./accounts/templates/password_reset_email.txt"
+	invitationEmailTemplateHTML    = "./accounts/templates/invitation_email.html"
+	invitationEmailTemplateTxt     = "./accounts/templates/invitation_email.txt"
 )
 
 // EmailFactory facilitates construction of email.Email objects
@@ -87,7 +85,7 @@ func (f *EmailFactory) NewConfirmationEmail(o *models.Confirmation) (*email.Mess
 
 	return &email.Message{
 		Subject: subject,
-		Recipients: []*email.Recipient{&email.Recipient{
+		Recipients: []*email.Recipient{{
 			Email: email.Email{
 				Address: o.User.OauthUser.Username,
 				Name:    o.User.GetName(),
@@ -230,7 +228,7 @@ func (f *EmailFactory) NewPasswordResetEmail(o *models.PasswordReset) (*email.Me
 
 	return &email.Message{
 		Subject: subject,
-		Recipients: []*email.Recipient{&email.Recipient{
+		Recipients: []*email.Recipient{{
 			Email: email.Email{
 				Address: o.User.OauthUser.Username,
 				Name:    o.User.GetName(),
@@ -381,7 +379,7 @@ func (f *EmailFactory) NewInvitationEmail(o *models.Invitation) (*email.Message,
 
 	return &email.Message{
 		Subject: subject,
-		Recipients: []*email.Recipient{&email.Recipient{
+		Recipients: []*email.Recipient{{
 			Email: email.Email{
 				Address: o.InvitedUser.OauthUser.Username,
 				Name:    o.InvitedUser.GetName(),

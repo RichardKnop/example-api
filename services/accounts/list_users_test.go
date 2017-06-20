@@ -3,8 +3,8 @@ package accounts_test
 import (
 	"net/http"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/test-util"
 	"github.com/stretchr/testify/assert"
 )

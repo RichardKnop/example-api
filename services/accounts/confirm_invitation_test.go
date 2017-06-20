@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
 	"github.com/RichardKnop/example-api/test-util"
 	pass "github.com/RichardKnop/example-api/util/password"
@@ -41,6 +41,7 @@ func (suite *AccountsTestSuite) TestConfirmInvitationReferenceNotFound() {
 	payload, err := json.Marshal(&accounts.ConfirmInvitationRequest{
 		PasswordRequest: accounts.PasswordRequest{Password: "test_password"},
 	})
+	assert.NoError(suite.T(), err, "JSON marshaling not get an error")
 	r, err := http.NewRequest(
 		"POST",
 		fmt.Sprintf("http://1.2.3.4/v1/invitations/%s", bogusUUID),

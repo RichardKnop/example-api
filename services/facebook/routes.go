@@ -21,7 +21,7 @@ func (s *Service) RegisterRoutes(router *mux.Router, prefix string) {
 // GetRoutes returns []routes.Route slice for the facebook service
 func (s *Service) GetRoutes() []routes.Route {
 	return []routes.Route{
-		routes.Route{
+		{
 			Name:        "facebook_login",
 			Method:      "POST",
 			Pattern:     loginPath,

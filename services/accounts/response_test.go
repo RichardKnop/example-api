@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -97,10 +97,10 @@ func TestNewPasswordResetResponse(t *testing.T) {
 
 func TestNewListUsersResponse(t *testing.T) {
 	testUsers := []*models.User{
-		&models.User{
+		{
 			OauthUser: new(models.OauthUser),
 		},
-		&models.User{
+		{
 			OauthUser: new(models.OauthUser),
 		},
 	}

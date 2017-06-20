@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/util"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFormatTime(t *testing.T) {

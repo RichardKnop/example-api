@@ -3,8 +3,8 @@ package accounts_test
 import (
 	"testing"
 
-	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/models"
+	"github.com/RichardKnop/example-api/services/accounts"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
 	"github.com/RichardKnop/example-api/util"
@@ -182,7 +182,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 	// Let's try passing an existing facebook ID
 	user, err = suite.service.GetOrCreateFacebookUser(
 		suite.clients[0], // oauth client
-		"facebook_id_2",   // facebook ID
+		"facebook_id_2",  // facebook ID
 		&accounts.UserRequest{
 			Email:     "test@user",
 			FirstName: "John",
@@ -211,7 +211,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// Let's try passing an existing email
 	user, err = suite.service.GetOrCreateFacebookUser(
-		suite.clients[0],   // oauth client
+		suite.clients[0],    // oauth client
 		"finch_facebook_id", // facebook ID
 		&accounts.UserRequest{
 			Email:     "test@user",
@@ -241,7 +241,7 @@ func (suite *AccountsTestSuite) TestGetOrCreateFacebookUser() {
 
 	// We pass new facebook ID and new email
 	user, err = suite.service.GetOrCreateFacebookUser(
-		suite.clients[0],   // oauth client
+		suite.clients[0],    // oauth client
 		"reese_facebook_id", // facebook ID
 		&accounts.UserRequest{
 			Email:     "john@reese",
@@ -277,8 +277,8 @@ func (suite *AccountsTestSuite) TestCreateSuperuser() {
 	// We try to insert a user with a non unique oauth user
 	user, err = suite.service.CreateSuperuser(
 		suite.clients[0], // oauth client
-		"test@superuser",  // email
-		"test_password",   // password
+		"test@superuser", // email
+		"test_password",  // password
 	)
 
 	// User object should be nil
@@ -291,7 +291,7 @@ func (suite *AccountsTestSuite) TestCreateSuperuser() {
 
 	// We try to insert a unique superuser
 	user, err = suite.service.CreateSuperuser(
-		suite.clients[0],   // oauth client
+		suite.clients[0],    // oauth client
 		"test@newsuperuser", // email
 		"test_password",     // password
 	)

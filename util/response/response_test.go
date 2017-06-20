@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/util/response"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestWriteJSON(t *testing.T) {

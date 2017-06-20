@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/util/pagination"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetLinks(t *testing.T) {
@@ -93,7 +93,7 @@ func testGetLinks(t *testing.T, testURL string) {
 	}
 
 	// Test page too big
-	first, last, previous, next, err = pagination.GetLinks(
+	_, _, _, _, err = pagination.GetLinks(
 		urlObject,
 		10, // count
 		6,  // page

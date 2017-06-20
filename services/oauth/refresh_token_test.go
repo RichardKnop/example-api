@@ -322,14 +322,14 @@ func (suite *OauthTestSuite) TestGetValidRefreshToken() {
 	// Insert some test refresh tokens
 	testRefreshTokens := []*models.OauthRefreshToken{
 		// Expired test refresh token
-		&models.OauthRefreshToken{
+		{
 			Token:     "test_expired_token",
 			ExpiresAt: time.Now().UTC().Add(-10 * time.Second),
 			Client:    suite.clients[0],
 			User:      suite.users[0],
 		},
 		// Refresh token
-		&models.OauthRefreshToken{
+		{
 			Token:     "test_token",
 			ExpiresAt: time.Now().UTC().Add(+10 * time.Second),
 			Client:    suite.clients[0],

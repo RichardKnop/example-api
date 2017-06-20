@@ -3,8 +3,8 @@ package testutil_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/test-util"
+	"github.com/stretchr/testify/assert"
 )
 
 var (

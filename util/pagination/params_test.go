@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/RichardKnop/example-api/util/pagination"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetParams(t *testing.T) {
@@ -36,7 +36,7 @@ func TestGetParams(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	page, limit, sorts, err = pagination.GetParams(r, sortableBy)
+	_, _, _, err = pagination.GetParams(r, sortableBy)
 	if assert.Error(t, err) {
 		assert.Equal(t, pagination.ErrPageTooSmall, err)
 	}
@@ -46,7 +46,7 @@ func TestGetParams(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	page, limit, sorts, err = pagination.GetParams(r, sortableBy)
+	_, _, _, err = pagination.GetParams(r, sortableBy)
 	if assert.Error(t, err) {
 		assert.Equal(t, pagination.ErrLimitTooSmall, err)
 	}
@@ -56,7 +56,7 @@ func TestGetParams(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	page, limit, sorts, err = pagination.GetParams(r, sortableBy)
+	_, _, _, err = pagination.GetParams(r, sortableBy)
 	if assert.Error(t, err) {
 		assert.Equal(t, pagination.ErrLimitTooBig, err)
 	}
