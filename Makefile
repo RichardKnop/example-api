@@ -14,17 +14,20 @@ install-deps:
 fmt:
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go fmt'
 
-test-oauth:
-	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/services/oauth'
+fmt:
+	bash -c 'go list ./... | grep -v vendor | xargs -n1 go fmt'
 
-test-accounts:
-	bash -c 'go test -timeout=30s github.com/RichardKnop/example-api/services/accounts'
+lint:
+	bash -c 'gometalinter --disable-all -E vet -E gofmt -E misspell -E ineffassign -E goimports -E deadcode --tests --vendor ./...'
 
-test-facebook:
-	bash -c 'go test -timeout=60s github.com/RichardKnop/example-api/services/facebook'
+golint:
+	# TODO: When Go 1.9 is released vendor folder should be ignored automatically
+	bash -c 'go list ./... | grep -v vendor | grep -v mocks | xargs -n1 golint'
 
 test:
+	# TODO: When Go 1.9 is released vendor folder should be ignored automatically
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=60s'
 
 test-with-coverage:
+	# TODO: When Go 1.9 is released vendor folder should be ignored automatically
 	bash -c 'go list ./... | grep -v vendor | xargs -n1 go test -timeout=60s -coverprofile=coverage.txt -covermode=set'
