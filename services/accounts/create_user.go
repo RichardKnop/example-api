@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/RichardKnop/example-api/util/response"
 )
 
@@ -36,7 +36,7 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal the request body into the request prototype
 	userRequest := new(UserRequest)
 	if err = json.Unmarshal(payload, userRequest); err != nil {
-		logger.ERROR.Printf("Failed to unmarshal user request: %s", payload)
+		log.ERROR.Printf("Failed to unmarshal user request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -44,7 +44,7 @@ func (s *Service) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a new user account
 	user, err := s.CreateUser(authenticatedClient, userRequest)
 	if err != nil {
-		logger.ERROR.Printf("Create user error: %s", err)
+		log.ERROR.Printf("Create user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))
 		return
 	}

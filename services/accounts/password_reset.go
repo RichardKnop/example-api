@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/RichardKnop/example-api/models"
 	"github.com/jinzhu/gorm"
 )
@@ -108,7 +108,7 @@ func (s *Service) createPasswordReset(user *models.User) (*models.PasswordReset,
 	// Send password reset email
 	go func() {
 		if err := s.sendPasswordResetEmail(passwordReset); err != nil {
-			logger.ERROR.Print(err)
+			log.ERROR.Print(err)
 		}
 	}()
 

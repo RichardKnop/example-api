@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
 	"github.com/coreos/etcd/pkg/transport"
@@ -29,7 +29,7 @@ var (
 var Cnf = &Config{
 	Database: DatabaseConfig{
 		Type:         "postgres",
-		Host:         "localhost",
+		Host:         "postgres",
 		Port:         5432,
 		User:         "example_api",
 		Password:     "",
@@ -101,7 +101,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 		// Read from remote config the first time
 		newCnf, err := LoadConfig()
 		if err != nil {
-			logger.FATAL.Fatal(err)
+			log.FATAL.Fatal(err)
 			os.Exit(1)
 		}
 
@@ -110,7 +110,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 
 		// Set configLoaded to true
 		configLoaded = true
-		logger.INFO.Print("Successfully loaded config for the first time")
+		log.INFO.Print("Successfully loaded config for the first time")
 	}
 
 	if keepReloading {
@@ -123,7 +123,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 				// Attempt to reload the config
 				newCnf, err := LoadConfig()
 				if err != nil {
-					logger.ERROR.Print(err)
+					log.ERROR.Print(err)
 					continue
 				}
 
@@ -132,7 +132,7 @@ func NewConfig(mustLoadOnce bool, keepReloading bool) *Config {
 
 				// Set configLoaded to true
 				configLoaded = true
-				// logger.Info("Successfully reloaded config")
+				// log.INFO("Successfully reloaded config")
 			}
 		}()
 	}
@@ -186,7 +186,7 @@ func RefreshConfig(newCnf *Config) {
 
 func newEtcdClient(theEndpoints, certFile, keyFile, caFile string) (*clientv3.Client, error) {
 	// Log the etcd endpoint for debugging purposes
-	logger.INFO.Printf("ETCD Endpoints: %s", theEndpoints)
+	log.INFO.Printf("ETCD Endpoints: %s", theEndpoints)
 
 	// ETCD config
 	etcdConfig := clientv3.Config{

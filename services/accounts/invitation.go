@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
@@ -115,7 +115,7 @@ func (s *Service) InviteUser(invitedByUser *models.User, invitationRequest *Invi
 	// Send invitation email
 	go func() {
 		if err := s.sendInvitationEmail(invitation); err != nil {
-			logger.ERROR.Print(invitation)
+			log.ERROR.Print(invitation)
 		}
 	}()
 

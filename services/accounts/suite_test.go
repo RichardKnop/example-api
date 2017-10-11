@@ -66,6 +66,7 @@ func (suite *AccountsTestSuite) SetupSuite() {
 
 	// Create the test database
 	db, err := testutil.CreateTestDatabasePostgres(
+		suite.cnf.Database.Host,
 		testDbUser,
 		testDbName,
 		testMigrations,

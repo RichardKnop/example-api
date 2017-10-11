@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/RichardKnop/example-api/util/response"
 )
 
@@ -35,7 +35,7 @@ func (s *Service) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal the request body into the request prototype
 	invitationRequest := new(InvitationRequest)
 	if err = json.Unmarshal(payload, invitationRequest); err != nil {
-		logger.ERROR.Printf("Failed to unmarshal invitation request: %s", payload)
+		log.ERROR.Printf("Failed to unmarshal invitation request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -43,7 +43,7 @@ func (s *Service) inviteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a new invited user account
 	invitation, err := s.InviteUser(authenticatedUser, invitationRequest)
 	if err != nil {
-		logger.ERROR.Printf("Invite user error: %s", err)
+		log.ERROR.Printf("Invite user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))
 		return
 	}

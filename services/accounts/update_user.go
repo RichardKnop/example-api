@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
 	"github.com/RichardKnop/example-api/util/response"
@@ -62,7 +62,7 @@ func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal the request body into the request prototype
 	userRequest := new(UserRequest)
 	if err = json.Unmarshal(payload, userRequest); err != nil {
-		logger.ERROR.Printf("Failed to unmarshal user request: %s", payload)
+		log.ERROR.Printf("Failed to unmarshal user request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -75,7 +75,7 @@ func (s *Service) updateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Update the user
 	if err = s.UpdateUser(user, userRequest); err != nil {
-		logger.ERROR.Printf("Update user error: %s", err)
+		log.ERROR.Printf("Update user error: %s", err)
 		response.Error(w, err.Error(), getErrStatusCode(err))
 		return
 	}

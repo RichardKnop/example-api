@@ -1,0 +1,22 @@
+version: "2"
+
+services:
+  postgres:
+    container_name: example_api_sut_postgres
+    image: "postgres"
+    environment:
+      POSTGRES_USER: "example_api"
+      POSTGRES_PASSWORD: ""
+      POSTGRES_DB: "example_api"
+    logging:
+      driver: none
+
+  sut:
+    container_name: example_api_sut
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test

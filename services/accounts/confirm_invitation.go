@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/RichardKnop/example-api/util/response"
 	"github.com/gorilla/mux"
 )
@@ -36,7 +36,7 @@ func (s *Service) confirmInvitationHandler(w http.ResponseWriter, r *http.Reques
 	// Unmarshal the request body into the request prototype
 	confirmInvitationRequest := new(ConfirmInvitationRequest)
 	if err = json.Unmarshal(payload, confirmInvitationRequest); err != nil {
-		logger.ERROR.Printf("Failed to unmarshal confirm invitation request: %s", payload)
+		log.ERROR.Printf("Failed to unmarshal confirm invitation request: %s", payload)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

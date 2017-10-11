@@ -3,7 +3,7 @@ package migrations
 import (
 	"fmt"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/jinzhu/gorm"
 )
 
@@ -19,11 +19,11 @@ func Bootstrap(db *gorm.DB) error {
 	exists := nil == db.Where("name = ?", migrationName).First(migration).Error
 
 	if exists {
-		logger.INFO.Printf("Skipping %s migration", migrationName)
+		log.INFO.Printf("Skipping %s migration", migrationName)
 		return nil
 	}
 
-	logger.INFO.Printf("Running %s migration", migrationName)
+	log.INFO.Printf("Running %s migration", migrationName)
 
 	// Create migrations table
 	if err := db.CreateTable(new(Migration)).Error; err != nil {

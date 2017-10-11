@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/RichardKnop/example-api/logger"
+	"github.com/RichardKnop/example-api/log"
 	"github.com/RichardKnop/example-api/models"
 	"github.com/RichardKnop/example-api/services/oauth"
 	"github.com/RichardKnop/example-api/services/oauth/roles"
@@ -128,7 +128,7 @@ func (s *Service) CreateUser(oauthClient *models.OauthClient, data *UserRequest)
 	// Send confirmation email
 	go func() {
 		if err := s.sendConfirmationEmail(confirmation); err != nil {
-			logger.ERROR.Print(err)
+			log.ERROR.Print(err)
 		}
 	}()
 
