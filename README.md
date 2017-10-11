@@ -8,7 +8,6 @@ It relies on `Postgres` for database and `etcd` for configuration but both are e
 [![godoc for RichardKnop/example-api](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/example-api)
 [![goreportcard for RichardKnop/example-api](https://goreportcard.com/badge/github.com/RichardKnop/example-api)](https://goreportcard.com/report/RichardKnop/example-api)
 [![codecov for RichardKnop/example-api](https://codecov.io/gh/RichardKnop/example-api/branch/master/graph/badge.svg)](https://codecov.io/gh/RichardKnop/example-api)
-[![Codeship Status for RichardKnop/example-api](https://codeship.com/projects/eb1ee0d0-ac8c-0133-aaf6-0af8633f2b2a/status?branch=master)](https://codeship.com/projects/131678)
 
 [![Sourcegraph for RichardKnop/example-api](https://sourcegraph.com/github.com/RichardKnop/example-api/-/badge.svg)](https://sourcegraph.com/github.com/RichardKnop/example-api?badge)
 [![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://richardknop.github.io/donate/)
