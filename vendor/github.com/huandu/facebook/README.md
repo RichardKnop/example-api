@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/huandu/facebook.png?branch=master)](https://travis-ci.org/huandu/facebook)
 
-This is a Go package fully supports Facebook Graph API with file upload, batch request, FQL and multi-FQL. It can be used in Google App Engine.
+This is a Go package fully supports Facebook Graph API with file upload, batch request, marketing API. It can be used in Google App Engine.
 
 API documents can be found on [godoc](http://godoc.org/github.com/huandu/facebook).
 
@@ -16,7 +16,7 @@ Use `go get -u github.com/huandu/facebook` to get or update it.
 
 ### Quick start ###
 
-Here is a sample to read my Facebook first name by uid.
+Here is a sample that reads my Facebook first name by uid.
 
 ```go
 package main
@@ -35,7 +35,7 @@ func main() {
 }
 ```
 
-Type of `res` is `fb.Result` (a.k.a. `map[string]interface{}`).
+The type of `res` is `fb.Result` (a.k.a. `map[string]interface{}`).
 This type has several useful methods to decode `res` to any Go type safely.
 
 ```go
@@ -54,11 +54,11 @@ res.Decode(&user)
 fmt.Println("print first_name in struct:", user.FirstName)
 ```
 
-If a type implements `json.Unmarshaler` interface, `Decode` or `DecodeField` will use it to unmarshal JSON.
+If a type implements the `json.Unmarshaler` interface, `Decode` or `DecodeField` will use it to unmarshal JSON.
 
 ```go
 res := Result{
-    "create_time": "2006-01-02 15:16:17Z",
+    "create_time": "2006-01-02T15:16:17Z",
 }
 
 // Type `*time.Time` implements `json.Unmarshaler`.
@@ -115,7 +115,7 @@ for _, item := range items {
 
 ### Use `App` and `Session` ###
 
-It's recommended to use `App` and `Session` in a production app. They provide more controls over all API calls. They can also make code clear and concise.
+It's recommended to use `App` and `Session` in a production app. They provide more control over all API calls. They can also make code clear and concise.
 
 ```go
 // create a global App var to hold app id and secret.
@@ -158,7 +158,7 @@ noMore, err := paging.Next()
 results = paging.Data()
 ```
 
-### Read graph api response and decode result into a struct ###
+### Read graph API response and decode result into a struct ###
 
 As facebook Graph API always uses lower case words as keys in API response.
 This package can convert go's camel-case-style struct field name to facebook's underscore-style API key name.
@@ -179,23 +179,24 @@ type Data struct {
 }
 ```
 
-Decoding behavior can be changed per field through field tag -- just like what `encoding/json` does.
+The decoding of each struct field can be customized by the format string stored under the "facebook" key or the "json" key in the struct field's tag. The "facebook" key is recommended as it's specifically designed for this package.
 
 Following is a sample shows all possible field tags.
 
 ```go
 // define a facebook feed object.
 type FacebookFeed struct {
-    Id          string `facebook:",required"`             // this field must exist in response.
-                                                          // mind the "," before "required".
+    Id          string            `facebook:",required"`             // this field must exist in response.
+                                                                     // mind the "," before "required".
     Story       string
-    FeedFrom    *FacebookFeedFrom `facebook:"from"`       // use customized field name "from".
-    CreatedTime string `facebook:"created_time,required"` // both customized field name and "required" flag.
-    Omitted     string `facebook:"-"`                     // this field is omitted when decoding.
+    FeedFrom    *FacebookFeedFrom `facebook:"from"`                  // use customized field name "from".
+    CreatedTime string            `facebook:"created_time,required"` // both customized field name and "required" flag.
+    Omitted     string            `facebook:"-"`                     // this field is omitted when decoding.
 }
 
 type FacebookFeedFrom struct {
-    Name, Id string
+    Name string `json:"name"`                   // the "json" key also works as expected.
+    Id string   `facebook:"id" json:"shadowed"` // if both "facebook" and "json" key are set, the "facebook" key is used.
 }
 
 // create a feed object direct from graph api result.
@@ -235,50 +236,9 @@ res.DecodeField("id", &id)
 contentType := batchResult1.Header.Get("Content-Type")
 ```
 
-### Send FQL query ###
-
-*FQL is deprecated by facebook right now.*
-
-```go
-results, _ := fb.FQL("SELECT username FROM page WHERE page_id = 20531316728")
-fmt.Println(results[0]["username"]) // print "facebook"
-
-// most FQL query requires access token. create session to hold access token.
-session := &fb.Session{}
-session.SetAccessToken("A-VALID-ACCESS-TOKEN")
-results, _ := session.FQL("SELECT username FROM page WHERE page_id = 20531316728")
-fmt.Println(results[0]["username"]) // print "facebook"
-```
-
-### Make multi-FQL ###
-
-*FQL is deprecated by facebook right now.*
-
-```go
-res, _ := fb.MultiFQL(Params{
-    "query1": "SELECT username FROM page WHERE page_id = 20531316728",
-    "query2": "SELECT uid FROM user WHERE uid = 538744468",
-})
-var query1, query2 []Result
-
-// get response for query1 and query2.
-res.DecodeField("query1", &query1)
-res.DecodeField("query2", &query2)
-
-// most FQL query requires access token. create session to hold access token.
-session := &fb.Session{}
-session.SetAccessToken("A-VALID-ACCESS-TOKEN")
-res, _ := session.MultiFQL(Params{
-    "query1": "...",
-    "query2": "...",
-})
-
-// same as the sample without access token...
-```
-
 ### Use it in Google App Engine ###
 
-Google App Engine provide `appengine/urlfetch` package as standard http client package. Default client in `net/http` doesn't work. One must explicitly set http client in `Session` to make it work.
+Google App Engine provides `appengine/urlfetch` package as the standard http client package. The default client in `net/http` doesn't work. One must explicitly set http client in `Session` to make it work.
 
 ```go
 import (
@@ -307,7 +267,7 @@ See [Platform Versioning](https://developers.facebook.com/docs/apps/versions) to
 // change following global variable to specific a global default version.
 fb.Version = "v2.0"
 
-// starting with graph api v2.0, it's not allowed to get user information without access token.
+// starting with graph API v2.0; it's not allowed to get user information without access token.
 fb.Api("huan.du", GET, nil)
 
 // it's possible to specify version per session.
@@ -337,9 +297,9 @@ session.EnableAppsecretProof(false)
 
 Facebook introduces a way to debug graph API calls. See [Debugging API Requests](https://developers.facebook.com/docs/graph-api/using-graph-api/v2.3#debugging) for details.
 
-This package provides both package level and per session debug flag. Set `Debug` to a `DEBUG_*` constant to change debug mode globally; or use `Session#SetDebug` to change debug mode for one session.
+This package provides both package level, and per session debug flag. Set `Debug` to a `DEBUG_*` constant to change debug mode globally; or use `Session#SetDebug` to change debug mode for one session.
 
-When debug mode is turned on, use `Result#DebugInfo` to get `DebugInfo` struct from result.
+When debug mode is turned on, use `Result#DebugInfo` to get `DebugInfo` struct from the result.
 
 ```go
 fb.Debug = fb.DEBUG_ALL
@@ -385,6 +345,23 @@ session := &fb.Session{
 res, _ := session.Get("/me", nil)
 ```
 
+### Control timeout and cancelation with `Context` ###
+
+The `Session` can work with `Context` now.
+
+```go
+// Create a new context.
+ctx, cancel := context.WithTimeout(session.Context(), 100 * time.Millisecond)
+defer cancel()
+
+// Call an API with ctx.
+// The return value of `session.WithContext` is a shadow copy of original session and
+// should not be stored. It can be used only once.
+result, err := session.WithContext(ctx).Get("/me", nil)
+```
+
+See https://blog.golang.org/context for more details about how to use `Context`.
+
 ## Change Log ##
 
 See [CHANGELOG.md](CHANGELOG.md).
@@ -392,7 +369,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 ## Out of Scope ##
 
 1. No OAuth integration. This package only provides APIs to parse/verify access token and code generated in OAuth 2.0 authentication process.
-2. No old RESTful API support. Such APIs are deprecated for years. Forget about them.
+2. No old RESTful API and FQL support. Such APIs are deprecated for years. Forget about them.
 
 ## License ##
 

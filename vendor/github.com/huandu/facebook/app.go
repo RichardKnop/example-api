@@ -11,10 +11,27 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strings"
 )
+
+// Holds facebook application information.
+type App struct {
+	// Facebook app id
+	AppId string
+
+	// Facebook app secret
+	AppSecret string
+
+	// Facebook app redirect URI in the app's configuration.
+	RedirectUri string
+
+	// Enable appsecret proof in every API call to facebook.
+	// Facebook document: https://developers.facebook.com/docs/graph-api/securing-requests
+	EnableAppsecretProof bool
+}
 
 // Creates a new App and sets app id and secret.
 func New(appId, appSecret string) *App {
@@ -38,14 +55,14 @@ func (app *App) ParseSignedRequest(signedRequest string) (res Result, err error)
 		return
 	}
 
-	sig, e1 := decodeBase64URLEncodingString(strs[0])
+	sig, e1 := base64.RawURLEncoding.DecodeString(strs[0])
 
 	if e1 != nil {
 		err = fmt.Errorf("cannot decode signed request sig. error is %v.", e1)
 		return
 	}
 
-	payload, e2 := decodeBase64URLEncodingString(strs[1])
+	payload, e2 := base64.RawURLEncoding.DecodeString(strs[1])
 
 	if e2 != nil {
 		err = fmt.Errorf("cannot decode signed request payload. error is %v.", e2)
@@ -147,7 +164,7 @@ func (app *App) ParseCodeInfo(code, machineId string) (token string, expires int
 	return
 }
 
-// Exchange a short lived access token to a long lived access token.
+// Exchange a short-lived access token to a long-lived access token.
 // Return new access token and its expires time.
 func (app *App) ExchangeToken(accessToken string) (token string, expires int, err error) {
 	if accessToken == "" {

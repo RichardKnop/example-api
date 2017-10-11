@@ -1,30 +1,31 @@
-memo = "06d30ae687c3c1dbc3afc18ca3d102d3643438daa89671914a902c190b659f8c"
+memo = "0dacdbdfe7d900d1a5ae936fdd3bd135213fed43399093af19aba85b3c3f33c6"
 
 [[projects]]
-  branch = "master"
   name = "github.com/PuerkitoBio/goquery"
   packages = ["."]
-  revision = "152b1a2c8f5d0340f658bb656032a39b94e52958"
+  revision = "e1271ee34c6a305e38566ecd27ae374944907ee9"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/RichardKnop/go-fixtures"
   packages = ["."]
-  revision = "97d66ac32863fd6c8996e2f38e18eee82777c89c"
+  revision = "f109e7da807a35886f208a50074d162380f91fb8"
 
 [[projects]]
   branch = "master"
   name = "github.com/RichardKnop/jsonhal"
   packages = ["."]
-  revision = "6308bb1c8009793cecfa1fb45c1b7bc612bab300"
+  revision = "95cb5deb31ecf60cd3f633ffde7a5ce129f66fc8"
 
 [[projects]]
   branch = "master"
   name = "github.com/RichardKnop/logging"
   packages = ["."]
-  revision = "0745ebe7cc826d7d0453c7c9f08ea75a7fe86f7b"
+  revision = "c29d67bd732ba53b98680ceacd5131d8ec3bd285"
 
 [[projects]]
+  branch = "master"
   name = "github.com/RichardKnop/uuid"
   packages = ["."]
   revision = "c55201b036063326c5b1b89ccfe45a184973d073"
@@ -33,7 +34,7 @@ memo = "06d30ae687c3c1dbc3afc18ca3d102d3643438daa89671914a902c190b659f8c"
   branch = "master"
   name = "github.com/andybalholm/cascadia"
   packages = ["."]
-  revision = "65919c611220063037b1db8eb334acaf17a6d8ea"
+  revision = "349dd0209470eabd9514242c688c403c0926d266"
 
 [[projects]]
   branch = "master"
@@ -44,18 +45,20 @@ memo = "06d30ae687c3c1dbc3afc18ca3d102d3643438daa89671914a902c190b659f8c"
 [[projects]]
   name = "github.com/coreos/etcd"
   packages = ["auth/authpb","clientv3","etcdserver/api/v3rpc/rpctypes","etcdserver/etcdserverpb","mvcc/mvccpb","pkg/tlsutil","pkg/transport"]
-  revision = "386374a6d0b27fd13dbf3fd4bc0483b7fef67d05"
+  revision = "f1d7dd87da3e8feab4aaf675b8e29c6a5ed5f58b"
+  version = "v3.2.9"
 
 [[projects]]
-  branch = "master"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/golang/protobuf"
-  packages = ["proto","ptypes/any"]
-  revision = "b50ceb1fa9818fa4d78b016c2d4ae025593a7ce3"
+  packages = ["proto","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
+  revision = "130e6b02ab059e7b717a096f397c5b60111cae74"
 
 [[projects]]
   branch = "master"
@@ -73,21 +76,22 @@ memo = "06d30ae687c3c1dbc3afc18ca3d102d3643438daa89671914a902c190b659f8c"
   branch = "master"
   name = "github.com/gorilla/mux"
   packages = ["."]
-  revision = "ac112f7d75a0714af1bd86ab17749b31f7809640"
+  revision = "9bd9ff2d1d2a0660d35050674f2c3112547997af"
 
 [[projects]]
-  branch = "master"
   name = "github.com/huandu/facebook"
   packages = ["."]
-  revision = "efe962f32209aa6e7430fb779bdf29bbcdb716e1"
+  revision = "cb06a50311533d4c24211a80cffb6cf7eaeb5f52"
+  version = "v2.1.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/jinzhu/gorm"
   packages = ["."]
-  revision = "9acaa33324bbcc78239a1c913d4f1292c12177b9"
+  revision = "0a51f6cdc55d1650d9ed3b4c13026cfa9133b01e"
 
 [[projects]]
+  branch = "master"
   name = "github.com/jinzhu/inflection"
   packages = ["."]
   revision = "1c35d901db3da928c72a72d8458480cc9ade058f"
@@ -96,12 +100,13 @@ memo = "06d30ae687c3c1dbc3afc18ca3d102d3643438daa89671914a902c190b659f8c"
   branch = "master"
   name = "github.com/lib/pq"
   packages = [".","oid"]
-  revision = "2704adc878c21e1329f46f6e56a1c387d788ff94"
+  revision = "30d59eaf01528a141f560f34f0208e0ec5218e75"
 
 [[projects]]
   name = "github.com/mattn/go-sqlite3"
   packages = ["."]
-  revision = "cf7286f069c3ef596efcc87781a4653a2e7607bd"
+  revision = "ca5e3819723d8eeaf170ad510e7da1d6d2e94a08"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
@@ -116,16 +121,16 @@ memo = "06d30ae687c3c1dbc3afc18ca3d102d3643438daa89671914a902c190b659f8c"
   revision = "8118ae63850fee22b2fe43cea81d3bc149774503"
 
 [[projects]]
-  branch = "master"
   name = "github.com/pkg/errors"
   packages = ["."]
-  revision = "c605e284fe17294bda444b34710735b29d1a9d90"
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -137,78 +142,82 @@ memo = "06d30ae687c3c1dbc3afc18ca3d102d3643438daa89671914a902c190b659f8c"
   branch = "master"
   name = "github.com/stretchr/testify"
   packages = ["assert","mock","require","suite"]
-  revision = "05e8a0eda380579888eb53c394909df027f06991"
+  revision = "890a5c3458b43e6104ff5da8dfa139d013d77544"
 
 [[projects]]
   branch = "master"
   name = "github.com/unrolled/secure"
   packages = ["."]
-  revision = "a80c09da9c7bd84aaf622507fd339a9281b8acd1"
+  revision = "19a872c81779b0456e9ee495a8162fb60c57b0c0"
 
 [[projects]]
   branch = "master"
   name = "github.com/urfave/cli"
   packages = ["."]
-  revision = "4b90d79a682b4bf685762c7452db20f2a676ecb2"
+  revision = "2997500ba5f393daa5d76c18544c6367b2c48d16"
 
 [[projects]]
   branch = "master"
   name = "github.com/urfave/negroni"
   packages = ["."]
-  revision = "3444e69ea1ef03a77998d11fc56e7f0a34f7213c"
+  revision = "5bc66cf1ad89af58511e07e108a31f219ed61012"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["bcrypt","blowfish"]
-  revision = "122d919ec1efcfb58483215da23f815853e24b81"
+  revision = "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","html","html/atom","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
-  revision = "513929065c19401a1c7b76ecd942f9f86a0c061b"
+  packages = ["context","context/ctxhttp","html","html/atom","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
+  revision = "a04bdaca5b32abe1c069418fb7088ae607de5bd0"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/oauth2"
   packages = [".","facebook","internal"]
-  revision = "ad516a297a9f2a74ecc244861b298c94bdd28b9d"
-
-[[projects]]
-  name = "golang.org/x/text"
-  packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4"
+  revision = "bb50c06baba3d0c76f9d125c0719093e315b5b44"
 
 [[projects]]
   branch = "master"
-  name = "google.golang.org/appengine"
-  packages = ["internal","internal/base","internal/datastore","internal/log","internal/remote_api","internal/urlfetch","urlfetch"]
-  revision = "58c0e2a2044a8d1abd8dd1d97939cd74497d0806"
+  name = "golang.org/x/text"
+  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  revision = "825fc78a2fd6fa0a5447e300189e3219e05e1f25"
 
 [[projects]]
+  name = "google.golang.org/appengine"
+  packages = ["internal","internal/base","internal/datastore","internal/log","internal/remote_api","internal/urlfetch","urlfetch"]
+  revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "411e09b969b1170a9f0c467558eb4c4c110d9c77"
+  revision = "f676e0f3ac6395ff1a529ae59a6670878a8371a6"
 
 [[projects]]
   name = "google.golang.org/grpc"
-  packages = [".","codes","credentials","grpclb/grpc_lb_v1","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "17760cfd5b60decdc7ca12e5ae74fcdffe9ef0d2"
+  packages = [".","codes","connectivity","credentials","grpclb/grpc_lb_v1/messages","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
+  revision = "f92cdcd7dcdc69e81b2d7b338479a19a8723cfa3"
+  version = "v1.6.0"
 
 [[projects]]
-  branch = "master"
   name = "gopkg.in/mailgun/mailgun-go.v1"
   packages = ["."]
   revision = "a4002e2df2e8ca2da6a6fbb4a72871b504e49f50"
+  version = "v1.1.0"
 
 [[projects]]
-  branch = "master"
   name = "gopkg.in/tylerb/graceful.v1"
   packages = ["."]
   revision = "4654dfbb6ad53cb5e27f37d99b02e16c1872fbbb"
+  version = "v1.2.15"
 
 [[projects]]
-  branch = "master"
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
+  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
