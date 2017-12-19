@@ -6,7 +6,6 @@ It relies on `Postgres` for database and `etcd` for configuration but both are e
 
 [![Travis Status for RichardKnop/example-api](https://travis-ci.org/RichardKnop/example-api.svg?branch=master&label=linux+build)](https://travis-ci.org/RichardKnop/example-api)
 [![godoc for RichardKnop/example-api](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/example-api)
-[![goreportcard for RichardKnop/example-api](https://goreportcard.com/badge/github.com/RichardKnop/example-api)](https://goreportcard.com/report/RichardKnop/example-api)
 [![codecov for RichardKnop/example-api](https://codecov.io/gh/RichardKnop/example-api/branch/master/graph/badge.svg)](https://codecov.io/gh/RichardKnop/example-api)
 
 [![Sourcegraph for RichardKnop/example-api](https://sourcegraph.com/github.com/RichardKnop/example-api/-/badge.svg)](https://sourcegraph.com/github.com/RichardKnop/example-api?badge)
