@@ -287,7 +287,7 @@ func main() {
 
 本中介器接收`panic`跟錯誤代碼`500`的回應. 如果其他任何中介器寫了回應
 的HTTP代碼或內容的話, 中介器會無法順利地傳送500給用戶端, 因為用戶端
-已經收到HTTP的回應代碼. 另外, 可以掛載`ErrorHandlerFunc`來回報500
+已經收到HTTP的回應代碼. 另外, 可以掛載`PanicHandlerFunc`來回報500
 的錯誤到錯誤回報系統, 如: Sentry或Airbrake.
 
 範例:
@@ -339,14 +339,14 @@ func main() {
 
   n := negroni.New()
   recovery := negroni.NewRecovery()
-  recovery.ErrorHandlerFunc = reportToSentry
+  recovery.PanicHandlerFunc = reportToSentry
   n.Use(recovery)
   n.UseHandler(mux)
 
   http.ListenAndServe(":3003", n)
 }
 
-func reportToSentry(error interface{}) {
+func reportToSentry(info *negroni.PanicInformation) {
     // 在這寫些程式回報錯誤給Sentry
 }
 ```
@@ -395,7 +395,7 @@ func main() {
 
 | 中介器 | 作者 | 說明 |
 | -----------|--------|-------------|
-| [authz](https://github.com/casbin/negroni) | [Yang Luo](https://github.com/hsluoyz) | 支援ACL, RBAC, ABAC的權限管理中介器. 基於[Casbin](https://github.com/casbin/casbin) |
+| [authz](https://github.com/casbin/negroni-authz) | [Yang Luo](https://github.com/hsluoyz) | 支援ACL, RBAC, ABAC的權限管理中介器. 基於[Casbin](https://github.com/casbin/casbin) |
 | [binding](https://github.com/mholt/binding) | [Matt Holt](https://github.com/mholt) | 把HTTP請求的資料榜定到structs |
 | [cloudwatch](https://github.com/cvillecsteele/negroni-cloudwatch) | [Colin Steele](https://github.com/cvillecsteele) | AWS CloudWatch 矩陣的中介器 |
 | [cors](https://github.com/rs/cors) | [Olivier Poitrey](https://github.com/rs) | 支援[Cross Origin Resource Sharing](http://www.w3.org/TR/cors/)(CORS) |
